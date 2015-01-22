@@ -20,8 +20,8 @@ namespace Basketball_Roster_Manager
         private static string appDataFile = "Rosters.sdf";
         private static string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-        public static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Basketball_Roster_Manager.Properties.Settings.RostersConnectionString"].ConnectionString;
-        //public static string connectionString = Path.Combine(appDataPath, appDataFolder, appDataFile);
+        //public static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Basketball_Roster_Manager.Properties.Settings.RostersConnectionString"].ConnectionString;
+        public static string connectionString = Path.Combine(appDataPath, appDataFolder, appDataFile);
 
         public Form1()
         {
@@ -30,18 +30,18 @@ namespace Basketball_Roster_Manager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //if (verifyDataPath(connectionString))
-            //{
+            if (verifyDataPath(connectionString))
+            {
                 loadHalves();
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
                 tsCboHalf_SelectedIndexChanged(sender, e);
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    this.Close();
-            //}
+            }
+            else
+            {
+                MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+            }
         }
 
         private bool verifyDataPath(string connStr)
