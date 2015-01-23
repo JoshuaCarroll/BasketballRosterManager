@@ -8,7 +8,7 @@ The program also allows one to change the background color of each team to match
 Setup
 =====
 
-Right now the database location is hard coded into the application.  That is something on which I'll be working.
+None
 
 Requirements/Components
 =======================
