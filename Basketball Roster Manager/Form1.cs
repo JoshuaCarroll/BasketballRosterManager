@@ -32,7 +32,8 @@ namespace Basketball_Roster_Manager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (verifyDataPath())
+            string errorMessage = string.Empty;
+            if (verifyDataPath(out errorMessage))
             {
                 loadHalves();
                 loadLeagues();
@@ -42,13 +43,15 @@ namespace Basketball_Roster_Manager
             }
             else
             {
-                MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(errorMessage + "Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
         }
 
-        private bool verifyDataPath()
+        private bool verifyDataPath(out string errorMessage)
         {
+            errorMessage = string.Empty;
+
             if (File.Exists(connectionPath))
             {
                 return true;
@@ -57,24 +60,83 @@ namespace Basketball_Roster_Manager
             {
                 if (MessageBox.Show("The rosters data file was not found.  Create a new data file to maintain data?", "Create new file?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    // Create new data folder
-                    if (!Directory.Exists(Path.Combine(appDataPath, appDataFolder))) Directory.CreateDirectory(Path.Combine(appDataPath, appDataFolder));
-
-                    // Create new data file
-                    Assembly assembly = Assembly.GetExecutingAssembly();
-                    using (Stream input = assembly.GetManifestResourceStream("EmptyRosters"))
-                    using (Stream output = File.Create(connectionPath))
+                    if (createNewDatabase(out errorMessage))
                     {
-                        input.CopyTo(output);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
 
-                    return true;
+                    //// Create new data folder
+                    //if (!Directory.Exists(Path.Combine(appDataPath, appDataFolder))) Directory.CreateDirectory(Path.Combine(appDataPath, appDataFolder));
+
+                    //// Create new data file
+                    //Assembly assembly = Assembly.GetExecutingAssembly();
+                    //using (Stream input = assembly.GetManifestResourceStream("EmptyRosters"))
+                    //using (Stream output = File.Create(connectionPath))
+                    //{
+                    //    if (input != null)
+                    //    {
+                    //        input.CopyTo(output);
+                    //    }
+                    //    else
+                    //    {
+                    //        errorMessage = "Input resource stream for new database file is null.  ";
+                    //        return false;
+                    //    }
+                    //}
+
+                    
                 }
                 else
                 {
+                    errorMessage = "User opted to not create new database file.  ";
                     return false;
                 }
             }
+        }
+
+        private bool createNewDatabase(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            SqlCeEngine engine = new SqlCeEngine(connectionString);
+            engine.CreateDatabase();
+
+            string[] strSql = {"CREATE TABLE Leagues ( LeagueID int IDENTITY(1,1) PRIMARY KEY, LeagueName nvarchar(100) );",
+"CREATE TABLE Players ( PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int NOT NULL, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100) );",
+"CREATE TABLE Teams ( TeamID int IDENTITY(1,1) PRIMARY KEY, LeagueID int NOT NULL, TeamName nvarchar(100), Color nvarchar(100) );",
+"INSERT INTO Leagues (LeagueName) VALUES ('Boys varsity');",
+"INSERT INTO Leagues (LeagueName) VALUES ('Girls varsity');"};
+
+            SqlCeConnection conn = new SqlCeConnection(connectionString);
+            System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                conn.Open();
+                foreach (string s in strSql)
+                {
+                    cmd.CommandText = s;
+                    cmd.ExecuteNonQuery();
+                }
+                
+                conn.Close();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                errorMessage = "Exception thrown while populating new database: " + ex.Message + "  ";
+                return false;
+            }
+
+
+            
         }
 
         public void loadHalves()
