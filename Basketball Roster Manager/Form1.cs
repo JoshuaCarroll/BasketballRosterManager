@@ -16,12 +16,12 @@ namespace Basketball_Roster_Manager
 {
     public partial class Form1 : Form
     {
-        private static string appDataFolder = "Carroll Media";
+        private static string appDataFolder = "Carroll Sports Media";
         private static string appDataFile = "Rosters.sdf";
         private static string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-        //public static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Basketball_Roster_Manager.Properties.Settings.RostersConnectionString"].ConnectionString;
-        public static string connectionString = Path.Combine(appDataPath, appDataFolder, appDataFile);
+        public static string connectionPath = Path.Combine(appDataPath, appDataFolder, appDataFile);
+        public static string connectionString = "Data Source=" + connectionPath;
 
         public Form1()
         {
@@ -30,7 +30,7 @@ namespace Basketball_Roster_Manager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (verifyDataPath(connectionString))
+            if (verifyDataPath())
             {
                 loadHalves();
                 loadLeagues();
@@ -44,9 +44,9 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        private bool verifyDataPath(string connStr)
+        private bool verifyDataPath()
         {
-            if (File.Exists(connStr))
+            if (File.Exists(connectionPath))
             {
                 return true;
             }
@@ -60,7 +60,7 @@ namespace Basketball_Roster_Manager
                     // Create new data file
                     Assembly assembly = Assembly.GetExecutingAssembly();
                     using (Stream input = assembly.GetManifestResourceStream("EmptyRosters"))
-                    using (Stream output = File.Create(connStr))
+                    using (Stream output = File.Create(connectionPath))
                     {
                         input.CopyTo(output);
                     }
@@ -76,6 +76,7 @@ namespace Basketball_Roster_Manager
 
         public void loadHalves()
         {
+            /// TODO: Reconsider.  Why is this dynamic?
             tsCboHalf.Items.Add(new ComboBoxItem("First half", "1"));
             tsCboHalf.Items.Add(new ComboBoxItem("Second half", "2"));
             tsCboHalf.SelectedIndex = 0;
@@ -83,12 +84,51 @@ namespace Basketball_Roster_Manager
 
         public void loadLeagues()
         {
-            tsCboLeague.ComboBox.BindingContext = this.BindingContext;
-            tsCboLeague.ComboBox.DisplayMember = "LeagueName";
-            tsCboLeague.ComboBox.ValueMember = "LeagueID";
-            tsCboLeague.ComboBox.DataSource = leaguesBindingSource;
+            ToolStripComboBox comboToLoad = tsCboLeague;
+            
+            // For possible future use when we might save the last selected
+            int selectedItemID = -1;
 
-            this.leaguesTableAdapter.Fill(this.rostersDataSet.Leagues);
+            try
+            {
+                // Load teams from this league
+                SqlCeConnection conn = new SqlCeConnection(connectionString);
+                System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select * from Leagues order by LeagueName", conn);
+                conn.Open();
+
+                SqlCeDataReader dr = cmd.ExecuteReader();
+
+                comboToLoad.Items.Clear();
+
+                while (dr.Read())
+                {
+                    comboToLoad.Items.Add(new ComboBoxItem(dr["LeagueName"], dr["LeagueID"]));
+                }
+
+                dr.Close();
+                conn.Close();
+
+                if (selectedItemID != -1)
+                {
+                    for (int i = 0; i < comboToLoad.Items.Count; i++)
+                    {
+                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[0];
+                        if (int.Parse(cbi.Value) == selectedItemID)
+                        {
+                            comboToLoad.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // TODO...
+                //comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
+
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Unable to load leagues: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void loadLeagues(string selectedLeagueText)
@@ -99,20 +139,26 @@ namespace Basketball_Roster_Manager
 
         private void tsCboLeague_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Make sure this is being fired b/c of someone clicking on the ToolStripCombo
             if (sender is ToolStripComboBox)
             {
-
-                Debug.Print("Sender is: ");
-
                 ToolStripComboBox cb = (ToolStripComboBox)sender;
                 cb.Owner.Hide();
 
-                if (cb.ComboBox.SelectedValue != null)
+                if (cb.ComboBox.SelectedItem != null)
                 {
-                    int leagueID = (int)cb.ComboBox.SelectedValue;
+                    ComboBoxItem cbi = (ComboBoxItem)cb.ComboBox.SelectedItem;
+                    int leagueID = 0;
 
-                    loadTeams(cboTeam1, leagueID);
-                    loadTeams(cboTeam2, leagueID);
+                    if (int.TryParse(cbi.Value, out leagueID))
+                    {
+                        loadTeams(cboTeam1, leagueID);
+                        loadTeams(cboTeam2, leagueID);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Unble to parse league ID from combobox selected value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -161,7 +207,7 @@ namespace Basketball_Roster_Manager
             }
             catch (System.Exception ex)
             {
-                Debug.Print("Unable to load teams from league: " + ex.Message);
+                MessageBox.Show("Unble to load teams from league: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -560,7 +606,7 @@ namespace Basketball_Roster_Manager
                     }
                     catch (Exception ex)
                     {
-                        Debug.Print("Exception thrown while inserting player record: " + ex.Message);
+                        MessageBox.Show("Exception thrown while inserting player record: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     
                 }
@@ -595,41 +641,6 @@ namespace Basketball_Roster_Manager
                     away2.Text = "";
                     homeIn.Checked = false;
                     awayIn.Checked = false;
-                }
-            }
-        }
-
-        private void setTeamColorOLD(object sender, EventArgs e)
-        {
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ToolStripMenuItem t = (ToolStripMenuItem)sender;
-                Color c = colorDialog1.Color;
-                GroupBox g = new GroupBox();
-                string strTeamId = string.Empty;
-                ComboBoxItem cbi = new ComboBoxItem();
-
-                if (t.Name == "setHomeColorToolStripMenuItem")
-                {
-                    g = groupHome;
-                    cbi = (ComboBoxItem)cboTeam1.SelectedItem;
-                }
-                else
-                {
-                    g = groupVisitor;
-                    cbi = (ComboBoxItem)cboTeam2.SelectedItem;
-                }
-
-                g.BackColor = c;
-
-                try
-                {
-                    strTeamId = cbi.Value;
-                    ///TODO: Save to database (Update Teams set color = {c} where TeamID = {strTeamId}
-                }
-                catch (Exception ex)
-                {
-                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
                 }
             }
         }
@@ -676,7 +687,7 @@ namespace Basketball_Roster_Manager
                 }
                 catch (Exception ex)
                 {
-                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
+                    MessageBox.Show("Exception thrown while attempting to save color: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

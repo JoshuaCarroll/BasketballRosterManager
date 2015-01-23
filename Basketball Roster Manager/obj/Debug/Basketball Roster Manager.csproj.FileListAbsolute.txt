@@ -24,3 +24,16 @@ C:\Users\jcarroll\Documents\GitHub\BasketballRosterManager\Basketball Roster Man
 C:\Users\jcarroll\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Properties.Resources.resources
 C:\Users\jcarroll\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Resource1.resources
 C:\Users\jcarroll\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.csproj.GenerateResource.Cache
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\bin\Debug\Basketball Roster Manager.exe.config
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.exe
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.pdb
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\bin\Debug\App_Data\EmptyRosters.sdf
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\bin\Debug\App_Data\Rosters.sdf
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\bin\Debug\Basketball Roster Manager.exe
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\bin\Debug\Basketball Roster Manager.pdb
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.csprojResolveAssemblyReference.cache
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Form1.resources
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.NewTeam.resources
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Properties.Resources.resources
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Resource1.resources
+C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.csproj.GenerateResource.Cache

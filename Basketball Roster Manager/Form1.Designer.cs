@@ -29,15 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.leaguesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.rostersDataSet = new Basketball_Roster_Manager.App_Data.RostersDataSet();
             this.cboTeam1 = new System.Windows.Forms.ComboBox();
             this.teamContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setHomeColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAwayColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.switchSidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.leaguesTableAdapter = new Basketball_Roster_Manager.App_Data.RostersDataSetTableAdapters.LeaguesTableAdapter();
+            this.changeHalfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupHome = new System.Windows.Forms.GroupBox();
             this.HomeEntered18 = new System.Windows.Forms.CheckBox();
             this.HomeEntered17 = new System.Windows.Forms.CheckBox();
@@ -295,24 +293,11 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
-            this.changeHalfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.leaguesBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rostersDataSet)).BeginInit();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupVisitor.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // leaguesBindingSource
-            // 
-            this.leaguesBindingSource.DataMember = "Leagues";
-            this.leaguesBindingSource.DataSource = this.rostersDataSet;
-            // 
-            // rostersDataSet
-            // 
-            this.rostersDataSet.DataSetName = "RostersDataSet";
-            this.rostersDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // cboTeam1
             // 
@@ -334,7 +319,7 @@
             this.switchSidesToolStripMenuItem,
             this.changeHalfToolStripMenuItem});
             this.teamContextMenuStrip.Name = "teamContextMenuStrip";
-            this.teamContextMenuStrip.Size = new System.Drawing.Size(155, 120);
+            this.teamContextMenuStrip.Size = new System.Drawing.Size(155, 98);
             // 
             // setHomeColorToolStripMenuItem
             // 
@@ -362,9 +347,12 @@
             this.switchSidesToolStripMenuItem.Text = "Switch sides";
             this.switchSidesToolStripMenuItem.Click += new System.EventHandler(this.switchSidesToolStripMenuItem_Click);
             // 
-            // leaguesTableAdapter
+            // changeHalfToolStripMenuItem
             // 
-            this.leaguesTableAdapter.ClearBeforeFill = true;
+            this.changeHalfToolStripMenuItem.Name = "changeHalfToolStripMenuItem";
+            this.changeHalfToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.changeHalfToolStripMenuItem.Text = "Change half";
+            this.changeHalfToolStripMenuItem.Click += new System.EventHandler(this.changeHalfToolStripMenuItem_Click);
             // 
             // groupHome
             // 
@@ -3299,13 +3287,6 @@
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // changeHalfToolStripMenuItem
-            // 
-            this.changeHalfToolStripMenuItem.Name = "changeHalfToolStripMenuItem";
-            this.changeHalfToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.changeHalfToolStripMenuItem.Text = "Change half";
-            this.changeHalfToolStripMenuItem.Click += new System.EventHandler(this.changeHalfToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3322,8 +3303,6 @@
             this.Text = "Basketball Roster Manager";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.leaguesBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rostersDataSet)).EndInit();
             this.teamContextMenuStrip.ResumeLayout(false);
             this.groupHome.ResumeLayout(false);
             this.groupHome.PerformLayout();
@@ -3339,9 +3318,6 @@
         #endregion
 
         private System.Windows.Forms.ComboBox cboTeam1;
-        private App_Data.RostersDataSet rostersDataSet;
-        private System.Windows.Forms.BindingSource leaguesBindingSource;
-        private App_Data.RostersDataSetTableAdapters.LeaguesTableAdapter leaguesTableAdapter;
         private System.Windows.Forms.GroupBox groupHome;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
