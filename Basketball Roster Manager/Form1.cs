@@ -36,6 +36,7 @@ namespace Basketball_Roster_Manager
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
                 tsCboHalf_SelectedIndexChanged(sender, e);
+                setRosterFormChanges(false, true);
             }
             else
             {
@@ -124,6 +125,7 @@ namespace Basketball_Roster_Manager
                 // TODO...
                 //comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
 
+                setRosterFormChanges(false, true);
             }
             catch (System.Exception ex)
             {
@@ -204,6 +206,7 @@ namespace Basketball_Roster_Manager
 
                 comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
 
+                setRosterFormChanges(false, true);
             }
             catch (System.Exception ex)
             {
@@ -442,6 +445,9 @@ namespace Basketball_Roster_Manager
 
                 dr.Close();
                 conn.Close();
+
+                setRosterFormChanges(true, false);
+                changeHalf(false);
             }
             else
             {
@@ -459,6 +465,11 @@ namespace Basketball_Roster_Manager
                 cb.Owner.Hide();
             }
 
+            changeHalf();
+        }
+
+        private void changeHalf(bool switchSides)
+        {
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
@@ -515,8 +526,16 @@ namespace Basketball_Roster_Manager
                 AwayFoulSecondTotal.Enabled = true;
             }
 
-            SwitchSides();
-            btnPossession_Click(sender, e);
+            if (switchSides)
+            {
+                SwitchSides();
+                changePossession();
+            }
+        }
+
+        private void changeHalf()
+        {
+            changeHalf(true);
         }
 
         private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -737,6 +756,11 @@ namespace Basketball_Roster_Manager
 
         private void btnPossession_Click(object sender, EventArgs e)
         {
+            changePossession();
+        }
+
+        private void changePossession()
+        {
             if (btnPossession.Text == "←")
             {
                 btnPossession.Text = "→";
@@ -757,6 +781,34 @@ namespace Basketball_Roster_Manager
             {
                 tsCboHalf.SelectedIndex = 0;
             }
+        }
+
+        private void setRosterFormChanges(bool enabled, bool clear)
+        {
+            foreach (string homeOrAway in new string[] { "Home", "Away" })
+            {
+                for (int i = 1; i <= 18; i++)
+                {
+                    TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
+                    TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
+                    TextBox txtFoulFirst = (TextBox)Controls.Find(homeOrAway + "FoulFirst" + i, true)[0];
+                    TextBox txtFoulSecond = (TextBox)Controls.Find(homeOrAway + "FoulSecond" + i, true)[0];
+
+                    txtNumber.Enabled = enabled;
+                    txtName.Enabled = enabled;
+                    txtFoulFirst.Enabled = enabled;
+                    txtFoulSecond.Enabled = enabled;
+
+                    if (clear)
+                    {
+                        txtNumber.Text = "";
+                        txtName.Text = "";
+                        txtFoulFirst.Text = "";
+                        txtFoulSecond.Text = "";
+                    }
+                }
+            }
+
         }
     }
 }
