@@ -23,6 +23,8 @@ namespace Basketball_Roster_Manager
         public static string connectionPath = Path.Combine(appDataPath, appDataFolder, appDataFile);
         public static string connectionString = "Data Source=" + connectionPath;
 
+        private int intTimeoutSeconds = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -809,6 +811,31 @@ namespace Basketball_Roster_Manager
                 }
             }
 
+        }
+
+        private void btnTimeout30_Click(object sender, EventArgs e)
+        {
+            setTimer(30);
+        }
+
+        private void btnTimeout60_Click(object sender, EventArgs e)
+        {
+            setTimer(60);
+        }
+
+        private void setTimer(int seconds)
+        {
+            intTimeoutSeconds = seconds;
+            txtTimeout.Text = "0:" + String.Format("{0:D2}", intTimeoutSeconds);
+            timerTimeout.Start();
+        }
+
+        private void timerTimeout_Tick(object sender, EventArgs e)
+        {
+            intTimeoutSeconds--;
+            txtTimeout.Text = "0:" + String.Format("{0:D2}", intTimeoutSeconds);
+
+            if (intTimeoutSeconds == 0) { timerTimeout.Stop(); }
         }
     }
 }

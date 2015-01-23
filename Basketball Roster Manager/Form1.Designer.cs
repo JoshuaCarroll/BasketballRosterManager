@@ -293,6 +293,11 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
+            this.txtTimeout = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.btnTimeout30 = new System.Windows.Forms.Button();
+            this.btnTimeout60 = new System.Windows.Forms.Button();
+            this.timerTimeout = new System.Windows.Forms.Timer(this.components);
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -3287,12 +3292,65 @@
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // txtTimeout
+            // 
+            this.txtTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTimeout.Location = new System.Drawing.Point(582, 192);
+            this.txtTimeout.Name = "txtTimeout";
+            this.txtTimeout.Size = new System.Drawing.Size(75, 20);
+            this.txtTimeout.TabIndex = 13;
+            this.txtTimeout.Text = "0:00";
+            this.txtTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label18
+            // 
+            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(597, 176);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(45, 13);
+            this.label18.TabIndex = 14;
+            this.label18.Text = "Timeout";
+            // 
+            // btnTimeout30
+            // 
+            this.btnTimeout30.Location = new System.Drawing.Point(582, 218);
+            this.btnTimeout30.Name = "btnTimeout30";
+            this.btnTimeout30.Size = new System.Drawing.Size(36, 23);
+            this.btnTimeout30.TabIndex = 15;
+            this.btnTimeout30.Text = "0:30";
+            this.btnTimeout30.UseVisualStyleBackColor = true;
+            this.btnTimeout30.Click += new System.EventHandler(this.btnTimeout30_Click);
+            // 
+            // btnTimeout60
+            // 
+            this.btnTimeout60.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTimeout60.Location = new System.Drawing.Point(621, 218);
+            this.btnTimeout60.Name = "btnTimeout60";
+            this.btnTimeout60.Size = new System.Drawing.Size(36, 23);
+            this.btnTimeout60.TabIndex = 16;
+            this.btnTimeout60.Text = "0:60";
+            this.btnTimeout60.UseVisualStyleBackColor = true;
+            this.btnTimeout60.Click += new System.EventHandler(this.btnTimeout60_Click);
+            // 
+            // timerTimeout
+            // 
+            this.timerTimeout.Interval = 1000;
+            this.timerTimeout.Tick += new System.EventHandler(this.timerTimeout_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1240, 694);
             this.ContextMenuStrip = this.teamContextMenuStrip;
+            this.Controls.Add(this.btnTimeout60);
+            this.Controls.Add(this.btnTimeout30);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.txtTimeout);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.btnPossession);
             this.Controls.Add(this.groupVisitor);
@@ -3581,6 +3639,11 @@
         private System.Windows.Forms.Button btnPossession;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
+        private System.Windows.Forms.TextBox txtTimeout;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button btnTimeout30;
+        private System.Windows.Forms.Button btnTimeout60;
+        private System.Windows.Forms.Timer timerTimeout;
     }
 }
 
