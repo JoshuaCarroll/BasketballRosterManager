@@ -294,14 +294,18 @@
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.txtTimeout = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
             this.btnTimeout30 = new System.Windows.Forms.Button();
             this.btnTimeout60 = new System.Windows.Forms.Button();
             this.timerTimeout = new System.Windows.Forms.Timer(this.components);
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.btnStopTimer = new System.Windows.Forms.Button();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupVisitor.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // cboTeam1
@@ -1761,7 +1765,7 @@
             this.halfToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1240, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1257, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1979,7 +1983,7 @@
             this.groupVisitor.Controls.Add(this.label14);
             this.groupVisitor.Controls.Add(this.AwayNumber1);
             this.groupVisitor.Controls.Add(this.cboTeam2);
-            this.groupVisitor.Location = new System.Drawing.Point(694, 33);
+            this.groupVisitor.Location = new System.Drawing.Point(711, 33);
             this.groupVisitor.Margin = new System.Windows.Forms.Padding(3, 0, 3, 1);
             this.groupVisitor.Name = "groupVisitor";
             this.groupVisitor.Size = new System.Drawing.Size(534, 620);
@@ -3272,9 +3276,9 @@
             this.btnPossession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPossession.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPossession.Location = new System.Drawing.Point(582, 68);
+            this.btnPossession.Location = new System.Drawing.Point(564, 68);
             this.btnPossession.Name = "btnPossession";
-            this.btnPossession.Size = new System.Drawing.Size(75, 43);
+            this.btnPossession.Size = new System.Drawing.Size(129, 43);
             this.btnPossession.TabIndex = 11;
             this.btnPossession.Text = "←";
             this.btnPossession.UseVisualStyleBackColor = true;
@@ -3282,10 +3286,9 @@
             // 
             // label17
             // 
-            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(589, 52);
+            this.label17.Location = new System.Drawing.Point(598, 52);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(60, 13);
             this.label17.TabIndex = 12;
@@ -3294,32 +3297,19 @@
             // 
             // txtTimeout
             // 
-            this.txtTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTimeout.Location = new System.Drawing.Point(582, 192);
+            this.txtTimeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTimeout.Location = new System.Drawing.Point(6, 19);
             this.txtTimeout.Name = "txtTimeout";
-            this.txtTimeout.Size = new System.Drawing.Size(75, 20);
+            this.txtTimeout.Size = new System.Drawing.Size(129, 26);
             this.txtTimeout.TabIndex = 13;
             this.txtTimeout.Text = "0:00";
             this.txtTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label18
-            // 
-            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(597, 176);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(45, 13);
-            this.label18.TabIndex = 14;
-            this.label18.Text = "Timeout";
-            // 
             // btnTimeout30
             // 
-            this.btnTimeout30.Location = new System.Drawing.Point(582, 218);
+            this.btnTimeout30.Location = new System.Drawing.Point(9, 52);
             this.btnTimeout30.Name = "btnTimeout30";
-            this.btnTimeout30.Size = new System.Drawing.Size(36, 23);
+            this.btnTimeout30.Size = new System.Drawing.Size(55, 23);
             this.btnTimeout30.TabIndex = 15;
             this.btnTimeout30.Text = "0:30";
             this.btnTimeout30.UseVisualStyleBackColor = true;
@@ -3327,10 +3317,9 @@
             // 
             // btnTimeout60
             // 
-            this.btnTimeout60.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTimeout60.Location = new System.Drawing.Point(621, 218);
+            this.btnTimeout60.Location = new System.Drawing.Point(80, 52);
             this.btnTimeout60.Name = "btnTimeout60";
-            this.btnTimeout60.Size = new System.Drawing.Size(36, 23);
+            this.btnTimeout60.Size = new System.Drawing.Size(55, 23);
             this.btnTimeout60.TabIndex = 16;
             this.btnTimeout60.Text = "0:60";
             this.btnTimeout60.UseVisualStyleBackColor = true;
@@ -3341,16 +3330,45 @@
             this.timerTimeout.Interval = 1000;
             this.timerTimeout.Tick += new System.EventHandler(this.timerTimeout_Tick);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnStopTimer);
+            this.groupBox1.Controls.Add(this.txtTimeout);
+            this.groupBox1.Controls.Add(this.btnTimeout60);
+            this.groupBox1.Controls.Add(this.btnTimeout30);
+            this.groupBox1.Location = new System.Drawing.Point(3, 11);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(141, 84);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Timeout";
+            // 
+            // panel1
+            // 
+            this.panel1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Location = new System.Drawing.Point(553, 138);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(153, 104);
+            this.panel1.TabIndex = 18;
+            // 
+            // btnStopTimer
+            // 
+            this.btnStopTimer.Location = new System.Drawing.Point(109, 20);
+            this.btnStopTimer.Name = "btnStopTimer";
+            this.btnStopTimer.Size = new System.Drawing.Size(24, 23);
+            this.btnStopTimer.TabIndex = 19;
+            this.btnStopTimer.Text = "■";
+            this.btnStopTimer.UseVisualStyleBackColor = true;
+            this.btnStopTimer.Click += new System.EventHandler(this.btnStopTimer_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1240, 694);
+            this.ClientSize = new System.Drawing.Size(1257, 694);
             this.ContextMenuStrip = this.teamContextMenuStrip;
-            this.Controls.Add(this.btnTimeout60);
-            this.Controls.Add(this.btnTimeout30);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.txtTimeout);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.btnPossession);
             this.Controls.Add(this.groupVisitor);
@@ -3368,6 +3386,9 @@
             this.menuStrip1.PerformLayout();
             this.groupVisitor.ResumeLayout(false);
             this.groupVisitor.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3640,10 +3661,12 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
         private System.Windows.Forms.TextBox txtTimeout;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button btnTimeout30;
         private System.Windows.Forms.Button btnTimeout60;
         private System.Windows.Forms.Timer timerTimeout;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnStopTimer;
     }
 }
 

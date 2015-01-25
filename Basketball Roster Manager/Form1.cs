@@ -899,5 +899,11 @@ namespace Basketball_Roster_Manager
 
             if (intTimeoutSeconds == 0) { timerTimeout.Stop(); }
         }
+
+        private void btnStopTimer_Click(object sender, EventArgs e)
+        {
+            timerTimeout.Stop();
+            txtTimeout.Text = "0:00";
+        }
     }
 }
