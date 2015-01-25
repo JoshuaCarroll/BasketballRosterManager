@@ -259,7 +259,7 @@ namespace Basketball_Roster_Manager
                 {
                     for (int i = 0; i < comboToLoad.Items.Count; i++)
                     {
-                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[0];
+                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[i];
                         if (int.Parse(cbi.Value) == selectedTeamID)
                         {
                             comboToLoad.SelectedIndex = i;

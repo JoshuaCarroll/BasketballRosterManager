@@ -124,7 +124,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(84, 122);
+            this.button1.Location = new System.Drawing.Point(84, 104);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 7;
@@ -136,7 +136,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(369, 157);
+            this.ClientSize = new System.Drawing.Size(369, 146);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnColorSelect);
             this.Controls.Add(this.txtColor);
