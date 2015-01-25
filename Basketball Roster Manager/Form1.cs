@@ -67,28 +67,7 @@ namespace Basketball_Roster_Manager
                     else
                     {
                         return false;
-                    }
-
-                    //// Create new data folder
-                    //if (!Directory.Exists(Path.Combine(appDataPath, appDataFolder))) Directory.CreateDirectory(Path.Combine(appDataPath, appDataFolder));
-
-                    //// Create new data file
-                    //Assembly assembly = Assembly.GetExecutingAssembly();
-                    //using (Stream input = assembly.GetManifestResourceStream("EmptyRosters"))
-                    //using (Stream output = File.Create(connectionPath))
-                    //{
-                    //    if (input != null)
-                    //    {
-                    //        input.CopyTo(output);
-                    //    }
-                    //    else
-                    //    {
-                    //        errorMessage = "Input resource stream for new database file is null.  ";
-                    //        return false;
-                    //    }
-                    //}
-
-                    
+                    } 
                 }
                 else
                 {
@@ -130,18 +109,16 @@ namespace Basketball_Roster_Manager
             }
             catch (Exception ex)
             {
-                throw ex;
                 errorMessage = "Exception thrown while populating new database: " + ex.Message + "  ";
                 return false;
             }
-
-
-            
         }
 
         public void loadHalves()
         {
-            /// TODO: Reconsider.  Why is this dynamic?
+            /// This is dynamic because the IDE only allows items in the Items collection to be strings, 
+            /// and assigns the same string to the Name and Value properties. Doing it this way allows me to 
+            /// have different values for those two properties.
             tsCboHalf.Items.Add(new ComboBoxItem("First half", "1"));
             tsCboHalf.Items.Add(new ComboBoxItem("Second half", "2"));
             tsCboHalf.SelectedIndex = 0;
