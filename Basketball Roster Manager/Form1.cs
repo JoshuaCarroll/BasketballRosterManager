@@ -163,8 +163,7 @@ namespace Basketball_Roster_Manager
                     }
                 }
 
-                // TODO...
-                //comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
+                comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
 
                 setRosterFormChanges(false, true);
             }
@@ -191,16 +190,24 @@ namespace Basketball_Roster_Manager
                 if (cb.ComboBox.SelectedItem != null)
                 {
                     ComboBoxItem cbi = (ComboBoxItem)cb.ComboBox.SelectedItem;
-                    int leagueID = 0;
 
-                    if (int.TryParse(cbi.Value, out leagueID))
+                    if (cbi.Value != "0")
                     {
-                        loadTeams(cboTeam1, leagueID);
-                        loadTeams(cboTeam2, leagueID);
+                        int leagueID = 0;
+
+                        if (int.TryParse(cbi.Value, out leagueID))
+                        {
+                            loadTeams(cboTeam1, leagueID);
+                            loadTeams(cboTeam2, leagueID);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Unble to parse league ID from combobox selected value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("Unble to parse league ID from combobox selected value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        throw new NotImplementedException("Sorry, we haven't finished the part of the program that allows you to add new leagues.");
                     }
                 }
             }
