@@ -126,10 +126,12 @@ namespace Basketball_Roster_Manager
 
         public void loadLeagues()
         {
+            loadLeagues(-1);
+        }
+
+        public void loadLeagues(int selectedItemID)
+        {
             ToolStripComboBox comboToLoad = tsCboLeague;
-            
-            // For possible future use when we might save the last selected
-            int selectedItemID = -1;
 
             try
             {
@@ -154,7 +156,7 @@ namespace Basketball_Roster_Manager
                 {
                     for (int i = 0; i < comboToLoad.Items.Count; i++)
                     {
-                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[0];
+                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[i];
                         if (int.Parse(cbi.Value) == selectedItemID)
                         {
                             comboToLoad.SelectedIndex = i;
@@ -173,11 +175,10 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        public void loadLeagues(string selectedLeagueText)
-        {
-            loadLeagues();
-            tsCboLeague.SelectedText = selectedLeagueText;
-        }
+        //public void loadLeagues(string selectedLeagueText)
+        //{
+        //    loadLeagues();
+        //}
 
         private void tsCboLeague_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -207,7 +208,9 @@ namespace Basketball_Roster_Manager
                     }
                     else
                     {
-                        throw new NotImplementedException("Sorry, we haven't finished the part of the program that allows you to add new leagues.");
+                        // Let them add a new league
+                        NewLeague n = new NewLeague(this, tsCboLeague);
+                        n.Show();
                     }
                 }
             }

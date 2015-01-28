@@ -58,7 +58,7 @@ namespace Basketball_Roster_Manager
                 leagueID = int.Parse(scalarLeague.ToString());
                 conn.Close();
 
-                form1.loadLeagues(cmboLeague.Text);
+                form1.loadLeagues(leagueID);
             }
 
             cmd.CommandText = String.Format("Insert into Teams (LeagueID, TeamName, Color) values ({0},'{1}','{2}');", leagueID, txtTeamName.Text.Replace("'", "''"), txtColor.Text.Replace("'", "''"));
