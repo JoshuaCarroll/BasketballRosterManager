@@ -42,7 +42,8 @@ local.properties
 *.sln.docstates
 
 # Build results
-Basketball Roster Manager/bin
+Basketball Roster Manager/bin/
+Basketball Roster Manager/obj/
 [Dd]ebug/
 [Rr]elease/
 x64/
