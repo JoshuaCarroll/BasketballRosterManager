@@ -156,7 +156,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.HomeNumber1 = new System.Windows.Forms.TextBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setHomeColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.setAwayColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -301,9 +300,9 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.groupVisitor.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -365,6 +364,13 @@
             this.changeHalfToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.changeHalfToolStripMenuItem.Text = "Change half";
             this.changeHalfToolStripMenuItem.Click += new System.EventHandler(this.changeHalfToolStripMenuItem_Click);
+            //
+            // menuStrip1
+            //
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem,
+            this.leagueToolStripMenuItem1,
+            this.halfToolStripMenuItem1});
             // 
             // groupHome
             // 
@@ -1759,14 +1765,6 @@
             this.HomeNumber1.Size = new System.Drawing.Size(40, 26);
             this.HomeNumber1.TabIndex = 3;
             this.HomeNumber1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.MarkDirty);
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1257, 24);
-            this.menuStrip1.TabIndex = 9;
-            this.menuStrip1.Text = "menuStrip1";
             // 
             // optionsToolStripMenuItem
             // 
@@ -3370,6 +3368,14 @@
             this.panel2.Size = new System.Drawing.Size(153, 80);
             this.panel2.TabIndex = 20;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1257, 24);
+            this.menuStrip1.TabIndex = 9;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3389,8 +3395,6 @@
             this.teamContextMenuStrip.ResumeLayout(false);
             this.groupHome.ResumeLayout(false);
             this.groupHome.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.groupVisitor.ResumeLayout(false);
             this.groupVisitor.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -3502,7 +3506,6 @@
         private System.Windows.Forms.TextBox HomeFoulFirst18;
         private System.Windows.Forms.TextBox HomeName18;
         private System.Windows.Forms.TextBox HomeNumber18;
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.TextBox HomeFoulSecondTotal;
         private System.Windows.Forms.TextBox HomeFoulFirstTotal;
@@ -3677,6 +3680,7 @@
         private System.Windows.Forms.Button btnStopTimer;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.MenuStrip menuStrip1;
     }
 }
 

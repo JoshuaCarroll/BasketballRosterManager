@@ -586,11 +586,6 @@ namespace Basketball_Roster_Manager
             changeHalf(true);
         }
 
-        private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SwitchSides();
-        }
-
         private void SwitchSides()
         {
             if (groupHome.Location.X == 12)
@@ -689,29 +684,6 @@ namespace Basketball_Roster_Manager
             saveButton.Visible = false;
         }
 
-        private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                for (int i = 1; i <= 18; i++)
-                {
-                    TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
-                    TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
-                    TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
-                    TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
-                    CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
-                    CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
-
-                    home1.Text = "";
-                    away1.Text = "";
-                    home2.Text = "";
-                    away2.Text = "";
-                    homeIn.Checked = false;
-                    awayIn.Checked = false;
-                }
-            }
-        }
-
         private void setTeamColor(object sender, EventArgs e)
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
@@ -759,49 +731,6 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        private void homeTeamWhiteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem i = (ToolStripMenuItem)sender;
-            i.Checked = !i.Checked;
-        }
-
-        private void homeTeamWhiteToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            bool homeTeamInWhite = homeTeamWhiteToolStripMenuItem.Checked;
-
-            GroupBox g = groupHome;
-
-            if (homeTeamInWhite)
-            {
-                g.BackColor = Color.White;
-            }
-            else
-            {
-                #region Get team color from database
-
-                string selectedValue = ((ComboBoxItem)cboTeam1.SelectedItem).Value;
-
-                // Get team color from database
-                SqlCeConnection conn = new SqlCeConnection(connectionString);
-                System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select Color from Teams where TeamID = " + selectedValue, conn);
-                conn.Open();
-                object scalarResult = cmd.ExecuteScalar();
-                conn.Close();
-
-                int argbColor = 0;
-
-                if (int.TryParse(scalarResult.ToString(), out argbColor))
-                {
-                    g.BackColor = Color.FromArgb(argbColor);
-                }
-                else
-                {
-                    g.BackColor = SystemColors.Control;
-                }
-                #endregion
-            }
-        }
-
         private void btnPossession_Click(object sender, EventArgs e)
         {
             changePossession();
@@ -818,18 +747,6 @@ namespace Basketball_Roster_Manager
             {
                 btnPossession.Text = "←";
                 btnPossession.Image = (Image)Properties.Resources.ResourceManager.GetObject("left");
-            }
-        }
-
-        private void changeHalfToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (tsCboHalf.SelectedIndex == 0)
-            {
-                tsCboHalf.SelectedIndex = 1;
-            }
-            else
-            {
-                tsCboHalf.SelectedIndex = 0;
             }
         }
 
@@ -890,6 +807,91 @@ namespace Basketball_Roster_Manager
         {
             timerTimeout.Stop();
             txtTimeout.Text = "0:00";
+        }
+
+        // ============  AUTO WIRED-UP EVENTS ============================================
+
+        private void homeTeamWhiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem i = (ToolStripMenuItem)sender;
+            i.Checked = !i.Checked;
+        }
+
+        private void homeTeamWhiteToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            bool homeTeamInWhite = homeTeamWhiteToolStripMenuItem.Checked;
+
+            GroupBox g = groupHome;
+
+            if (homeTeamInWhite)
+            {
+                g.BackColor = Color.White;
+            }
+            else
+            {
+                #region Get team color from database
+
+                string selectedValue = ((ComboBoxItem)cboTeam1.SelectedItem).Value;
+
+                // Get team color from database
+                SqlCeConnection conn = new SqlCeConnection(connectionString);
+                System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select Color from Teams where TeamID = " + selectedValue, conn);
+                conn.Open();
+                object scalarResult = cmd.ExecuteScalar();
+                conn.Close();
+
+                int argbColor = 0;
+
+                if (int.TryParse(scalarResult.ToString(), out argbColor))
+                {
+                    g.BackColor = Color.FromArgb(argbColor);
+                }
+                else
+                {
+                    g.BackColor = SystemColors.Control;
+                }
+                #endregion
+            }
+        }
+
+        private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            {
+                for (int i = 1; i <= 18; i++)
+                {
+                    TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
+                    TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
+                    TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
+                    TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
+                    CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
+                    CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
+
+                    home1.Text = "";
+                    away1.Text = "";
+                    home2.Text = "";
+                    away2.Text = "";
+                    homeIn.Checked = false;
+                    awayIn.Checked = false;
+                }
+            }
+        }
+
+        private void changeHalfToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tsCboHalf.SelectedIndex == 0)
+            {
+                tsCboHalf.SelectedIndex = 1;
+            }
+            else
+            {
+                tsCboHalf.SelectedIndex = 0;
+            }
+        }
+
+        private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchSides();
         }
     }
 }
