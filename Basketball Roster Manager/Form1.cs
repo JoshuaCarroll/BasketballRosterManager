@@ -135,7 +135,7 @@ namespace Basketball_Roster_Manager
 
             try
             {
-                // Load teams from this league
+                // Load leagues
                 SqlCeConnection conn = new SqlCeConnection(connectionString);
                 System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select * from Leagues order by LeagueName", conn);
                 conn.Open();

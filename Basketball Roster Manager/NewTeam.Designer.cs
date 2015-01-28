@@ -28,21 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.cmboLeague = new System.Windows.Forms.ComboBox();
-            this.leaguesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.rostersDataSet = new Basketball_Roster_Manager.App_Data.RostersDataSet();
-            this.leaguesTableAdapter = new Basketball_Roster_Manager.App_Data.RostersDataSetTableAdapters.LeaguesTableAdapter();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtColor = new System.Windows.Forms.TextBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnColorSelect = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.leaguesBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rostersDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -63,28 +57,12 @@
             // 
             // cmboLeague
             // 
-            this.cmboLeague.DataSource = this.leaguesBindingSource;
-            this.cmboLeague.DisplayMember = "LeagueName";
             this.cmboLeague.FormattingEnabled = true;
             this.cmboLeague.Location = new System.Drawing.Point(84, 39);
             this.cmboLeague.Name = "cmboLeague";
             this.cmboLeague.Size = new System.Drawing.Size(263, 21);
             this.cmboLeague.TabIndex = 2;
             this.cmboLeague.ValueMember = "LeagueID";
-            // 
-            // leaguesBindingSource
-            // 
-            this.leaguesBindingSource.DataMember = "Leagues";
-            this.leaguesBindingSource.DataSource = this.rostersDataSet;
-            // 
-            // rostersDataSet
-            // 
-            this.rostersDataSet.DataSetName = "RostersDataSet";
-            this.rostersDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // leaguesTableAdapter
-            // 
-            this.leaguesTableAdapter.ClearBeforeFill = true;
             // 
             // label2
             // 
@@ -151,8 +129,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Add new team";
             this.Load += new System.EventHandler(this.NewTeam_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.leaguesBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rostersDataSet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -163,9 +139,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtTeamName;
         private System.Windows.Forms.ComboBox cmboLeague;
-        private App_Data.RostersDataSet rostersDataSet;
-        private System.Windows.Forms.BindingSource leaguesBindingSource;
-        private App_Data.RostersDataSetTableAdapters.LeaguesTableAdapter leaguesTableAdapter;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtColor;
