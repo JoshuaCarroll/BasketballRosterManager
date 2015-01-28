@@ -413,17 +413,18 @@ namespace Basketball_Roster_Manager
 
         private void cboTeam1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            loadTeamMembers(sender, e);
+            ComboBox cb = (ComboBox)sender;
+            loadTeamMembers(cb, e);
         }
 
         private void cboTeam2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            loadTeamMembers(sender, e);
+            ComboBox cb = (ComboBox)sender;
+            loadTeamMembers(cb, e);
         }
 
-        private void loadTeamMembers(object sender, EventArgs e)
+        private void loadTeamMembers(ComboBox cb, EventArgs e)
         {
-            ComboBox cb = (ComboBox)sender;
             string selectedValue = ((ComboBoxItem)cb.SelectedItem).Value;
             SqlCeConnection conn = new SqlCeConnection(connectionString);
             System.Data.SqlServerCe.SqlCeCommand cmd;
@@ -632,19 +633,21 @@ namespace Basketball_Roster_Manager
 
             Button saveButton = (Button)sender;
             string homeOrAway = string.Empty;
+            ComboBox cboTeam;
             ComboBoxItem selectedTeam;
 
             if (saveButton.Name == "btnSaveHome")
             {
-                selectedTeam = (ComboBoxItem)cboTeam1.SelectedItem;
+                cboTeam = cboTeam1;
                 homeOrAway = "Home";
             }
             else
             {
-                selectedTeam = (ComboBoxItem)cboTeam2.SelectedItem;
+                cboTeam = cboTeam2;
                 homeOrAway = "Away";
             }
 
+            selectedTeam = (ComboBoxItem)cboTeam.SelectedItem;
             string teamID = selectedTeam.Value;
 
             conn.Open();
@@ -685,6 +688,34 @@ namespace Basketball_Roster_Manager
             conn.Close();
 
             saveButton.Visible = false;
+
+            // Issue 20: Prompt to re-sort the team upon save
+            TextBox f1 = (TextBox)Controls.Find(homeOrAway + "FoulFirstTotal", true)[0];
+            TextBox f2 = (TextBox)Controls.Find(homeOrAway + "FoulSecondTotal", true)[0];
+
+            if ((addFoulTotals(f1, f2) == 0) || (MessageBox.Show("Changes saved.\r\n\r\nDo you want to re-sort the roster numerically?\r\n(Not recommended if you have recorded fouls.)", "Re-sort roster?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+            {
+                loadTeamMembers(cboTeam, new EventArgs());
+            }
+        }
+
+        private int addFoulTotals(TextBox txtFoulBox1, TextBox txtFoulBox2)
+        {
+            int intTotal = 0;
+            int intFoulBox1 = 0;
+            int intFoulBox2 = 0;
+
+            if (!int.TryParse(txtFoulBox1.Text, out intFoulBox1))
+            {
+                intFoulBox1 = 0;
+            }
+            if (!int.TryParse(txtFoulBox2.Text, out intFoulBox2))
+            {
+                intFoulBox2 = 0;
+            }
+
+            intTotal = intFoulBox1 + intFoulBox2;
+            return intTotal;
         }
 
         private void setTeamColor(object sender, EventArgs e)
