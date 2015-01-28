@@ -292,20 +292,23 @@
             this.cboTeam2 = new System.Windows.Forms.ComboBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
-            this.label17 = new System.Windows.Forms.Label();
             this.txtTimeout = new System.Windows.Forms.TextBox();
             this.btnTimeout30 = new System.Windows.Forms.Button();
             this.btnTimeout60 = new System.Windows.Forms.Button();
             this.timerTimeout = new System.Windows.Forms.Timer(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.btnStopTimer = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupVisitor.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // cboTeam1
@@ -1759,10 +1762,6 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem,
-            this.leagueToolStripMenuItem1,
-            this.halfToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1257, 24);
@@ -3276,24 +3275,14 @@
             this.btnPossession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPossession.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPossession.Location = new System.Drawing.Point(564, 68);
+            this.btnPossession.ImageKey = "(none)";
+            this.btnPossession.Location = new System.Drawing.Point(9, 19);
             this.btnPossession.Name = "btnPossession";
-            this.btnPossession.Size = new System.Drawing.Size(129, 43);
+            this.btnPossession.Size = new System.Drawing.Size(117, 43);
             this.btnPossession.TabIndex = 11;
             this.btnPossession.Text = "←";
             this.btnPossession.UseVisualStyleBackColor = true;
             this.btnPossession.Click += new System.EventHandler(this.btnPossession_Click);
-            // 
-            // label17
-            // 
-            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(598, 52);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(60, 13);
-            this.label17.TabIndex = 12;
-            this.label17.Text = "Possession";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtTimeout
             // 
@@ -3336,21 +3325,12 @@
             this.groupBox1.Controls.Add(this.txtTimeout);
             this.groupBox1.Controls.Add(this.btnTimeout60);
             this.groupBox1.Controls.Add(this.btnTimeout30);
-            this.groupBox1.Location = new System.Drawing.Point(3, 11);
+            this.groupBox1.Location = new System.Drawing.Point(6, 11);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(141, 84);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Timeout";
-            // 
-            // panel1
-            // 
-            this.panel1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Location = new System.Drawing.Point(553, 138);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(153, 104);
-            this.panel1.TabIndex = 18;
             // 
             // btnStopTimer
             // 
@@ -3362,15 +3342,42 @@
             this.btnStopTimer.UseVisualStyleBackColor = true;
             this.btnStopTimer.Click += new System.EventHandler(this.btnStopTimer_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Location = new System.Drawing.Point(553, 138);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(153, 104);
+            this.panel1.TabIndex = 18;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btnPossession);
+            this.groupBox2.Location = new System.Drawing.Point(6, 5);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(141, 71);
+            this.groupBox2.TabIndex = 19;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Possession";
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.panel2.Controls.Add(this.groupBox2);
+            this.panel2.Location = new System.Drawing.Point(552, 42);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(153, 80);
+            this.panel2.TabIndex = 20;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1257, 694);
             this.ContextMenuStrip = this.teamContextMenuStrip;
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.label17);
-            this.Controls.Add(this.btnPossession);
             this.Controls.Add(this.groupVisitor);
             this.Controls.Add(this.groupHome);
             this.Controls.Add(this.menuStrip1);
@@ -3389,6 +3396,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3658,7 +3667,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem homeTeamWhiteToolStripMenuItem;
         private System.Windows.Forms.Button btnPossession;
-        private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
         private System.Windows.Forms.TextBox txtTimeout;
         private System.Windows.Forms.Button btnTimeout30;
@@ -3667,6 +3675,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnStopTimer;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Panel panel2;
     }
 }
 

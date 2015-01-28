@@ -35,5 +35,4 @@ C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manag
 C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Form1.resources
 C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.NewTeam.resources
 C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Properties.Resources.resources
-C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball_Roster_Manager.Resource1.resources
 C:\Users\Joshua\Documents\GitHub\BasketballRosterManager\Basketball Roster Manager\obj\Debug\Basketball Roster Manager.csproj.GenerateResource.Cache

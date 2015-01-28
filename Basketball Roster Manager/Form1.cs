@@ -812,10 +812,12 @@ namespace Basketball_Roster_Manager
             if (btnPossession.Text == "←")
             {
                 btnPossession.Text = "→";
+                btnPossession.Image = (Image)Properties.Resources.ResourceManager.GetObject("right");
             }
             else
             {
                 btnPossession.Text = "←";
+                btnPossession.Image = (Image)Properties.Resources.ResourceManager.GetObject("left");
             }
         }
 
