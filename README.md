@@ -6,7 +6,7 @@ Basketball Roster Manager is written in C#. It provides a modern UI, built on th
 
 For the back-end part a local SQL database stores everything. 
 
-## Screenshots (might not be up to date, please use the demo below!)
+## Screenshots 
 
 [Not yet available; will post some soon.]
 
