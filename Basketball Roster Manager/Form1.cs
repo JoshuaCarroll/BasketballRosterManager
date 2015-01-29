@@ -46,6 +46,19 @@ namespace Basketball_Roster_Manager
                 MessageBox.Show(errorMessage + "Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
+
+            // Wireup all of the foul controls to the mouse_enter and mouse_leave methods
+            string[] textboxPrefixes = { "HomeFoulFirst", "HomeFoulSecond", "AwayFoulFirst", "AwayFoulSecond" };
+
+            foreach (string s in textboxPrefixes)
+            {
+                for (int i = 1; i <= 18; i++)
+                {
+                    TextBox t = (TextBox)this.Controls.Find(s + i, true)[0];
+                    t.MouseEnter += foulBox_MouseEnter;
+                    t.MouseLeave += foulBox_MouseLeave;
+                }
+            }
         }
 
         private bool verifyDataPath(out string errorMessage)
@@ -174,11 +187,6 @@ namespace Basketball_Roster_Manager
                 MessageBox.Show("Unable to load leagues: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        //public void loadLeagues(string selectedLeagueText)
-        //{
-        //    loadLeagues();
-        //}
 
         private void tsCboLeague_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -926,6 +934,16 @@ namespace Basketball_Roster_Manager
         private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SwitchSides();
+        }
+
+        private void foulBox_MouseEnter(object sender, EventArgs e)
+        {
+            toolStripStatusLabel1.Text = "Tip: Double-click in the appropriate foul box to add one.";
+        }
+
+        private void foulBox_MouseLeave(object sender, EventArgs e)
+        {
+            toolStripStatusLabel1.Text = string.Empty;
         }
     }
 }
