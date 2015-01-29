@@ -8,7 +8,8 @@ For the back-end part a local SQL database stores everything.
 
 ## Screenshots 
 
-[Not yet available; will post some soon.]
+![capture](https://cloud.githubusercontent.com/assets/2617394/5951214/b5ba3d46-a729-11e4-91c4-90cdecea1a47.JPG)
+![capture2](https://cloud.githubusercontent.com/assets/2617394/5951215/b5bfda80-a729-11e4-85c5-911b14951445.JPG)
 
 ## Initial installation (quick & dirty documented)
 
