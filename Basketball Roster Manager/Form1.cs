@@ -506,8 +506,9 @@ namespace Basketball_Roster_Manager
                 dr.Close();
                 conn.Close();
 
-                setRosterFormChanges(true, false);
-                changeHalf(false);
+                //setRosterFormChanges(true, false);
+                //changeHalf(false);
+                timerPostTeamLoad.Enabled = true;
             }
             else
             {
@@ -792,30 +793,49 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        private void setRosterFormChanges(bool enabled, bool clear)
+        private void setRosterFormChanges(bool enabled, bool clear, string homeOrAway)
         {
             foreach (string homeOrAway in new string[] { "Home", "Away" })
             {
-                for (int i = 1; i <= 18; i++)
-                {
-                    TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
-                    TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
-                    TextBox txtFoulFirst = (TextBox)Controls.Find(homeOrAway + "FoulFirst" + i, true)[0];
-                    TextBox txtFoulSecond = (TextBox)Controls.Find(homeOrAway + "FoulSecond" + i, true)[0];
+                //ComboBox cboTeam;
+                //if (homeOrAway == "Home")
+                //{
+                //    cboTeam = cboTeam1;
+                //}
+                //else
+                //{
+                //    cboTeam = cboTeam2;
+                //}
 
-                    txtNumber.Enabled = enabled;
-                    txtName.Enabled = enabled;
-                    txtFoulFirst.Enabled = enabled;
-                    txtFoulSecond.Enabled = enabled;
-
-                    if (clear)
+                //if (cboTeam.SelectedItem != null)
+                //{
+                    for (int i = 1; i <= 18; i++)
                     {
-                        txtNumber.Text = "";
-                        txtName.Text = "";
-                        txtFoulFirst.Text = "";
-                        txtFoulSecond.Text = "";
+                        TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
+                        TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
+                        TextBox txtFoulFirst = (TextBox)Controls.Find(homeOrAway + "FoulFirst" + i, true)[0];
+                        TextBox txtFoulSecond = (TextBox)Controls.Find(homeOrAway + "FoulSecond" + i, true)[0];
+
+                        txtNumber.Enabled = enabled;
+                        txtName.Enabled = enabled;
+                        //if (tsCboHalf.SelectedText == "First half")
+                        //{
+                            txtFoulFirst.Enabled = enabled;
+                        //}
+                        //else
+                        //{
+                            txtFoulSecond.Enabled = enabled;
+                        //}
+
+                        if (clear)
+                        {
+                            txtNumber.Text = "";
+                            txtName.Text = "";
+                            txtFoulFirst.Text = "";
+                            txtFoulSecond.Text = "";
+                        }
                     }
-                }
+                //}
             }
 
         }
@@ -944,6 +964,13 @@ namespace Basketball_Roster_Manager
         private void foulBox_MouseLeave(object sender, EventArgs e)
         {
             toolStripStatusLabel1.Text = string.Empty;
+        }
+
+        private void timerPostTeamLoad_Tick(object sender, EventArgs e)
+        {
+            timerPostTeamLoad.Enabled = false;
+            changeHalf(false);
+            setRosterFormChanges(true, false);
         }
     }
 }

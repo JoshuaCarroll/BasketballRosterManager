@@ -303,6 +303,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timerPostTeamLoad = new System.Windows.Forms.Timer(this.components);
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.groupVisitor.SuspendLayout();
@@ -3393,6 +3394,11 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
+            // timerPostTeamLoad
+            // 
+            this.timerPostTeamLoad.Interval = 500;
+            this.timerPostTeamLoad.Tick += new System.EventHandler(this.timerPostTeamLoad_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3705,6 +3711,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Timer timerPostTeamLoad;
     }
 }
 
