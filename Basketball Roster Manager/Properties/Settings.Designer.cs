@@ -26,21 +26,20 @@ namespace Basketball_Roster_Manager.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=C:\\Users\\Joshua\\Documents\\Visual Studio 2012\\Projects\\Basketball Rost" +
-            "er Manager\\Basketball Roster Manager\\App_Data\\Rosters.sdf")]
-        public string RostersConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\App_Data\\EmptyRosters.sdf")]
+        public string Copy_of_RostersConnectionString {
             get {
-                return ((string)(this["RostersConnectionString"]));
+                return ((string)(this["Copy_of_RostersConnectionString"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\App_Data\\EmptyRosters.sdf")]
-        public string Copy_of_RostersConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\Rosters.sdf")]
+        public string RostersConnectionString {
             get {
-                return ((string)(this["Copy_of_RostersConnectionString"]));
+                return ((string)(this["RostersConnectionString"]));
             }
         }
     }
