@@ -16,14 +16,13 @@ namespace Basketball_Roster_Manager
 {
     public partial class Form1 : Form
     {
-        private static string appDataFolder = "Carroll Sports Media";
-        private static string appDataFile = "Rosters.sdf";
-        private static string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        public static string dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.CompanyName, Application.ProductName);
+        public static string dataFile = "Rosters.sdf";
+        public static string dataPath = Path.Combine(dataFolder, dataFile);
+        public static string connectionString = "Data Source=" + dataPath + ";Persist Security Info=False;";
 
-        public static string connectionPath = Path.Combine(appDataPath, appDataFolder, appDataFile);
-        public static string connectionString = "Data Source=" + connectionPath;
-
-        private int intTimeoutSeconds = 0;
+        private int mostRecentHomeTeamID = -1;
+        private int mostRecentAwayTeamID = -1;
 
         public Form1()
         {
@@ -32,40 +31,23 @@ namespace Basketball_Roster_Manager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string errorMessage = string.Empty;
-            if (verifyDataPath(out errorMessage))
+            if (verifyDataPath())
             {
                 loadHalves();
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
                 tsCboHalf_SelectedIndexChanged(sender, e);
-                setRosterFormChanges(false, true);
-            }
+            }   
             else
             {
-                MessageBox.Show(errorMessage + "Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
-            }
-
-            // Wireup all of the foul controls to the mouse_enter and mouse_leave methods
-            string[] textboxPrefixes = { "HomeFoulFirst", "HomeFoulSecond", "AwayFoulFirst", "AwayFoulSecond" };
-
-            foreach (string s in textboxPrefixes)
-            {
-                for (int i = 1; i <= 18; i++)
-                {
-                    TextBox t = (TextBox)this.Controls.Find(s + i, true)[0];
-                    t.MouseEnter += foulBox_MouseEnter;
-                    t.MouseLeave += foulBox_MouseLeave;
-                }
             }
         }
 
-        private bool verifyDataPath(out string errorMessage)
+        private bool verifyDataPath()
         {
-            errorMessage = string.Empty;
-
-            if (File.Exists(connectionPath))
+            if (File.Exists(dataPath))
             {
                 return true;
             }
@@ -73,65 +55,81 @@ namespace Basketball_Roster_Manager
             {
                 if (MessageBox.Show("The rosters data file was not found.  Create a new data file to maintain data?", "Create new file?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    if (createNewDatabase(out errorMessage))
+                    // Verify folder exists
+                    if (!Directory.Exists(dataFolder))
+                    {
+                        Directory.CreateDirectory(dataFolder);
+                    }
+
+                    // Create new data file
+                    bool allIsWell = true;
+                    Exception exception = new Exception();
+
+                    try
+                    {
+                        SqlCeEngine en = new SqlCeEngine(connectionString);
+                        en.CreateDatabase();
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                        allIsWell = false;
+                    }
+
+                    if (allIsWell)
+                    {
+                        string[] sqlCreate = {"Create table Leagues (LeagueID int IDENTITY(1,1) PRIMARY KEY, LeagueName nvarchar(100));",
+                            "Create table Teams (TeamID int IDENTITY(1,1) PRIMARY KEY, LeagueID int, TeamName nvarchar(100), Color nvarchar(100));",
+                            "Create table Players (PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100));"
+                        };
+
+                        SqlCeConnection conn = new SqlCeConnection(connectionString);
+                        System.Data.SqlServerCe.SqlCeCommand cmd = new SqlCeCommand();
+                        cmd.Connection = conn;
+                        conn.Open();
+
+                        for (int i = 0; i < sqlCreate.Length; i++)
+                        {
+                            cmd.CommandText = sqlCreate[i];
+                            try
+                            {
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                allIsWell = false;
+                                exception = ex;
+                            }
+                        }
+                        conn.Close();
+                    }
+
+                    if (allIsWell)
                     {
                         return true;
                     }
                     else
                     {
+                        if (File.Exists(dataPath))
+                        {
+                            File.Delete(dataPath);
+                        }
+
+                        MessageBox.Show("The follow error occured creating the database:\r\n\r\n" + exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
-                    } 
+                    }
+
+
                 }
                 else
                 {
-                    errorMessage = "User opted to not create new database file.  ";
                     return false;
                 }
             }
         }
 
-        private bool createNewDatabase(out string errorMessage)
-        {
-            errorMessage = string.Empty;
-
-            SqlCeEngine engine = new SqlCeEngine(connectionString);
-            engine.CreateDatabase();
-
-            string[] strSql = {"CREATE TABLE Leagues ( LeagueID int IDENTITY(1,1) PRIMARY KEY, LeagueName nvarchar(100) );",
-"CREATE TABLE Players ( PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int NOT NULL, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100) );",
-"CREATE TABLE Teams ( TeamID int IDENTITY(1,1) PRIMARY KEY, LeagueID int NOT NULL, TeamName nvarchar(100), Color nvarchar(100) );",
-"INSERT INTO Leagues (LeagueName) VALUES ('Boys varsity');",
-"INSERT INTO Leagues (LeagueName) VALUES ('Girls varsity');"};
-
-            SqlCeConnection conn = new SqlCeConnection(connectionString);
-            System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand();
-            cmd.Connection = conn;
-
-            try
-            {
-                conn.Open();
-                foreach (string s in strSql)
-                {
-                    cmd.CommandText = s;
-                    cmd.ExecuteNonQuery();
-                }
-                
-                conn.Close();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                errorMessage = "Exception thrown while populating new database: " + ex.Message + "  ";
-                return false;
-            }
-        }
-
         public void loadHalves()
         {
-            /// This is dynamic because the IDE only allows items in the Items collection to be strings, 
-            /// and assigns the same string to the Name and Value properties. Doing it this way allows me to 
-            /// have different values for those two properties.
             tsCboHalf.Items.Add(new ComboBoxItem("First half", "1"));
             tsCboHalf.Items.Add(new ComboBoxItem("Second half", "2"));
             tsCboHalf.SelectedIndex = 0;
@@ -139,87 +137,71 @@ namespace Basketball_Roster_Manager
 
         public void loadLeagues()
         {
-            loadLeagues(-1);
+            // Load leagues
+            SqlCeConnection conn = new SqlCeConnection(connectionString);
+            System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select * from Leagues order by LeagueName", conn);
+            conn.Open();
+
+            SqlCeDataReader dr = cmd.ExecuteReader();
+
+            tsCboLeague.Items.Clear();
+
+            while (dr.Read())
+            {
+                tsCboLeague.Items.Add(new ComboBoxItem(dr["LeagueName"], dr["LeagueID"]));
+            }
+
+            dr.Close();
+            conn.Close();
+
+            tsCboLeague.Items.Add(new ComboBoxItem("Add new", "0"));
         }
 
-        public void loadLeagues(int selectedItemID)
+        public void loadLeagues(int selectedLeagueID)
         {
-            ToolStripComboBox comboToLoad = tsCboLeague;
+            loadLeagues();
 
-            try
+            if (selectedLeagueID != -1)
             {
-                // Load leagues
-                SqlCeConnection conn = new SqlCeConnection(connectionString);
-                System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select * from Leagues order by LeagueName", conn);
-                conn.Open();
-
-                SqlCeDataReader dr = cmd.ExecuteReader();
-
-                comboToLoad.Items.Clear();
-
-                while (dr.Read())
+                for (int i = 0; i < tsCboLeague.Items.Count; i++)
                 {
-                    comboToLoad.Items.Add(new ComboBoxItem(dr["LeagueName"], dr["LeagueID"]));
-                }
-
-                dr.Close();
-                conn.Close();
-
-                if (selectedItemID != -1)
-                {
-                    for (int i = 0; i < comboToLoad.Items.Count; i++)
+                    ComboBoxItem cbi = (ComboBoxItem)tsCboLeague.Items[i];
+                    if (int.Parse(cbi.Value) == selectedLeagueID)
                     {
-                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[i];
-                        if (int.Parse(cbi.Value) == selectedItemID)
+                        tsCboLeague.SelectedIndex = i;
+
+                        if (selectedLeagueID > 0)
                         {
-                            comboToLoad.SelectedIndex = i;
-                            break;
+                            loadTeams(cboTeam1, selectedLeagueID);
+                            loadTeams(cboTeam2, selectedLeagueID);
                         }
+                        break;
                     }
                 }
-
-                comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
-
-                setRosterFormChanges(false, true);
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show("Unable to load leagues: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void tsCboLeague_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Make sure this is being fired b/c of someone clicking on the ToolStripCombo
             if (sender is ToolStripComboBox)
             {
                 ToolStripComboBox cb = (ToolStripComboBox)sender;
                 cb.Owner.Hide();
+                
+                string selectedValue = ((ComboBoxItem)cb.SelectedItem).Value;
 
-                if (cb.ComboBox.SelectedItem != null)
+                if (selectedValue != "0")
                 {
-                    ComboBoxItem cbi = (ComboBoxItem)cb.ComboBox.SelectedItem;
+                    int leagueID = int.Parse(selectedValue);
 
-                    if (cbi.Value != "0")
-                    {
-                        int leagueID = 0;
-
-                        if (int.TryParse(cbi.Value, out leagueID))
-                        {
-                            loadTeams(cboTeam1, leagueID);
-                            loadTeams(cboTeam2, leagueID);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Unble to parse league ID from combobox selected value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else
-                    {
-                        // Let them add a new league
-                        NewLeague n = new NewLeague(this, tsCboLeague);
-                        n.Show();
-                    }
+                    loadTeams(cboTeam1, leagueID);
+                    loadTeams(cboTeam2, leagueID);
+                }
+                else
+                {
+                    // Open new league dialog
+                    NewLeague n = new NewLeague(this, tsCboLeague);
+                    n.Show();
                 }
             }
         }
@@ -231,6 +213,8 @@ namespace Basketball_Roster_Manager
 
         public void loadTeams(ComboBox comboToLoad, int leagueID, int selectedTeamID)
         {
+            ///TODO: If fouls or entered players have been recorded, confirm league change first
+
             try
             {
                 // Load teams from this league
@@ -252,26 +236,35 @@ namespace Basketball_Roster_Manager
 
                 if (selectedTeamID != -1)
                 {
-                    for (int i = 0; i < comboToLoad.Items.Count; i++)
-                    {
-                        ComboBoxItem cbi = (ComboBoxItem)comboToLoad.Items[i];
-                        if (int.Parse(cbi.Value) == selectedTeamID)
-                        {
-                            comboToLoad.SelectedIndex = i;
-                            break;
-                        }
-                    }
+                    setComboBoxValue(comboToLoad, selectedTeamID);
+                }
+                else
+                {
+                    //Make sure all the player and foul fields are empty
+                    resetAllForm();
                 }
 
                 comboToLoad.Items.Add(new ComboBoxItem("Add new", "0"));
 
-                setRosterFormChanges(false, true);
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show("Unble to load teams from league: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.Print("Unable to load teams from league: " + ex.Message);
             }
 
+        }
+
+        private void setComboBoxValue(ComboBox comboBox, int value)
+        {
+            for (int i = 0; i < comboBox.Items.Count; i++)
+            {
+                ComboBoxItem cbi = (ComboBoxItem)comboBox.Items[i];
+                if (int.Parse(cbi.Value) == value)
+                {
+                    comboBox.SelectedIndex = i;
+                    break;
+                }
+            }
         }
 
         private void tsMenuItemSwitchSides_Click(object sender, EventArgs e)
@@ -421,18 +414,44 @@ namespace Basketball_Roster_Manager
 
         private void cboTeam1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboBox cb = (ComboBox)sender;
-            loadTeamMembers(cb, e);
+            cboTeam_SelectedIndexChanging(sender, e);
         }
 
         private void cboTeam2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboBox cb = (ComboBox)sender;
-            loadTeamMembers(cb, e);
+            cboTeam_SelectedIndexChanging(sender, e);
         }
 
-        private void loadTeamMembers(ComboBox cb, EventArgs e)
+        private void cboTeam_SelectedIndexChanging(object sender, EventArgs e)
         {
+            ///TODO: If fouls or entered players have been recorded, confirm team change first
+            if (formHasBeenUsed())
+            {
+                if (MessageBox.Show("You have recorded fouls and players who have entered the game.  If you change the team now, you will lose that information.\r\n\r\nAre you sure you want to proceed?", "Discard changes?", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
+                    loadTeamMembers(sender, e);
+                }
+                else
+                {
+                    setComboBoxValue(cboTeam2, mostRecentHomeTeamID);
+                }
+            }
+            else
+            {
+                mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
+                loadTeamMembers(sender, e);
+            }
+
+            loadTeamMembers(sender, e);
+        }
+
+        private void loadTeamMembers(object sender, EventArgs e)
+        {
+            // Upon team change, reset fouls and totals
+            resetFoulsAndActivePlayers(false);
+
+            ComboBox cb = (ComboBox)sender;
             string selectedValue = ((ComboBoxItem)cb.SelectedItem).Value;
             SqlCeConnection conn = new SqlCeConnection(connectionString);
             System.Data.SqlServerCe.SqlCeCommand cmd;
@@ -505,10 +524,6 @@ namespace Basketball_Roster_Manager
 
                 dr.Close();
                 conn.Close();
-
-                //setRosterFormChanges(true, false);
-                //changeHalf(false);
-                timerPostTeamLoad.Enabled = true;
             }
             else
             {
@@ -516,6 +531,24 @@ namespace Basketball_Roster_Manager
                 NewTeam n = new NewTeam(this, tsCboLeague, cb);
                 n.Show();
             }
+        }
+
+        private bool formHasBeenUsed()
+        {
+            bool rtn = false;
+
+            if ((HomeFoulFirstTotal.Text != string.Empty) && (HomeFoulFirstTotal.Text != "0")) { return true; }
+            if ((AwayFoulFirstTotal.Text != string.Empty) && (AwayFoulFirstTotal.Text != "0")) { return true; }
+            if ((HomeFoulSecondTotal.Text != string.Empty) && (HomeFoulSecondTotal.Text != "0")) { return true; }
+            if ((AwayFoulSecondTotal.Text != string.Empty) && (AwayFoulSecondTotal.Text != "0")) { return true; }
+
+            for (int i = 1; i <= 18; i++)
+            {
+                if (((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked) { return true; }
+                if (((CheckBox)Controls.Find("AwayEntered" + i, true)[0]).Checked) { return true; }
+            }
+
+            return rtn;
         }
 
         private void tsCboHalf_SelectedIndexChanged(object sender, EventArgs e)
@@ -526,11 +559,6 @@ namespace Basketball_Roster_Manager
                 cb.Owner.Hide();
             }
 
-            changeHalf();
-        }
-
-        private void changeHalf(bool switchSides)
-        {
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
@@ -587,16 +615,13 @@ namespace Basketball_Roster_Manager
                 AwayFoulSecondTotal.Enabled = true;
             }
 
-            if (switchSides)
-            {
-                SwitchSides();
-                changePossession();
-            }
+            SwitchSides();
+            btnPossession_Click(sender, e);
         }
 
-        private void changeHalf()
+        private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            changeHalf(true);
+            SwitchSides();
         }
 
         private void SwitchSides()
@@ -642,21 +667,19 @@ namespace Basketball_Roster_Manager
 
             Button saveButton = (Button)sender;
             string homeOrAway = string.Empty;
-            ComboBox cboTeam;
             ComboBoxItem selectedTeam;
 
             if (saveButton.Name == "btnSaveHome")
             {
-                cboTeam = cboTeam1;
+                selectedTeam = (ComboBoxItem)cboTeam1.SelectedItem;
                 homeOrAway = "Home";
             }
             else
             {
-                cboTeam = cboTeam2;
+                selectedTeam = (ComboBoxItem)cboTeam2.SelectedItem;
                 homeOrAway = "Away";
             }
 
-            selectedTeam = (ComboBoxItem)cboTeam.SelectedItem;
             string teamID = selectedTeam.Value;
 
             conn.Open();
@@ -683,7 +706,7 @@ namespace Basketball_Roster_Manager
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Exception thrown while inserting player record: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Debug.Print("Exception thrown while inserting player record: " + ex.Message);
                     }
                     
                 }
@@ -697,34 +720,93 @@ namespace Basketball_Roster_Manager
             conn.Close();
 
             saveButton.Visible = false;
+        }
 
-            // Issue 20: Prompt to re-sort the team upon save
-            TextBox f1 = (TextBox)Controls.Find(homeOrAway + "FoulFirstTotal", true)[0];
-            TextBox f2 = (TextBox)Controls.Find(homeOrAway + "FoulSecondTotal", true)[0];
-
-            if ((addFoulTotals(f1, f2) == 0) || (MessageBox.Show("Changes saved.\r\n\r\nDo you want to re-sort the roster numerically?\r\n(Not recommended if you have recorded fouls.)", "Re-sort roster?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+        private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                loadTeamMembers(cboTeam, new EventArgs());
+                resetFoulsAndActivePlayers(true);
             }
         }
 
-        private int addFoulTotals(TextBox txtFoulBox1, TextBox txtFoulBox2)
+        private void resetFoulsAndActivePlayers(bool requestConfirmation)
         {
-            int intTotal = 0;
-            int intFoulBox1 = 0;
-            int intFoulBox2 = 0;
-
-            if (!int.TryParse(txtFoulBox1.Text, out intFoulBox1))
+            for (int i = 1; i <= 18; i++)
             {
-                intFoulBox1 = 0;
+                TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
+                TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
+                TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
+                TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
+                CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
+                CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
+
+                home1.Text = "";
+                away1.Text = "";
+                home2.Text = "";
+                away2.Text = "";
+                homeIn.Checked = false;
+                awayIn.Checked = false;
             }
-            if (!int.TryParse(txtFoulBox2.Text, out intFoulBox2))
+        }
+
+        private void resetAllForm()
+        {
+            for (int i = 1; i <= 18; i++)
             {
-                intFoulBox2 = 0;
+                ((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked = false;
+                ((TextBox)Controls.Find("HomeNumber" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("HomeName" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("HomeFoulFirst" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("HomeFoulSecond" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("HomeFoulTotal" + i, true)[0]).Text = "";
+
+                ((CheckBox)Controls.Find("AwayEntered" + i, true)[0]).Checked = false;
+                ((TextBox)Controls.Find("AwayNumber" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("AwayName" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("AwayFoulFirst" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("AwayFoulSecond" + i, true)[0]).Text = "";
+                ((TextBox)Controls.Find("AwayFoulTotal" + i, true)[0]).Text = "";
             }
 
-            intTotal = intFoulBox1 + intFoulBox2;
-            return intTotal;
+            //Reset home and away colors
+            groupHome.BackColor = SystemColors.Control;
+            groupVisitor.BackColor = SystemColors.Control;
+        }
+
+        private void setTeamColor__OLD(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                ToolStripMenuItem t = (ToolStripMenuItem)sender;
+                Color c = colorDialog1.Color;
+                GroupBox g = new GroupBox();
+                string strTeamId = string.Empty;
+                ComboBoxItem cbi = new ComboBoxItem();
+
+                if (t.Name == "setHomeColorToolStripMenuItem")
+                {
+                    g = groupHome;
+                    cbi = (ComboBoxItem)cboTeam1.SelectedItem;
+                }
+                else
+                {
+                    g = groupVisitor;
+                    cbi = (ComboBoxItem)cboTeam2.SelectedItem;
+                }
+
+                g.BackColor = c;
+
+                try
+                {
+                    strTeamId = cbi.Value;
+                    ///TODO: Save to database (Update Teams set color = {c} where TeamID = {strTeamId}
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
+                }
+            }
         }
 
         private void setTeamColor(object sender, EventArgs e)
@@ -752,7 +834,6 @@ namespace Basketball_Roster_Manager
                 try
                 {
                     strTeamId = cbi.Value;
-                    //Save to database (Update Teams set color = {c} where TeamID = {strTeamId}
 
                     SqlCeConnection conn = new SqlCeConnection(connectionString);
                     SqlCeCommand cmd = new SqlCeCommand();
@@ -769,109 +850,10 @@ namespace Basketball_Roster_Manager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Exception thrown while attempting to save color: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
                 }
             }
         }
-
-        private void btnPossession_Click(object sender, EventArgs e)
-        {
-            changePossession();
-        }
-
-        private void changePossession()
-        {
-            if (btnPossession.Text == "←")
-            {
-                btnPossession.Text = "→";
-                btnPossession.Image = (Image)Properties.Resources.ResourceManager.GetObject("right");
-            }
-            else
-            {
-                btnPossession.Text = "←";
-                btnPossession.Image = (Image)Properties.Resources.ResourceManager.GetObject("left");
-            }
-        }
-
-        private void setRosterFormChanges(bool enabled, bool clear, string homeOrAway)
-        {
-            foreach (string homeOrAway in new string[] { "Home", "Away" })
-            {
-                //ComboBox cboTeam;
-                //if (homeOrAway == "Home")
-                //{
-                //    cboTeam = cboTeam1;
-                //}
-                //else
-                //{
-                //    cboTeam = cboTeam2;
-                //}
-
-                //if (cboTeam.SelectedItem != null)
-                //{
-                    for (int i = 1; i <= 18; i++)
-                    {
-                        TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
-                        TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
-                        TextBox txtFoulFirst = (TextBox)Controls.Find(homeOrAway + "FoulFirst" + i, true)[0];
-                        TextBox txtFoulSecond = (TextBox)Controls.Find(homeOrAway + "FoulSecond" + i, true)[0];
-
-                        txtNumber.Enabled = enabled;
-                        txtName.Enabled = enabled;
-                        //if (tsCboHalf.SelectedText == "First half")
-                        //{
-                            txtFoulFirst.Enabled = enabled;
-                        //}
-                        //else
-                        //{
-                            txtFoulSecond.Enabled = enabled;
-                        //}
-
-                        if (clear)
-                        {
-                            txtNumber.Text = "";
-                            txtName.Text = "";
-                            txtFoulFirst.Text = "";
-                            txtFoulSecond.Text = "";
-                        }
-                    }
-                //}
-            }
-
-        }
-
-        private void btnTimeout30_Click(object sender, EventArgs e)
-        {
-            setTimer(30);
-        }
-
-        private void btnTimeout60_Click(object sender, EventArgs e)
-        {
-            setTimer(60);
-        }
-
-        private void setTimer(int seconds)
-        {
-            intTimeoutSeconds = seconds;
-            txtTimeout.Text = "0:" + String.Format("{0:D2}", intTimeoutSeconds);
-            timerTimeout.Start();
-        }
-
-        private void timerTimeout_Tick(object sender, EventArgs e)
-        {
-            intTimeoutSeconds--;
-            txtTimeout.Text = "0:" + String.Format("{0:D2}", intTimeoutSeconds);
-
-            if (intTimeoutSeconds == 0) { timerTimeout.Stop(); }
-        }
-
-        private void btnStopTimer_Click(object sender, EventArgs e)
-        {
-            timerTimeout.Stop();
-            txtTimeout.Text = "0:00";
-        }
-
-        // ============  AUTO WIRED-UP EVENTS ============================================
 
         private void homeTeamWhiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -916,26 +898,15 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
+        private void btnPossession_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            if (btnPossession.Text == "←")
             {
-                for (int i = 1; i <= 18; i++)
-                {
-                    TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
-                    TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
-                    TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
-                    TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
-                    CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
-                    CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
-
-                    home1.Text = "";
-                    away1.Text = "";
-                    home2.Text = "";
-                    away2.Text = "";
-                    homeIn.Checked = false;
-                    awayIn.Checked = false;
-                }
+                btnPossession.Text = "→";
+            }
+            else
+            {
+                btnPossession.Text = "←";
             }
         }
 
@@ -949,28 +920,6 @@ namespace Basketball_Roster_Manager
             {
                 tsCboHalf.SelectedIndex = 0;
             }
-        }
-
-        private void switchSidesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SwitchSides();
-        }
-
-        private void foulBox_MouseEnter(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = "Tip: Double-click in the appropriate foul box to add one.";
-        }
-
-        private void foulBox_MouseLeave(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = string.Empty;
-        }
-
-        private void timerPostTeamLoad_Tick(object sender, EventArgs e)
-        {
-            timerPostTeamLoad.Enabled = false;
-            changeHalf(false);
-            setRosterFormChanges(true, false);
         }
     }
 }

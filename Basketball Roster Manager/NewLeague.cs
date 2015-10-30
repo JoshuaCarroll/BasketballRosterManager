@@ -13,14 +13,14 @@ namespace Basketball_Roster_Manager
 {
     public partial class NewLeague : Form
     {
-        private Form1 form1;
-        private ToolStripComboBox tsComboLeague;
+        Form1 form1;
+        ToolStripComboBox cboLeague;
 
-        public NewLeague(Form1 _form1, ToolStripComboBox _tsComboLeague)
+        public NewLeague(Form1 _form1, ToolStripComboBox _cboLeague)
         {
             InitializeComponent();
             form1 = _form1;
-            tsComboLeague = _tsComboLeague;
+            cboLeague = _cboLeague;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -29,17 +29,24 @@ namespace Basketball_Roster_Manager
             System.Data.SqlServerCe.SqlCeCommand cmd = new SqlCeCommand();
             cmd.Connection = conn;
 
-            cmd.CommandText = String.Format("Insert into Leagues (LeagueName) values ('{0}');", textBox1.Text.Replace("'", "''"));
-            conn.Open();
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = "SELECT @@IDENTITY;";
-            object scalarLeague = cmd.ExecuteScalar();
-            int leagueID = int.Parse(scalarLeague.ToString());
-            conn.Close();
+            if (txtLeagueName.Text != string.Empty)
+            {
+                cmd.CommandText = String.Format("Insert into Leagues (LeagueName) values ('{0}');", txtLeagueName.Text.Replace("'", "''"));
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT @@IDENTITY;";
+                object scalarLeague = cmd.ExecuteScalar();
+                int leagueID = int.Parse(scalarLeague.ToString());
+                conn.Close();
 
-            form1.loadLeagues(leagueID);
+                form1.loadLeagues(leagueID);
 
-            this.Close();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please provide a name for the new league.", "Enter league name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
     }
 }

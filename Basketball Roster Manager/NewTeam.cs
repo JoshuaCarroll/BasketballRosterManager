@@ -14,10 +14,9 @@ namespace Basketball_Roster_Manager
 {
     public partial class NewTeam : Form
     {
-        private Form1 form1;
-        private ToolStripComboBox cboLeague;
-        private ComboBox cboTeam;
-        private string strSelectedLeagueID = string.Empty;
+        Form1 form1;
+        ToolStripComboBox cboLeague;
+        ComboBox cboTeam;
 
         public NewTeam(Form1 parent, ToolStripComboBox toolStripCombo, ComboBox comboBox)
         {
@@ -25,48 +24,25 @@ namespace Basketball_Roster_Manager
             form1 = parent;
             cboLeague = toolStripCombo;
             cboTeam = comboBox;
-
-            try
-            {
-                ComboBoxItem cbiSelectedLeagueItem = (ComboBoxItem)cboLeague.SelectedItem;
-                strSelectedLeagueID = cbiSelectedLeagueItem.Value;
-            }
-            catch
-            {
-                // Can't pre-set the league, no big deal
-            }
-
         }
 
         private void NewTeam_Load(object sender, EventArgs e)
         {
-            // Load leagues
-            SqlCeConnection conn = new SqlCeConnection(Form1.connectionString);
-            System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand("Select * from Leagues order by LeagueName", conn);
-            conn.Open();
+            // Set the league DDL value to that of the league combobox value on Form1
+            string selectedValue = ((ComboBoxItem)cboLeague.SelectedItem).Value;
+            loadLeagues(selectedValue);
+        }
 
-            SqlCeDataReader dr = cmd.ExecuteReader();
-
-            cmboLeague.Items.Clear();
-
-            while (dr.Read())
+        public void loadLeagues(string strSelectedLeagueID)
+        {
+            for (int i = 0; i < cboLeague.Items.Count; i++)
             {
-                cmboLeague.Items.Add(new ComboBoxItem(dr["LeagueName"], dr["LeagueID"]));
-            }
+                cmboLeague.Items.Add((ComboBoxItem)cboLeague.Items[i]);
 
-            dr.Close();
-            conn.Close();
-
-            if (strSelectedLeagueID != string.Empty)
-            {
-                for (int i = 0; i < cmboLeague.Items.Count; i++)
+                if (((ComboBoxItem)cboLeague.Items[i]).Value == strSelectedLeagueID)
                 {
-                    ComboBoxItem cbi = (ComboBoxItem)cmboLeague.Items[i];
-                    if (cbi.Value == strSelectedLeagueID)
-                    {
-                        cmboLeague.SelectedIndex = i;
-                        break;
-                    }
+                    cmboLeague.SelectedIndex = i;
+                    break;
                 }
             }
         }
@@ -74,7 +50,9 @@ namespace Basketball_Roster_Manager
         private void btnColorSelect_Click(object sender, EventArgs e)
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
                 txtColor.Text = colorDialog1.Color.ToString();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -83,15 +61,9 @@ namespace Basketball_Roster_Manager
             System.Data.SqlServerCe.SqlCeCommand cmd = new SqlCeCommand();
             cmd.Connection = conn;
 
-            ComboBoxItem cbiLeague = (ComboBoxItem)cmboLeague.SelectedItem;
-            int leagueID = -1;
+            int leagueID = int.Parse(((ComboBoxItem) cmboLeague.SelectedItem).Value.ToString());
 
-            if (cbiLeague != null)
-            {
-                leagueID = int.Parse(cbiLeague.Value);
-            }
-
-            if ((cbiLeague == null) || (leagueID == -1))
+            if (leagueID == -1)
             {
                 cmd.CommandText = String.Format("Insert into Leagues (LeagueName) values ('{0}');", cmboLeague.Text.Replace("'", "''"));
                 conn.Open();
