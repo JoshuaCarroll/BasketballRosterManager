@@ -2,7 +2,7 @@ Basketball Roster Manager
 =========================
 Basketball Roster Manager is a Windows desktop application that is made for use by public address announcers during basketball games, which can replace paper rosters and hand-written notes to keep up with fouls, among other helpful features.
 
-Basketball Roster Manager is written in C#. It provides a modern UI, built on the idea that a UI is like a joke, if you have to explain it, it isn't good.
+Basketball Roster Manager is written in C#. It provides a modern UI, built on the idea that a UI is like a joke: if you have to explain it, it isn't good.
 
 For the back-end part a local SQL database stores everything. 
 
@@ -13,13 +13,7 @@ For the back-end part a local SQL database stores everything.
 
 ## Initial installation (quick & dirty documented)
 
-First of all, you need to clone this project to your machine. After that, check Windows Updates to make sure that you have .NET Framework v 4.5 installed.
-
-Second, you need compile the program.  Follow the instructions at https://msdn.microsoft.com/en-us/library/78f4aasd.aspx to compile the application.
-
-## Upgrading
-
-Upgrading to the latest GIT version of the Basketball Roster Manager is fairly easy. Update your local repository running `git pull`, recompile the application.  Since the database is stored in your roaming AppData folder, any data that you've saved will be accessible in newer versions.
+The only system prerequisite is .NET Framework v4.5.  Upon initial installation the program will create a new local database in the user's roaming app data folder.
 
 ## Developing
 
