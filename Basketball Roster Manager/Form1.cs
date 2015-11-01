@@ -414,12 +414,14 @@ namespace Basketball_Roster_Manager
 
         private void cboTeam1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cboTeam_SelectedIndexChanging(sender, e);
+            //cboTeam_SelectedIndexChanging(sender, e);
+            loadTeamMembers(sender, e);
         }
 
         private void cboTeam2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cboTeam_SelectedIndexChanging(sender, e);
+            //cboTeam_SelectedIndexChanging(sender, e);
+            loadTeamMembers(sender, e);
         }
 
         private void cboTeam_SelectedIndexChanging(object sender, EventArgs e)
