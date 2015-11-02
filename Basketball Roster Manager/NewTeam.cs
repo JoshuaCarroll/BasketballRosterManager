@@ -51,7 +51,8 @@ namespace Basketball_Roster_Manager
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                txtColor.Text = colorDialog1.Color.ToString();
+                Color color = colorDialog1.Color;
+                txtColor.Text = color.ToArgb().ToString();
             }
         }
 
