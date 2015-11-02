@@ -181,6 +181,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Kyo-Tux-Phuzion-Misc-Games.ico" />
+    <None Include="Resources\right.png" />
+    <None Include="Resources\left.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

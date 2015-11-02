@@ -3267,9 +3267,10 @@
             this.btnPossession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPossession.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPossession.Location = new System.Drawing.Point(582, 68);
+            this.btnPossession.Image = global::Basketball_Roster_Manager.Properties.Resources.left;
+            this.btnPossession.Location = new System.Drawing.Point(580, 68);
             this.btnPossession.Name = "btnPossession";
-            this.btnPossession.Size = new System.Drawing.Size(75, 43);
+            this.btnPossession.Size = new System.Drawing.Size(81, 43);
             this.btnPossession.TabIndex = 11;
             this.btnPossession.Text = "←";
             this.btnPossession.UseVisualStyleBackColor = true;

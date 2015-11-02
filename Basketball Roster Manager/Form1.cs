@@ -902,14 +902,21 @@ namespace Basketball_Roster_Manager
 
         private void btnPossession_Click(object sender, EventArgs e)
         {
+            var strArrowDirection = "";
+
             if (btnPossession.Text == "←")
             {
                 btnPossession.Text = "→";
+                strArrowDirection = "right";
             }
             else
             {
                 btnPossession.Text = "←";
+                strArrowDirection = "left";
             }
+
+            object objImage = Basketball_Roster_Manager.Properties.Resources.ResourceManager.GetObject(strArrowDirection);
+            btnPossession.Image = (Image)objImage;
         }
 
         private void changeHalfToolStripMenuItem_Click(object sender, EventArgs e)
