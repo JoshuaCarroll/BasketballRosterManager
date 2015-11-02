@@ -17,7 +17,9 @@ The only system prerequisite is .NET Framework v4.5.  Upon initial installation 
 
 ## Developing
 
-Developing on Basketball Roster Manager is fairly easy for anyone who's familiar with C# and WinForms. If you need something explained, then you probably shouldn't be contributing to this project.
+I initially wrote this for my own use. I later decided to share it with other announcers. I'm not proud of the code, because of the laziness with which I wrote the initial version. So I am constantly refactoring the original code in place of better programming practices - things I know even then, but just wanted to get it done. 
+
+Any C# developer is welcome to assist on this project.  Just make sure to submit your well documented pull request to the development branch.
 
 ## Other ways to contribute
 
