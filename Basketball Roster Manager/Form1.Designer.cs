@@ -293,7 +293,6 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -3433,21 +3432,12 @@
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 672);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1240, 22);
-            this.statusStrip1.TabIndex = 13;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1240, 694);
             this.ContextMenuStrip = this.teamContextMenuStrip;
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.btnPossession);
             this.Controls.Add(this.groupVisitor);
@@ -3736,7 +3726,6 @@
         private System.Windows.Forms.Button btnPossession;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip1;
     }
 }
 
