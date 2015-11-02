@@ -813,41 +813,6 @@ namespace Basketball_Roster_Manager
             groupVisitor.BackColor = SystemColors.Control;
         }
 
-        private void setTeamColor__OLD(object sender, EventArgs e)
-        {
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ToolStripMenuItem t = (ToolStripMenuItem)sender;
-                Color c = colorDialog1.Color;
-                GroupBox g = new GroupBox();
-                string strTeamId = string.Empty;
-                ComboBoxItem cbi = new ComboBoxItem();
-
-                if (t.Name == "setHomeColorToolStripMenuItem")
-                {
-                    g = groupHome;
-                    cbi = (ComboBoxItem)cboTeam1.SelectedItem;
-                }
-                else
-                {
-                    g = groupVisitor;
-                    cbi = (ComboBoxItem)cboTeam2.SelectedItem;
-                }
-
-                g.BackColor = c;
-
-                try
-                {
-                    strTeamId = cbi.Value;
-                    ///TODO: Save to database (Update Teams set color = {c} where TeamID = {strTeamId}
-                }
-                catch (Exception ex)
-                {
-                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
-                }
-            }
-        }
-
         private void setTeamColor(object sender, EventArgs e)
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
