@@ -741,6 +741,24 @@ namespace Basketball_Roster_Manager
             conn.Close();
 
             saveButton.Visible = false;
+
+            if (!formHasBeenUsed())
+            {
+                // Resort the players numerically
+
+                ComboBox cboTeam;
+                if (homeOrAway == "Home")
+                {
+                    cboTeam = cboTeam1;
+                }
+                else
+                {
+                    cboTeam = cboTeam2;
+                }
+                EventArgs eventArgs = new EventArgs();
+
+                loadTeamMembers(cboTeam, eventArgs);
+            }
         }
 
         private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
