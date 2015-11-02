@@ -932,5 +932,29 @@ namespace Basketball_Roster_Manager
                 tsCboHalf.SelectedIndex = 0;
             }
         }
+
+        private void exportDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            DialogResult dialogResult = saveFileDialog1.ShowDialog();
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+            {
+                File.Copy(dataPath, saveFileDialog1.FileName, true);
+            }
+        }
+
+        private void importDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            DialogResult dialogResult = openFileDialog1.ShowDialog();
+
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+            {
+                if (MessageBox.Show("Are you sure you want to import this data file?\r\nThis will replace your current data file.  This action can not be undone.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    File.Copy(openFileDialog1.FileName, dataPath, true);
+                }
+            }
+        }
     }
 }

@@ -294,6 +294,11 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -1842,7 +1847,10 @@
             this.tsMenuItemSwitchSides,
             this.resetFormToolStripMenuItem,
             this.toolStripSeparator2,
-            this.homeTeamWhiteToolStripMenuItem});
+            this.homeTeamWhiteToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.exportDatabaseToolStripMenuItem,
+            this.importDatabaseToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -3433,6 +3441,40 @@
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(179, 6);
+            // 
+            // exportDatabaseToolStripMenuItem
+            // 
+            this.exportDatabaseToolStripMenuItem.Name = "exportDatabaseToolStripMenuItem";
+            this.exportDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.exportDatabaseToolStripMenuItem.Text = "Export database";
+            this.exportDatabaseToolStripMenuItem.Click += new System.EventHandler(this.exportDatabaseToolStripMenuItem_Click);
+            // 
+            // importDatabaseToolStripMenuItem
+            // 
+            this.importDatabaseToolStripMenuItem.Name = "importDatabaseToolStripMenuItem";
+            this.importDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.importDatabaseToolStripMenuItem.Text = "Import database";
+            this.importDatabaseToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "brm";
+            this.saveFileDialog1.FileName = "rosters.brm";
+            this.saveFileDialog1.Filter = "Basketball Roster Manager data file(*.brm)|*.brm";
+            this.saveFileDialog1.RestoreDirectory = true;
+            this.saveFileDialog1.Title = "Export file name and location";
+            this.saveFileDialog1.ValidateNames = false;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "brm";
+            this.openFileDialog1.Filter = "Basketball Roster Manager data file(*.brm)|*.brm";
+            this.openFileDialog1.Title = "Select data file to import";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3728,6 +3770,11 @@
         private System.Windows.Forms.Button btnPossession;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem exportDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importDatabaseToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 
