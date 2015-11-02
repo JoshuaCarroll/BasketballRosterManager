@@ -24,6 +24,8 @@ namespace Basketball_Roster_Manager
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
 
+        private Tips tips = new Tips();
+
         public Form1()
         {
             InitializeComponent();
@@ -43,6 +45,21 @@ namespace Basketball_Roster_Manager
                 MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
+        }
+
+        private void foulTextBox_enter(object sender, EventArgs e)
+        {
+            if (tips.showFoulCountTip)
+            {
+                TextBox textBox = (TextBox)sender;
+                tips.toolTip.Show("Tip: Double-click this field to add a foul", textBox, textBox.Width, -12, 3000);
+            }
+        }
+
+        private void foulTextBox_leave(object sender, EventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            tips.toolTip.Hide(textBox);
         }
 
         private bool verifyDataPath()
@@ -274,6 +291,8 @@ namespace Basketball_Roster_Manager
 
         private void FoulTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            tips.showFoulCountTip = false;
+
             TextBox t = (TextBox)sender;
             int fouls = 0;
 
