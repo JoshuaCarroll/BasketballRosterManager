@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.cboTeam1 = new System.Windows.Forms.ComboBox();
             this.teamContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setHomeColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -3443,6 +3444,7 @@
             this.Controls.Add(this.groupVisitor);
             this.Controls.Add(this.groupHome);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Basketball Roster Manager";
