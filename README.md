@@ -1,10 +1,6 @@
 Basketball Roster Manager
 =========================
-Basketball Roster Manager is a Windows desktop application that is made for use by public address announcers during basketball games, which can replace paper rosters and hand-written notes to keep up with fouls, among other helpful features.
-
-Basketball Roster Manager is written in C#. It provides a modern UI, built on the idea that a UI is like a joke: if you have to explain it, it isn't good.
-
-For the back-end part a local SQL database stores everything. 
+Basketball Roster Manager is a Windows desktop application written in C# that is made for use by public address announcers during basketball games, which can replace paper rosters and hand-written notes to keep up with fouls, among other helpful features.
 
 ## Screenshots 
 
