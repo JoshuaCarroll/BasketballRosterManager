@@ -97,7 +97,11 @@ namespace Basketball_Roster_Manager
                     {
                         string[] sqlCreate = {"Create table Leagues (LeagueID int IDENTITY(1,1) PRIMARY KEY, LeagueName nvarchar(100));",
                             "Create table Teams (TeamID int IDENTITY(1,1) PRIMARY KEY, LeagueID int, TeamName nvarchar(100), Color nvarchar(100));",
-                            "Create table Players (PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100));"
+                            "Create table Players (PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100));",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('NCAA - men');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('NCAA - women');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('Varsity - boys');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('Varsity - girls');"
                         };
 
                         SqlCeConnection conn = new SqlCeConnection(connectionString);
