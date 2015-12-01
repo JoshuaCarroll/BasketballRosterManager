@@ -166,6 +166,9 @@
             this.resetFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.homeTeamWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leagueToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsCboLeague = new System.Windows.Forms.ToolStripComboBox();
             this.halfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -294,9 +297,6 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.teamContextMenuStrip.SuspendLayout();
@@ -308,11 +308,11 @@
             // cboTeam1
             // 
             this.cboTeam1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTeam1.Font = new System.Drawing.Font("Copperplate Gothic Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboTeam1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboTeam1.FormattingEnabled = true;
             this.cboTeam1.Location = new System.Drawing.Point(6, 19);
             this.cboTeam1.Name = "cboTeam1";
-            this.cboTeam1.Size = new System.Drawing.Size(500, 34);
+            this.cboTeam1.Size = new System.Drawing.Size(500, 37);
             this.cboTeam1.TabIndex = 2;
             this.cboTeam1.SelectedIndexChanged += new System.EventHandler(this.cboTeam1_SelectedIndexChanged);
             // 
@@ -1901,6 +1901,25 @@
             this.homeTeamWhiteToolStripMenuItem.CheckedChanged += new System.EventHandler(this.homeTeamWhiteToolStripMenuItem_CheckedChanged);
             this.homeTeamWhiteToolStripMenuItem.Click += new System.EventHandler(this.homeTeamWhiteToolStripMenuItem_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(179, 6);
+            // 
+            // exportDatabaseToolStripMenuItem
+            // 
+            this.exportDatabaseToolStripMenuItem.Name = "exportDatabaseToolStripMenuItem";
+            this.exportDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.exportDatabaseToolStripMenuItem.Text = "Export database";
+            this.exportDatabaseToolStripMenuItem.Click += new System.EventHandler(this.exportDatabaseToolStripMenuItem_Click);
+            // 
+            // importDatabaseToolStripMenuItem
+            // 
+            this.importDatabaseToolStripMenuItem.Name = "importDatabaseToolStripMenuItem";
+            this.importDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.importDatabaseToolStripMenuItem.Text = "Import database";
+            this.importDatabaseToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
+            // 
             // leagueToolStripMenuItem1
             // 
             this.leagueToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -3403,11 +3422,11 @@
             // 
             this.cboTeam2.ContextMenuStrip = this.teamContextMenuStrip;
             this.cboTeam2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTeam2.Font = new System.Drawing.Font("Copperplate Gothic Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboTeam2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboTeam2.FormattingEnabled = true;
             this.cboTeam2.Location = new System.Drawing.Point(6, 19);
             this.cboTeam2.Name = "cboTeam2";
-            this.cboTeam2.Size = new System.Drawing.Size(500, 34);
+            this.cboTeam2.Size = new System.Drawing.Size(500, 37);
             this.cboTeam2.TabIndex = 2;
             this.cboTeam2.SelectedIndexChanged += new System.EventHandler(this.cboTeam2_SelectedIndexChanged);
             // 
@@ -3440,25 +3459,6 @@
             this.label17.TabIndex = 12;
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(179, 6);
-            // 
-            // exportDatabaseToolStripMenuItem
-            // 
-            this.exportDatabaseToolStripMenuItem.Name = "exportDatabaseToolStripMenuItem";
-            this.exportDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.exportDatabaseToolStripMenuItem.Text = "Export database";
-            this.exportDatabaseToolStripMenuItem.Click += new System.EventHandler(this.exportDatabaseToolStripMenuItem_Click);
-            // 
-            // importDatabaseToolStripMenuItem
-            // 
-            this.importDatabaseToolStripMenuItem.Name = "importDatabaseToolStripMenuItem";
-            this.importDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.importDatabaseToolStripMenuItem.Text = "Import database";
-            this.importDatabaseToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
             // 
             // saveFileDialog1
             // 
