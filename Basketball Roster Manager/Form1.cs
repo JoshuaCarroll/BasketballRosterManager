@@ -24,6 +24,8 @@ namespace Basketball_Roster_Manager
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
 
+        private Tips tips = new Tips();
+
         public Form1()
         {
             InitializeComponent();
@@ -43,6 +45,21 @@ namespace Basketball_Roster_Manager
                 MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
+        }
+
+        private void foulTextBox_enter(object sender, EventArgs e)
+        {
+            if (tips.showFoulCountTip)
+            {
+                TextBox textBox = (TextBox)sender;
+                tips.toolTip.Show("Tip: Double-click this field to add a foul", textBox, textBox.Width, -12, 3000);
+            }
+        }
+
+        private void foulTextBox_leave(object sender, EventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            tips.toolTip.Hide(textBox);
         }
 
         private bool verifyDataPath()
@@ -80,7 +97,11 @@ namespace Basketball_Roster_Manager
                     {
                         string[] sqlCreate = {"Create table Leagues (LeagueID int IDENTITY(1,1) PRIMARY KEY, LeagueName nvarchar(100));",
                             "Create table Teams (TeamID int IDENTITY(1,1) PRIMARY KEY, LeagueID int, TeamName nvarchar(100), Color nvarchar(100));",
-                            "Create table Players (PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100));"
+                            "Create table Players (PlayerID int IDENTITY(1,1) PRIMARY KEY, TeamID int, GraduatingClass nvarchar(100), JerseyNumber nvarchar(3), Name nvarchar(100));",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('NCAA - men');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('NCAA - women');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('Varsity - boys');",
+                            "INSERT INTO Leagues (LeagueName) VALUES ('Varsity - girls');"
                         };
 
                         SqlCeConnection conn = new SqlCeConnection(connectionString);
@@ -274,6 +295,8 @@ namespace Basketball_Roster_Manager
 
         private void FoulTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            tips.showFoulCountTip = false;
+
             TextBox t = (TextBox)sender;
             int fouls = 0;
 
@@ -722,6 +745,24 @@ namespace Basketball_Roster_Manager
             conn.Close();
 
             saveButton.Visible = false;
+
+            if (!formHasBeenUsed())
+            {
+                // Resort the players numerically
+
+                ComboBox cboTeam;
+                if (homeOrAway == "Home")
+                {
+                    cboTeam = cboTeam1;
+                }
+                else
+                {
+                    cboTeam = cboTeam2;
+                }
+                EventArgs eventArgs = new EventArgs();
+
+                loadTeamMembers(cboTeam, eventArgs);
+            }
         }
 
         private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
@@ -774,41 +815,6 @@ namespace Basketball_Roster_Manager
             //Reset home and away colors
             groupHome.BackColor = SystemColors.Control;
             groupVisitor.BackColor = SystemColors.Control;
-        }
-
-        private void setTeamColor__OLD(object sender, EventArgs e)
-        {
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ToolStripMenuItem t = (ToolStripMenuItem)sender;
-                Color c = colorDialog1.Color;
-                GroupBox g = new GroupBox();
-                string strTeamId = string.Empty;
-                ComboBoxItem cbi = new ComboBoxItem();
-
-                if (t.Name == "setHomeColorToolStripMenuItem")
-                {
-                    g = groupHome;
-                    cbi = (ComboBoxItem)cboTeam1.SelectedItem;
-                }
-                else
-                {
-                    g = groupVisitor;
-                    cbi = (ComboBoxItem)cboTeam2.SelectedItem;
-                }
-
-                g.BackColor = c;
-
-                try
-                {
-                    strTeamId = cbi.Value;
-                    ///TODO: Save to database (Update Teams set color = {c} where TeamID = {strTeamId}
-                }
-                catch (Exception ex)
-                {
-                    Debug.Print("Exception thrown while attempting to save color: " + ex.Message);
-                }
-            }
         }
 
         private void setTeamColor(object sender, EventArgs e)
@@ -902,14 +908,21 @@ namespace Basketball_Roster_Manager
 
         private void btnPossession_Click(object sender, EventArgs e)
         {
+            var strArrowDirection = "";
+
             if (btnPossession.Text == "←")
             {
                 btnPossession.Text = "→";
+                strArrowDirection = "right";
             }
             else
             {
                 btnPossession.Text = "←";
+                strArrowDirection = "left";
             }
+
+            object objImage = Basketball_Roster_Manager.Properties.Resources.ResourceManager.GetObject(strArrowDirection);
+            btnPossession.Image = (Image)objImage;
         }
 
         private void changeHalfToolStripMenuItem_Click(object sender, EventArgs e)
@@ -921,6 +934,30 @@ namespace Basketball_Roster_Manager
             else
             {
                 tsCboHalf.SelectedIndex = 0;
+            }
+        }
+
+        private void exportDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            DialogResult dialogResult = saveFileDialog1.ShowDialog();
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+            {
+                File.Copy(dataPath, saveFileDialog1.FileName, true);
+            }
+        }
+
+        private void importDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            DialogResult dialogResult = openFileDialog1.ShowDialog();
+
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+            {
+                if (MessageBox.Show("Are you sure you want to import this data file?\r\nThis will replace your current data file.  This action can not be undone.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    File.Copy(openFileDialog1.FileName, dataPath, true);
+                }
             }
         }
     }

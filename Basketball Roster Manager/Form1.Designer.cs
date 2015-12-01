@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.cboTeam1 = new System.Windows.Forms.ComboBox();
             this.teamContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setHomeColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -165,6 +166,9 @@
             this.resetFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.homeTeamWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leagueToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsCboLeague = new System.Windows.Forms.ToolStripComboBox();
             this.halfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -293,6 +297,8 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnPossession = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.teamContextMenuStrip.SuspendLayout();
             this.groupHome.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -302,11 +308,11 @@
             // cboTeam1
             // 
             this.cboTeam1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTeam1.Font = new System.Drawing.Font("Copperplate Gothic Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboTeam1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboTeam1.FormattingEnabled = true;
             this.cboTeam1.Location = new System.Drawing.Point(6, 19);
             this.cboTeam1.Name = "cboTeam1";
-            this.cboTeam1.Size = new System.Drawing.Size(500, 34);
+            this.cboTeam1.Size = new System.Drawing.Size(500, 37);
             this.cboTeam1.TabIndex = 2;
             this.cboTeam1.SelectedIndexChanged += new System.EventHandler(this.cboTeam1_SelectedIndexChanged);
             // 
@@ -729,6 +735,8 @@
             this.HomeFoulSecond18.TabIndex = 97;
             this.HomeFoulSecond18.TabStop = false;
             this.HomeFoulSecond18.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond18.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond18.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond18.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst18
@@ -741,6 +749,8 @@
             this.HomeFoulFirst18.TabIndex = 96;
             this.HomeFoulFirst18.TabStop = false;
             this.HomeFoulFirst18.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst18.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst18.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst18.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName18
@@ -784,6 +794,8 @@
             this.HomeFoulSecond17.TabIndex = 92;
             this.HomeFoulSecond17.TabStop = false;
             this.HomeFoulSecond17.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond17.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond17.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond17.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst17
@@ -796,6 +808,8 @@
             this.HomeFoulFirst17.TabIndex = 91;
             this.HomeFoulFirst17.TabStop = false;
             this.HomeFoulFirst17.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst17.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst17.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst17.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName17
@@ -839,6 +853,8 @@
             this.HomeFoulSecond16.TabIndex = 87;
             this.HomeFoulSecond16.TabStop = false;
             this.HomeFoulSecond16.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond16.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond16.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond16.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst16
@@ -851,6 +867,8 @@
             this.HomeFoulFirst16.TabIndex = 86;
             this.HomeFoulFirst16.TabStop = false;
             this.HomeFoulFirst16.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst16.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst16.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst16.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName16
@@ -894,6 +912,8 @@
             this.HomeFoulSecond15.TabIndex = 82;
             this.HomeFoulSecond15.TabStop = false;
             this.HomeFoulSecond15.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond15.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond15.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond15.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst15
@@ -906,6 +926,8 @@
             this.HomeFoulFirst15.TabIndex = 81;
             this.HomeFoulFirst15.TabStop = false;
             this.HomeFoulFirst15.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst15.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst15.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst15.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName15
@@ -949,6 +971,8 @@
             this.HomeFoulSecond14.TabIndex = 77;
             this.HomeFoulSecond14.TabStop = false;
             this.HomeFoulSecond14.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond14.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond14.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond14.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst14
@@ -961,6 +985,8 @@
             this.HomeFoulFirst14.TabIndex = 76;
             this.HomeFoulFirst14.TabStop = false;
             this.HomeFoulFirst14.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst14.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst14.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst14.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName14
@@ -1004,6 +1030,8 @@
             this.HomeFoulSecond13.TabIndex = 72;
             this.HomeFoulSecond13.TabStop = false;
             this.HomeFoulSecond13.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond13.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond13.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond13.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst13
@@ -1016,6 +1044,8 @@
             this.HomeFoulFirst13.TabIndex = 71;
             this.HomeFoulFirst13.TabStop = false;
             this.HomeFoulFirst13.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst13.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst13.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst13.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName13
@@ -1059,6 +1089,8 @@
             this.HomeFoulSecond12.TabIndex = 67;
             this.HomeFoulSecond12.TabStop = false;
             this.HomeFoulSecond12.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond12.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond12.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond12.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst12
@@ -1071,6 +1103,8 @@
             this.HomeFoulFirst12.TabIndex = 66;
             this.HomeFoulFirst12.TabStop = false;
             this.HomeFoulFirst12.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst12.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst12.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst12.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName12
@@ -1114,6 +1148,8 @@
             this.HomeFoulSecond11.TabIndex = 62;
             this.HomeFoulSecond11.TabStop = false;
             this.HomeFoulSecond11.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond11.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond11.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond11.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst11
@@ -1126,6 +1162,8 @@
             this.HomeFoulFirst11.TabIndex = 61;
             this.HomeFoulFirst11.TabStop = false;
             this.HomeFoulFirst11.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst11.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst11.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst11.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName11
@@ -1169,6 +1207,8 @@
             this.HomeFoulSecond10.TabIndex = 57;
             this.HomeFoulSecond10.TabStop = false;
             this.HomeFoulSecond10.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond10.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond10.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond10.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst10
@@ -1181,6 +1221,8 @@
             this.HomeFoulFirst10.TabIndex = 56;
             this.HomeFoulFirst10.TabStop = false;
             this.HomeFoulFirst10.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst10.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst10.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst10.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName10
@@ -1224,6 +1266,8 @@
             this.HomeFoulSecond9.TabIndex = 52;
             this.HomeFoulSecond9.TabStop = false;
             this.HomeFoulSecond9.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond9.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond9.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond9.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst9
@@ -1236,6 +1280,8 @@
             this.HomeFoulFirst9.TabIndex = 51;
             this.HomeFoulFirst9.TabStop = false;
             this.HomeFoulFirst9.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst9.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst9.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst9.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName9
@@ -1279,6 +1325,8 @@
             this.HomeFoulSecond8.TabIndex = 47;
             this.HomeFoulSecond8.TabStop = false;
             this.HomeFoulSecond8.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond8.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond8.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst8
@@ -1291,6 +1339,8 @@
             this.HomeFoulFirst8.TabIndex = 46;
             this.HomeFoulFirst8.TabStop = false;
             this.HomeFoulFirst8.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst8.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst8.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName8
@@ -1334,6 +1384,8 @@
             this.HomeFoulSecond7.TabIndex = 42;
             this.HomeFoulSecond7.TabStop = false;
             this.HomeFoulSecond7.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond7.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond7.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond7.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst7
@@ -1346,6 +1398,8 @@
             this.HomeFoulFirst7.TabIndex = 41;
             this.HomeFoulFirst7.TabStop = false;
             this.HomeFoulFirst7.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst7.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst7.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst7.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName7
@@ -1389,6 +1443,8 @@
             this.HomeFoulSecond6.TabIndex = 37;
             this.HomeFoulSecond6.TabStop = false;
             this.HomeFoulSecond6.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond6.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond6.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst6
@@ -1401,6 +1457,8 @@
             this.HomeFoulFirst6.TabIndex = 36;
             this.HomeFoulFirst6.TabStop = false;
             this.HomeFoulFirst6.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst6.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst6.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName6
@@ -1444,6 +1502,8 @@
             this.HomeFoulSecond5.TabIndex = 32;
             this.HomeFoulSecond5.TabStop = false;
             this.HomeFoulSecond5.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond5.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond5.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond5.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst5
@@ -1456,6 +1516,8 @@
             this.HomeFoulFirst5.TabIndex = 31;
             this.HomeFoulFirst5.TabStop = false;
             this.HomeFoulFirst5.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst5.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst5.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst5.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName5
@@ -1499,6 +1561,8 @@
             this.HomeFoulSecond4.TabIndex = 27;
             this.HomeFoulSecond4.TabStop = false;
             this.HomeFoulSecond4.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond4.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond4.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond4.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst4
@@ -1511,6 +1575,8 @@
             this.HomeFoulFirst4.TabIndex = 26;
             this.HomeFoulFirst4.TabStop = false;
             this.HomeFoulFirst4.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst4.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst4.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst4.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName4
@@ -1543,6 +1609,8 @@
             this.HomeFoulSecond3.TabIndex = 22;
             this.HomeFoulSecond3.TabStop = false;
             this.HomeFoulSecond3.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond3.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond3.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst3
@@ -1555,6 +1623,8 @@
             this.HomeFoulFirst3.TabIndex = 21;
             this.HomeFoulFirst3.TabStop = false;
             this.HomeFoulFirst3.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst3.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst3.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName3
@@ -1598,6 +1668,8 @@
             this.HomeFoulSecond2.TabIndex = 17;
             this.HomeFoulSecond2.TabStop = false;
             this.HomeFoulSecond2.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond2.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond2.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst2
@@ -1610,6 +1682,8 @@
             this.HomeFoulFirst2.TabIndex = 16;
             this.HomeFoulFirst2.TabStop = false;
             this.HomeFoulFirst2.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst2.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst2.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName2
@@ -1653,6 +1727,8 @@
             this.HomeFoulSecond1.TabIndex = 12;
             this.HomeFoulSecond1.TabStop = false;
             this.HomeFoulSecond1.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulSecond1.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulSecond1.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulSecond1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeFoulFirst1
@@ -1665,6 +1741,8 @@
             this.HomeFoulFirst1.TabIndex = 11;
             this.HomeFoulFirst1.TabStop = false;
             this.HomeFoulFirst1.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.HomeFoulFirst1.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.HomeFoulFirst1.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.HomeFoulFirst1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // HomeName1
@@ -1769,7 +1847,10 @@
             this.tsMenuItemSwitchSides,
             this.resetFormToolStripMenuItem,
             this.toolStripSeparator2,
-            this.homeTeamWhiteToolStripMenuItem});
+            this.homeTeamWhiteToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.exportDatabaseToolStripMenuItem,
+            this.importDatabaseToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -1819,6 +1900,25 @@
             this.homeTeamWhiteToolStripMenuItem.Text = "Home team in white";
             this.homeTeamWhiteToolStripMenuItem.CheckedChanged += new System.EventHandler(this.homeTeamWhiteToolStripMenuItem_CheckedChanged);
             this.homeTeamWhiteToolStripMenuItem.Click += new System.EventHandler(this.homeTeamWhiteToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(179, 6);
+            // 
+            // exportDatabaseToolStripMenuItem
+            // 
+            this.exportDatabaseToolStripMenuItem.Name = "exportDatabaseToolStripMenuItem";
+            this.exportDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.exportDatabaseToolStripMenuItem.Text = "Export database";
+            this.exportDatabaseToolStripMenuItem.Click += new System.EventHandler(this.exportDatabaseToolStripMenuItem_Click);
+            // 
+            // importDatabaseToolStripMenuItem
+            // 
+            this.importDatabaseToolStripMenuItem.Name = "importDatabaseToolStripMenuItem";
+            this.importDatabaseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.importDatabaseToolStripMenuItem.Text = "Import database";
+            this.importDatabaseToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
             // 
             // leagueToolStripMenuItem1
             // 
@@ -2071,6 +2171,8 @@
             this.AwayFoulSecond18.TabIndex = 97;
             this.AwayFoulSecond18.TabStop = false;
             this.AwayFoulSecond18.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond18.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond18.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond18.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayEntered15
@@ -2092,6 +2194,8 @@
             this.AwayFoulFirst18.TabIndex = 96;
             this.AwayFoulFirst18.TabStop = false;
             this.AwayFoulFirst18.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst18.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst18.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst18.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName18
@@ -2162,6 +2266,8 @@
             this.AwayFoulSecond17.TabIndex = 92;
             this.AwayFoulSecond17.TabStop = false;
             this.AwayFoulSecond17.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond17.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond17.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond17.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // label16
@@ -2184,6 +2290,8 @@
             this.AwayFoulFirst17.TabIndex = 91;
             this.AwayFoulFirst17.TabStop = false;
             this.AwayFoulFirst17.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst17.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst17.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst17.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayEntered12
@@ -2272,6 +2380,8 @@
             this.AwayFoulSecond16.TabIndex = 87;
             this.AwayFoulSecond16.TabStop = false;
             this.AwayFoulSecond16.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond16.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond16.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond16.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayEntered3
@@ -2293,6 +2403,8 @@
             this.AwayFoulFirst16.TabIndex = 86;
             this.AwayFoulFirst16.TabStop = false;
             this.AwayFoulFirst16.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst16.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst16.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst16.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayEntered9
@@ -2372,6 +2484,8 @@
             this.AwayFoulSecond15.TabIndex = 82;
             this.AwayFoulSecond15.TabStop = false;
             this.AwayFoulSecond15.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond15.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond15.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond15.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayEntered7
@@ -2393,6 +2507,8 @@
             this.AwayFoulFirst15.TabIndex = 81;
             this.AwayFoulFirst15.TabStop = false;
             this.AwayFoulFirst15.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst15.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst15.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst15.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName15
@@ -2436,6 +2552,8 @@
             this.AwayFoulSecond14.TabIndex = 77;
             this.AwayFoulSecond14.TabStop = false;
             this.AwayFoulSecond14.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond14.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond14.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond14.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst14
@@ -2448,6 +2566,8 @@
             this.AwayFoulFirst14.TabIndex = 76;
             this.AwayFoulFirst14.TabStop = false;
             this.AwayFoulFirst14.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst14.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst14.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst14.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName14
@@ -2491,6 +2611,8 @@
             this.AwayFoulSecond13.TabIndex = 72;
             this.AwayFoulSecond13.TabStop = false;
             this.AwayFoulSecond13.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond13.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond13.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond13.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst13
@@ -2503,6 +2625,8 @@
             this.AwayFoulFirst13.TabIndex = 71;
             this.AwayFoulFirst13.TabStop = false;
             this.AwayFoulFirst13.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst13.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst13.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst13.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName13
@@ -2546,6 +2670,8 @@
             this.AwayFoulSecond12.TabIndex = 67;
             this.AwayFoulSecond12.TabStop = false;
             this.AwayFoulSecond12.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond12.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond12.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond12.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst12
@@ -2558,6 +2684,8 @@
             this.AwayFoulFirst12.TabIndex = 66;
             this.AwayFoulFirst12.TabStop = false;
             this.AwayFoulFirst12.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst12.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst12.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst12.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName12
@@ -2601,6 +2729,8 @@
             this.AwayFoulSecond11.TabIndex = 62;
             this.AwayFoulSecond11.TabStop = false;
             this.AwayFoulSecond11.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond11.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond11.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond11.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst11
@@ -2613,6 +2743,8 @@
             this.AwayFoulFirst11.TabIndex = 61;
             this.AwayFoulFirst11.TabStop = false;
             this.AwayFoulFirst11.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst11.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst11.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst11.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName11
@@ -2656,6 +2788,8 @@
             this.AwayFoulSecond10.TabIndex = 57;
             this.AwayFoulSecond10.TabStop = false;
             this.AwayFoulSecond10.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond10.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond10.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond10.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst10
@@ -2668,6 +2802,8 @@
             this.AwayFoulFirst10.TabIndex = 56;
             this.AwayFoulFirst10.TabStop = false;
             this.AwayFoulFirst10.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst10.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst10.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst10.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName10
@@ -2711,6 +2847,8 @@
             this.AwayFoulSecond9.TabIndex = 52;
             this.AwayFoulSecond9.TabStop = false;
             this.AwayFoulSecond9.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond9.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond9.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond9.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst9
@@ -2723,6 +2861,8 @@
             this.AwayFoulFirst9.TabIndex = 51;
             this.AwayFoulFirst9.TabStop = false;
             this.AwayFoulFirst9.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst9.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst9.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst9.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName9
@@ -2766,6 +2906,8 @@
             this.AwayFoulSecond8.TabIndex = 47;
             this.AwayFoulSecond8.TabStop = false;
             this.AwayFoulSecond8.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond8.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond8.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst8
@@ -2778,6 +2920,8 @@
             this.AwayFoulFirst8.TabIndex = 46;
             this.AwayFoulFirst8.TabStop = false;
             this.AwayFoulFirst8.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst8.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst8.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName8
@@ -2821,6 +2965,8 @@
             this.AwayFoulSecond7.TabIndex = 42;
             this.AwayFoulSecond7.TabStop = false;
             this.AwayFoulSecond7.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond7.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond7.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond7.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst7
@@ -2833,6 +2979,8 @@
             this.AwayFoulFirst7.TabIndex = 41;
             this.AwayFoulFirst7.TabStop = false;
             this.AwayFoulFirst7.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst7.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst7.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst7.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName7
@@ -2876,6 +3024,8 @@
             this.AwayFoulSecond6.TabIndex = 37;
             this.AwayFoulSecond6.TabStop = false;
             this.AwayFoulSecond6.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond6.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond6.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst6
@@ -2888,6 +3038,8 @@
             this.AwayFoulFirst6.TabIndex = 36;
             this.AwayFoulFirst6.TabStop = false;
             this.AwayFoulFirst6.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst6.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst6.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName6
@@ -2931,6 +3083,8 @@
             this.AwayFoulSecond5.TabIndex = 32;
             this.AwayFoulSecond5.TabStop = false;
             this.AwayFoulSecond5.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond5.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond5.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond5.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst5
@@ -2943,6 +3097,8 @@
             this.AwayFoulFirst5.TabIndex = 31;
             this.AwayFoulFirst5.TabStop = false;
             this.AwayFoulFirst5.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst5.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst5.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst5.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName5
@@ -2986,6 +3142,8 @@
             this.AwayFoulSecond4.TabIndex = 27;
             this.AwayFoulSecond4.TabStop = false;
             this.AwayFoulSecond4.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond4.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond4.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond4.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst4
@@ -2998,6 +3156,8 @@
             this.AwayFoulFirst4.TabIndex = 26;
             this.AwayFoulFirst4.TabStop = false;
             this.AwayFoulFirst4.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst4.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst4.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst4.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName4
@@ -3041,6 +3201,8 @@
             this.AwayFoulSecond3.TabIndex = 22;
             this.AwayFoulSecond3.TabStop = false;
             this.AwayFoulSecond3.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond3.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond3.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst3
@@ -3053,6 +3215,8 @@
             this.AwayFoulFirst3.TabIndex = 21;
             this.AwayFoulFirst3.TabStop = false;
             this.AwayFoulFirst3.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst3.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst3.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName3
@@ -3096,6 +3260,8 @@
             this.AwayFoulSecond2.TabIndex = 17;
             this.AwayFoulSecond2.TabStop = false;
             this.AwayFoulSecond2.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond2.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond2.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst2
@@ -3108,6 +3274,8 @@
             this.AwayFoulFirst2.TabIndex = 16;
             this.AwayFoulFirst2.TabStop = false;
             this.AwayFoulFirst2.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst2.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst2.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName2
@@ -3151,6 +3319,8 @@
             this.AwayFoulSecond1.TabIndex = 12;
             this.AwayFoulSecond1.TabStop = false;
             this.AwayFoulSecond1.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulSecond1.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulSecond1.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulSecond1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayFoulFirst1
@@ -3163,6 +3333,8 @@
             this.AwayFoulFirst1.TabIndex = 11;
             this.AwayFoulFirst1.TabStop = false;
             this.AwayFoulFirst1.TextChanged += new System.EventHandler(this.FoulTextBox_KeyPress);
+            this.AwayFoulFirst1.Enter += new System.EventHandler(this.foulTextBox_enter);
+            this.AwayFoulFirst1.Leave += new System.EventHandler(this.foulTextBox_leave);
             this.AwayFoulFirst1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FoulTextbox_MouseDoubleClick);
             // 
             // AwayName1
@@ -3250,11 +3422,11 @@
             // 
             this.cboTeam2.ContextMenuStrip = this.teamContextMenuStrip;
             this.cboTeam2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTeam2.Font = new System.Drawing.Font("Copperplate Gothic Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboTeam2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboTeam2.FormattingEnabled = true;
             this.cboTeam2.Location = new System.Drawing.Point(6, 19);
             this.cboTeam2.Name = "cboTeam2";
-            this.cboTeam2.Size = new System.Drawing.Size(500, 34);
+            this.cboTeam2.Size = new System.Drawing.Size(500, 37);
             this.cboTeam2.TabIndex = 2;
             this.cboTeam2.SelectedIndexChanged += new System.EventHandler(this.cboTeam2_SelectedIndexChanged);
             // 
@@ -3267,9 +3439,10 @@
             this.btnPossession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPossession.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPossession.Location = new System.Drawing.Point(582, 68);
+            this.btnPossession.Image = global::Basketball_Roster_Manager.Properties.Resources.left;
+            this.btnPossession.Location = new System.Drawing.Point(580, 68);
             this.btnPossession.Name = "btnPossession";
-            this.btnPossession.Size = new System.Drawing.Size(75, 43);
+            this.btnPossession.Size = new System.Drawing.Size(81, 43);
             this.btnPossession.TabIndex = 11;
             this.btnPossession.Text = "←";
             this.btnPossession.UseVisualStyleBackColor = true;
@@ -3287,6 +3460,21 @@
             this.label17.Text = "Possession";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "brm";
+            this.saveFileDialog1.FileName = "rosters.brm";
+            this.saveFileDialog1.Filter = "Basketball Roster Manager data file(*.brm)|*.brm";
+            this.saveFileDialog1.RestoreDirectory = true;
+            this.saveFileDialog1.Title = "Export file name and location";
+            this.saveFileDialog1.ValidateNames = false;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "brm";
+            this.openFileDialog1.Filter = "Basketball Roster Manager data file(*.brm)|*.brm";
+            this.openFileDialog1.Title = "Select data file to import";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3298,6 +3486,7 @@
             this.Controls.Add(this.groupVisitor);
             this.Controls.Add(this.groupHome);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Basketball Roster Manager";
@@ -3581,6 +3770,11 @@
         private System.Windows.Forms.Button btnPossession;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem changeHalfToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem exportDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importDatabaseToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 
