@@ -23,13 +23,13 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://www.decodethecode.com/basketball_roster_manager/</InstallUrl>
-    <SupportUrl>http://www.decodethecode.com</SupportUrl>
-    <ErrorReportUrl>http://www.decodethecode.com</ErrorReportUrl>
+    <SupportUrl>https://github.com/JoshuaCarroll/BasketballRosterManager/issues/</SupportUrl>
+    <ErrorReportUrl>https://github.com/JoshuaCarroll/BasketballRosterManager/issues/</ErrorReportUrl>
     <ProductName>Basketball Roster Manager</ProductName>
     <PublisherName>Carroll Sports Media</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.htm</WebPage>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.8.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
