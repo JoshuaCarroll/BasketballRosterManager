@@ -136,7 +136,7 @@ namespace Basketball_Roster_Manager
                             File.Delete(dataPath);
                         }
 
-                        MessageBox.Show("The follow error occured creating the database:\r\n\r\n" + exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("The following error occurred creating the database:\r\n\r\n" + exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
 
