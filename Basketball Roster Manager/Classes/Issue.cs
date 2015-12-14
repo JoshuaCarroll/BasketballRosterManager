@@ -36,16 +36,19 @@ class Issue
 
     public void append(string text)
     {
+        if (text == null) { text = string.Empty; }
         this.body += "\r\n" + text + "\r\n";
     }
 
     public void appendCode(string code)
     {
+        if (code == null) { code = string.Empty; }
         this.body += "\r\n```\r\n" + code + "\r\n```\r\n";
     }
 
     public void appendCode(string codeTitle, string code)
     {
+        if (code == null) { code = string.Empty; }
         this.body += "\r\n### " + codeTitle + "\r\n```\r\n" + code + "\r\n```\r\n";
     }
 
@@ -56,6 +59,7 @@ class Issue
 
     public void appendQuote(string quoteTitle, string text)
     {
+        if (text == null) { text = string.Empty; }
         this.body += "\r\n### " + quoteTitle + "\r\n> " + text.Replace("\r\n", "\r\n> ") + "\r\n";
     }
 
