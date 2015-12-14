@@ -63,6 +63,14 @@ class Issue
         this.body += "\r\n### " + quoteTitle + "\r\n> " + text.Replace("\r\n", "\r\n> ") + "\r\n";
     }
 
+    public void appendException(Exception exception)
+    {
+        appendQuote("Message", exception.Message);
+        appendQuote("Help link", exception.HelpLink);
+        appendQuote("Source", exception.Source);
+        appendQuote("Stack trace", exception.StackTrace);
+    }
+
     public Issue() { }
 
     public Issue(string title)
