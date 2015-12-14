@@ -139,10 +139,7 @@ namespace Basketball_Roster_Manager
                         if (MessageBox.Show("An error occurred creating the database.\r\n\r\nWould you like to create an error report?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                         {
                             Issue i = new Issue("Error while creating database", "An error occurred while the program attempted to create the database.");
-                            i.appendQuote("Message", exception.Message);
-                            i.appendQuote("Help link", exception.HelpLink);
-                            i.appendQuote("Source", exception.Source);
-                            i.appendQuote("Stack trace", exception.StackTrace);
+                            i.appendException(exception);
                             i.submit();
                         }
 
@@ -730,7 +727,15 @@ namespace Basketball_Roster_Manager
 
                 if ((txtNumber.Text.Trim() != string.Empty) || (txtName.Text.Trim() != string.Empty))
                 {
-                    cmd.CommandText = String.Format("INSERT INTO Players (TeamID,JerseyNumber,Name) VALUES ('{0}','{1}','{2}');", teamID, txtNumber.Text.Replace("'", "''"), txtName.Text.Replace("'", "''"));
+                    string strNumber = txtNumber.Text;
+
+                    //Format number to fix issue 47
+                    if ((strNumber != "0") && (strNumber.Length == 1))
+                    {
+                        strNumber = "0" + strNumber;
+                    }
+
+                    cmd.CommandText = String.Format("INSERT INTO Players (TeamID,JerseyNumber,Name) VALUES ('{0}','{1}','{2}');", teamID, strNumber.Replace("'", "''"), txtName.Text.Replace("'", "''"));
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -741,6 +746,13 @@ namespace Basketball_Roster_Manager
                     catch (Exception ex)
                     {
                         Debug.Print("Exception thrown while inserting player record: " + ex.Message);
+
+                        if (MessageBox.Show("An error occurred while inserting player record.\r\n\r\nWould you like to create an error report?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                        {
+                            Issue issue = new Issue("Exception while inserting player record", "An exception occurred while inserting a player record.");
+                            issue.appendException(ex);
+                            issue.submit();
+                        }
                     }
                     
                 }
