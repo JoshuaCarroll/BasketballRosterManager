@@ -543,7 +543,14 @@ namespace Basketball_Roster_Manager
 
                     if (dr.Read())
                     {
-                        jerseyNumber.Text = dr["JerseyNumber"].ToString();
+                        string strJerseyNumber = dr["JerseyNumber"].ToString();
+
+                        if ((strJerseyNumber.StartsWith("0")) && (strJerseyNumber != "0") && (strJerseyNumber != "00"))
+                        {
+                            strJerseyNumber = strJerseyNumber.Substring(1);
+                        }
+
+                        jerseyNumber.Text = strJerseyNumber;
                         playerName.Text = dr["Name"].ToString();
                     }
                     else
