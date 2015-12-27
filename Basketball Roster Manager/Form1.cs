@@ -23,6 +23,8 @@ namespace Basketball_Roster_Manager
 
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
+        private bool handleHomeTeamSelection = true;
+        private bool handleAwayTeamSelection = true;
 
         private Tips tips = new Tips();
 
@@ -136,7 +138,13 @@ namespace Basketball_Roster_Manager
                             File.Delete(dataPath);
                         }
 
-                        MessageBox.Show("The follow error occured creating the database:\r\n\r\n" + exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (MessageBox.Show("An error occurred creating the database.\r\n\r\nWould you like to create an error report?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                        {
+                            Issue i = new Issue("Error while creating database", "An error occurred while the program attempted to create the database.");
+                            i.appendException(exception);
+                            i.submit();
+                        }
+
                         return false;
                     }
 
@@ -437,38 +445,78 @@ namespace Basketball_Roster_Manager
 
         private void cboTeam1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //cboTeam_SelectedIndexChanging(sender, e);
-            loadTeamMembers(sender, e);
+            if (handleHomeTeamSelection)
+            {
+                cboTeam_SelectedIndexChanging(sender, e);
+            }
+            else
+            {
+                handleHomeTeamSelection = true;
+            }
         }
 
         private void cboTeam2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //cboTeam_SelectedIndexChanging(sender, e);
-            loadTeamMembers(sender, e);
+            if (handleAwayTeamSelection)
+            {
+                cboTeam_SelectedIndexChanging(sender, e);
+            }
+            else
+            {
+                handleHomeTeamSelection = true;
+            }
         }
 
         private void cboTeam_SelectedIndexChanging(object sender, EventArgs e)
         {
-            ///TODO: If fouls or entered players have been recorded, confirm team change first
-            if (formHasBeenUsed())
+            ComboBox cboSender = (ComboBox)sender;
+            ComboBoxItem cbiSelectedItem = (ComboBoxItem)cboSender.SelectedItem;
+            string strSelectedItemValue = cbiSelectedItem.Value;
+
+            if (((cboSender.Name == "cboTeam1") && (handleHomeTeamSelection)) || ((cboSender.Name == "cboTeam2") && (handleAwayTeamSelection)))
             {
-                if (MessageBox.Show("You have recorded fouls and players who have entered the game.  If you change the team now, you will lose that information.\r\n\r\nAre you sure you want to proceed?", "Discard changes?", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                ///TODO: If fouls or entered players have been recorded, confirm team change first
+                if (formHasBeenUsed())
                 {
-                    mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
-                    loadTeamMembers(sender, e);
+                    if (MessageBox.Show("You have recorded fouls and players who have entered the game.  If you change the team now, you will lose that information.\r\n\r\nAre you sure you want to proceed?", "Discard changes?", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        if (cboSender.Name == "cboTeam1")
+                        {
+                            mostRecentHomeTeamID = int.Parse(strSelectedItemValue);
+                        }
+                        else
+                        {
+                            mostRecentAwayTeamID = int.Parse(strSelectedItemValue);
+                        }
+                        loadTeamMembers(sender, e);
+                    }
+                    else
+                    {
+                        if (cboSender.Name == "cboTeam1")
+                        {
+                            handleHomeTeamSelection = false;
+                            setComboBoxValue(cboSender, mostRecentHomeTeamID);
+                        }
+                        else
+                        {
+                            handleAwayTeamSelection = false;
+                            setComboBoxValue(cboSender, mostRecentAwayTeamID);
+                        }
+                    }
                 }
                 else
                 {
-                    setComboBoxValue(cboTeam2, mostRecentHomeTeamID);
+                    if (cboSender.Name == "cboTeam1")
+                    {
+                        mostRecentHomeTeamID = int.Parse(strSelectedItemValue);
+                    }
+                    else
+                    {
+                        mostRecentAwayTeamID = int.Parse(strSelectedItemValue);
+                    }
+                    loadTeamMembers(sender, e);
                 }
             }
-            else
-            {
-                mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
-                loadTeamMembers(sender, e);
-            }
-
-            loadTeamMembers(sender, e);
         }
 
         private void loadTeamMembers(object sender, EventArgs e)
@@ -537,7 +585,14 @@ namespace Basketball_Roster_Manager
 
                     if (dr.Read())
                     {
-                        jerseyNumber.Text = dr["JerseyNumber"].ToString();
+                        string strJerseyNumber = dr["JerseyNumber"].ToString();
+
+                        if ((strJerseyNumber.StartsWith("0")) && (strJerseyNumber != "0") && (strJerseyNumber != "00"))
+                        {
+                            strJerseyNumber = strJerseyNumber.Substring(1);
+                        }
+
+                        jerseyNumber.Text = strJerseyNumber;
                         playerName.Text = dr["Name"].ToString();
                     }
                     else
@@ -721,7 +776,15 @@ namespace Basketball_Roster_Manager
 
                 if ((txtNumber.Text.Trim() != string.Empty) || (txtName.Text.Trim() != string.Empty))
                 {
-                    cmd.CommandText = String.Format("INSERT INTO Players (TeamID,JerseyNumber,Name) VALUES ('{0}','{1}','{2}');", teamID, txtNumber.Text.Replace("'", "''"), txtName.Text.Replace("'", "''"));
+                    string strNumber = txtNumber.Text;
+
+                    //Format number to fix issue 47
+                    if ((strNumber != "0") && (strNumber.Length == 1))
+                    {
+                        strNumber = "0" + strNumber;
+                    }
+
+                    cmd.CommandText = String.Format("INSERT INTO Players (TeamID,JerseyNumber,Name) VALUES ('{0}','{1}','{2}');", teamID, strNumber.Replace("'", "''"), txtName.Text.Replace("'", "''"));
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -732,6 +795,13 @@ namespace Basketball_Roster_Manager
                     catch (Exception ex)
                     {
                         Debug.Print("Exception thrown while inserting player record: " + ex.Message);
+
+                        if (MessageBox.Show("An error occurred while inserting player record.\r\n\r\nWould you like to create an error report?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                        {
+                            Issue issue = new Issue("Exception while inserting player record", "An exception occurred while inserting a player record.");
+                            issue.appendException(ex);
+                            issue.submit();
+                        }
                     }
                     
                 }
@@ -959,6 +1029,11 @@ namespace Basketball_Roster_Manager
                     File.Copy(openFileDialog1.FileName, dataPath, true);
                 }
             }
+        }
+
+        private void cboTeam1_DropDownClosed(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -23,14 +23,14 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://www.decodethecode.com/basketball_roster_manager/</InstallUrl>
-    <SupportUrl>http://www.decodethecode.com</SupportUrl>
-    <ErrorReportUrl>http://www.decodethecode.com</ErrorReportUrl>
+    <SupportUrl>https://github.com/JoshuaCarroll/BasketballRosterManager/issues/</SupportUrl>
+    <ErrorReportUrl>https://github.com/JoshuaCarroll/BasketballRosterManager/issues/</ErrorReportUrl>
     <ProductName>Basketball Roster Manager</ProductName>
     <PublisherName>Carroll Sports Media</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.8.1.%2a</ApplicationVersion>
+    <ApplicationVersion>1.9.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -80,11 +80,16 @@
   <PropertyGroup>
     <TargetZone>Internet</TargetZone>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -96,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\ComboBoxItem.cs" />
+    <Compile Include="Classes\Issue.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,11 +185,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.SQL.Server.Compact.4.0">
-      <Visible>False</Visible>
-      <ProductName>SQL Server Compact 4.0 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -191,6 +192,27 @@
   <ItemGroup>
     <Content Include="Kyo-Tux-Phuzion-Misc-Games.ico" />
     <Content Include="Resources\Kyo-Tux-Phuzion-Misc-Games.ico" />
+    <Content Include="sqlceca40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlcecompact40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlceer40EN.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlceme40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlceoledb40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlceqp40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlcese40.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\right.png" />
     <None Include="Resources\left.png" />
   </ItemGroup>
