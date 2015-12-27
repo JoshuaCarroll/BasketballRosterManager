@@ -23,6 +23,8 @@ namespace Basketball_Roster_Manager
 
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
+        private bool handleHomeTeamSelection = true;
+        private bool handleAwayTeamSelection = true;
 
         private Tips tips = new Tips();
 
@@ -443,38 +445,78 @@ namespace Basketball_Roster_Manager
 
         private void cboTeam1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //cboTeam_SelectedIndexChanging(sender, e);
-            loadTeamMembers(sender, e);
+            if (handleHomeTeamSelection)
+            {
+                cboTeam_SelectedIndexChanging(sender, e);
+            }
+            else
+            {
+                handleHomeTeamSelection = true;
+            }
         }
 
         private void cboTeam2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //cboTeam_SelectedIndexChanging(sender, e);
-            loadTeamMembers(sender, e);
+            if (handleAwayTeamSelection)
+            {
+                cboTeam_SelectedIndexChanging(sender, e);
+            }
+            else
+            {
+                handleHomeTeamSelection = true;
+            }
         }
 
         private void cboTeam_SelectedIndexChanging(object sender, EventArgs e)
         {
-            ///TODO: If fouls or entered players have been recorded, confirm team change first
-            if (formHasBeenUsed())
+            ComboBox cboSender = (ComboBox)sender;
+            ComboBoxItem cbiSelectedItem = (ComboBoxItem)cboSender.SelectedItem;
+            string strSelectedItemValue = cbiSelectedItem.Value;
+
+            if (((cboSender.Name == "cboTeam1") && (handleHomeTeamSelection)) || ((cboSender.Name == "cboTeam2") && (handleAwayTeamSelection)))
             {
-                if (MessageBox.Show("You have recorded fouls and players who have entered the game.  If you change the team now, you will lose that information.\r\n\r\nAre you sure you want to proceed?", "Discard changes?", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                ///TODO: If fouls or entered players have been recorded, confirm team change first
+                if (formHasBeenUsed())
                 {
-                    mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
-                    loadTeamMembers(sender, e);
+                    if (MessageBox.Show("You have recorded fouls and players who have entered the game.  If you change the team now, you will lose that information.\r\n\r\nAre you sure you want to proceed?", "Discard changes?", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        if (cboSender.Name == "cboTeam1")
+                        {
+                            mostRecentHomeTeamID = int.Parse(strSelectedItemValue);
+                        }
+                        else
+                        {
+                            mostRecentAwayTeamID = int.Parse(strSelectedItemValue);
+                        }
+                        loadTeamMembers(sender, e);
+                    }
+                    else
+                    {
+                        if (cboSender.Name == "cboTeam1")
+                        {
+                            handleHomeTeamSelection = false;
+                            setComboBoxValue(cboSender, mostRecentHomeTeamID);
+                        }
+                        else
+                        {
+                            handleAwayTeamSelection = false;
+                            setComboBoxValue(cboSender, mostRecentAwayTeamID);
+                        }
+                    }
                 }
                 else
                 {
-                    setComboBoxValue(cboTeam2, mostRecentHomeTeamID);
+                    if (cboSender.Name == "cboTeam1")
+                    {
+                        mostRecentHomeTeamID = int.Parse(strSelectedItemValue);
+                    }
+                    else
+                    {
+                        mostRecentAwayTeamID = int.Parse(strSelectedItemValue);
+                    }
+                    loadTeamMembers(sender, e);
                 }
             }
-            else
-            {
-                mostRecentAwayTeamID = int.Parse(((ComboBoxItem)cboTeam2.SelectedItem).Value);
-                loadTeamMembers(sender, e);
-            }
-
-            loadTeamMembers(sender, e);
         }
 
         private void loadTeamMembers(object sender, EventArgs e)
@@ -987,6 +1029,11 @@ namespace Basketball_Roster_Manager
                     File.Copy(openFileDialog1.FileName, dataPath, true);
                 }
             }
+        }
+
+        private void cboTeam1_DropDownClosed(object sender, EventArgs e)
+        {
+
         }
     }
 }

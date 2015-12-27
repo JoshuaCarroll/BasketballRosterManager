@@ -315,6 +315,7 @@
             this.cboTeam1.Size = new System.Drawing.Size(500, 37);
             this.cboTeam1.TabIndex = 2;
             this.cboTeam1.SelectedIndexChanged += new System.EventHandler(this.cboTeam1_SelectedIndexChanged);
+            this.cboTeam1.DropDownClosed += new System.EventHandler(this.cboTeam1_DropDownClosed);
             // 
             // teamContextMenuStrip
             // 
