@@ -8,9 +8,9 @@ Basketball Roster Manager is a Windows desktop application written in C# that is
 
 ![capture2](https://cloud.githubusercontent.com/assets/2617394/5951215/b5bfda80-a729-11e4-85c5-911b14951445.JPG)
 
-## Initial installation
+## Initial installation & updates
 
-The only system prerequisite is .NET Framework v4.5, which is already installed on Windows computers that are regularly updated.  Upon initial installation the program will create a new local database in the user's roaming app data folder.
+The only system prerequisite is .NET Framework v4.5, which is already installed on Windows computers that are regularly updated.  Upon initial installation the program will create a new local database in the user's roaming app data folder.  If there is an Internet connection when the program is opened it will look for an update and, if one is available, prompt the user to install it.
 
 ## Contributing 
 
