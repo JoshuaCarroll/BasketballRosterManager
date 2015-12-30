@@ -27,7 +27,7 @@ Pull requests are very welcome! Please try to follow these simple rules if appli
 * Submit pull requests to the Development branch.
 * Please create a topic-specific branch for every separate change you make.
 * Make sure your patches are well tested.
-* Update the [README](https://github.com/JoshuaCarroll/BasketballRosterManager/blob/development/README.md).
+* Update the [README](https://github.com/JoshuaCarroll/BasketballRosterManager/blob/development/README.md) and/or [WIKI](https://github.com/JoshuaCarroll/BasketballRosterManager/wiki) if applicable.
 * Please **do not change** the version number.
 
 For questions please join us in a [![chat on gitter](https://badges.gitter.im/JoshuaCarroll/BasketballRosterManager.svg)](https://gitter.im/JoshuaCarroll/BasketballRosterManager?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge).
