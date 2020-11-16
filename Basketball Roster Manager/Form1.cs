@@ -18,8 +18,9 @@ namespace Basketball_Roster_Manager
     {
         public static string dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.CompanyName, Application.ProductName);
         public static string dataFile = "Rosters.sdf";
+        public static string dataWord = "rosters";
         public static string dataPath = Path.Combine(dataFolder, dataFile);
-        public static string connectionString = "Data Source=" + dataPath + ";Persist Security Info=False;";
+        public static string connectionString = string.Format("Data Source=\"{0}\"; Password='{1}'",dataPath,dataWord);
 
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
@@ -74,6 +75,7 @@ namespace Basketball_Roster_Manager
             {
                 if (MessageBox.Show("The rosters data file was not found.  Create a new data file to maintain data?", "Create new file?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
+
                     // Verify folder exists
                     if (!Directory.Exists(dataFolder))
                     {

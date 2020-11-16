@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Carroll Sports Media")]
 [assembly: AssemblyProduct("Basketball Roster Manager")]
-[assembly: AssemblyCopyright("Copyright © Joshua Carroll 2015")]
+[assembly: AssemblyCopyright("Copyright © Joshua Carroll 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
