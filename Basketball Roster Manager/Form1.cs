@@ -144,6 +144,10 @@ namespace Basketball_Roster_Manager
                 textbox.Enter += new EventHandler(TextBox_enter);
                 textbox.Leave += new EventHandler(TextBox_leave);
             }
+            else if (name.Contains("Number") || name.Contains("Name"))
+            {
+                textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
+            }
 
             return textbox.Left + textbox.Width + leftMargin;
         }
