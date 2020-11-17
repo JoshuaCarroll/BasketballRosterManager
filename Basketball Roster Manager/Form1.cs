@@ -21,6 +21,8 @@ namespace Basketball_Roster_Manager
         public static string dataWord = "rosters";
         public static string dataPath = Path.Combine(dataFolder, dataFile);
         public static string connectionString = string.Format("Data Source=\"{0}\"; Password='{1}'",dataPath,dataWord);
+        public static int leftMargin = 5;
+        public static int topMargin = 5;
 
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
@@ -38,11 +40,11 @@ namespace Basketball_Roster_Manager
         {
             if (verifyDataPath())
             {
+                buildForm();
                 loadHalves();
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
                 tsCboHalf_SelectedIndexChanged(sender, e);
-                wireUpEvents();
             }   
             else
             {
@@ -51,48 +53,111 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        // Wrote this but couldn't get it to work. ??
-        // I'd rather have it dynamically create all of the form elements, and wire up the event handlers, but alas.
-        private void wireUpEvents()
+        private void buildForm()
         {
-            for (int i = 1; i <= 22; i++)
+            int numberOfRows = 22;
+
+            for (int i = 1; i <= numberOfRows; i++)
             {
-                TextBox t = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
-                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
-                t.Enter += new EventHandler(foulTextBox_enter);
-                t.Leave += new EventHandler(foulTextBox_leave);
-                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+                int top = 94 + (28 * (i - 1));
+                createLine("Home", i, top);
+            }
 
-                t = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
-                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
-                t.Enter += new EventHandler(foulTextBox_enter);
-                t.Leave += new EventHandler(foulTextBox_leave);
-                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
-
-                t = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
-                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
-                t.Enter += new EventHandler(foulTextBox_enter);
-                t.Leave += new EventHandler(foulTextBox_leave);
-                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
-
-                t = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
-                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
-                t.Enter += new EventHandler(foulTextBox_enter);
-                t.Leave += new EventHandler(foulTextBox_leave);
-                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+            for (int i = 1; i <= numberOfRows; i++)
+            {
+                int top = 94 + (28 * (i - 1));
+                createLine("Away", i, top);
             }
         }
 
-        private void foulTextBox_enter(object sender, EventArgs e)
+        private void createLine(string namePrefix, int number, int top)
         {
-            if (tips.showFoulCountTip)
+            int left = 12;
+            
+            left = createCheckbox(namePrefix + "Entered" + number, top, left);
+            left = createTextbox(namePrefix + "Number" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "Name" + number, top, left, 44, 265);
+            left = createTextbox(namePrefix + "FoulFirst" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FoulSecond" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FoulTotal" + number, top, left, 44, 38, true);
+            left = createTextbox(namePrefix + "FG" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "3P" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FT" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "PointsTotal" + number, top, left, 44, 38, true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="top"></param>
+        /// <param name="left"></param>
+        /// <returns>Position of right side</returns>
+        private int createCheckbox(string name, int top, int left)
+        {
+            CheckBox checkbox = new CheckBox();
+            if (name.StartsWith("Home"))
+            {
+                groupHome.Controls.Add(checkbox);
+            }
+            else
+            {
+                groupVisitor.Controls.Add(checkbox);
+            }
+            checkbox.Name = name;
+            checkbox.Top = top;
+            checkbox.Left = left;
+            checkbox.Text = "";
+            checkbox.Width = 14;
+            return checkbox.Left + checkbox.Width + leftMargin;
+        }
+
+        private int createTextbox(string name, int top, int left, int height, int width, bool readOnly=false)
+        {
+            TextBox textbox = new TextBox();
+            if (name.StartsWith("Home"))
+            {
+                groupHome.Controls.Add(textbox);
+            }
+            else
+            {
+                groupVisitor.Controls.Add(textbox);
+            }
+            textbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            textbox.Location = new System.Drawing.Point(left, top);
+            textbox.Margin = new System.Windows.Forms.Padding(6, 0, 6, 2);
+            textbox.Name = name;
+            textbox.Size = new System.Drawing.Size(width, height);
+            textbox.ReadOnly = readOnly;
+
+            if (name.Contains("FoulFirst") || name.Contains("FoulSecond"))
+            {
+                textbox.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                textbox.Enter += new EventHandler(TextBox_enter);
+                textbox.Leave += new EventHandler(TextBox_leave);
+                textbox.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+            } 
+            else if (name.StartsWith("HomeFG") || name.StartsWith("Home3P") || name.StartsWith("HomeFT") || name.StartsWith("AwayFG") || name.StartsWith("Away3P") || name.StartsWith("AwayFT"))
+            {
+                textbox.MouseDoubleClick += new MouseEventHandler(PointsTextbox_MouseDoubleClick);
+                textbox.TextChanged += new EventHandler(PointTextBox_KeyPress);
+                textbox.Enter += new EventHandler(TextBox_enter);
+                textbox.Leave += new EventHandler(TextBox_leave);
+            }
+
+            return textbox.Left + textbox.Width + leftMargin;
+        }
+
+        private void TextBox_enter(object sender, EventArgs e)
+        {
+            if (tips.showCountTip)
             {
                 TextBox textBox = (TextBox)sender;
-                tips.toolTip.Show("Tip: Double-click this field to add a foul", textBox, textBox.Width, -12, 3000);
+                tips.toolTip.Show(tips.tip, textBox, textBox.Width, -12, 3000);
             }
         }
 
-        private void foulTextBox_leave(object sender, EventArgs e)
+        private void TextBox_leave(object sender, EventArgs e)
         {
             TextBox textBox = (TextBox)sender;
             tips.toolTip.Hide(textBox);
@@ -338,7 +403,7 @@ namespace Basketball_Roster_Manager
 
         private void FoulTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            tips.showFoulCountTip = false;
+            tips.showCountTip = false;
 
             TextBox t = (TextBox)sender;
             int fouls = 0;
@@ -353,6 +418,77 @@ namespace Basketball_Roster_Manager
             t.Text = fouls.ToString();
 
             label1.Focus();
+        }
+
+        private void PointsTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            tips.showCountTip = false;
+
+            TextBox t = (TextBox)sender;
+            int points = 0;
+
+            try
+            {
+                points = int.Parse(t.Text);
+            }
+            catch { }
+
+            if (t.Name.StartsWith("HomeFG") || t.Name.StartsWith("AwayFG"))
+            {
+                points = points + 2;
+            }
+            else if (t.Name.StartsWith("Home3P") || t.Name.StartsWith("Away3P"))
+            {
+                points = points + 3;
+            }
+            else if (t.Name.StartsWith("HomeFT") || t.Name.StartsWith("AwayFT"))
+            {
+                points = points + 1;
+            }
+
+            t.Text = points.ToString();
+
+            label1.Focus();
+        }
+
+        private void PointTextBox_KeyPress(object sender, EventArgs e)
+        {
+            TextBox t = (TextBox)sender;
+            string lineNumber = string.Empty;
+            string homeOrAway = string.Empty;
+
+            if (t.Name.StartsWith("Home"))
+            {
+                homeOrAway = "Home";
+            }
+            else
+            {
+                homeOrAway = "Away";
+            }
+
+            lineNumber = t.Name.Substring(6);
+
+            CheckBox ck = (CheckBox)Controls.Find(homeOrAway + "Entered" + lineNumber, true)[0];
+            ck.Checked = true;
+
+            try
+            {
+                TextBox txtFieldGoals = (TextBox)Controls.Find(homeOrAway + "FG" + lineNumber, true)[0];
+                TextBox txtThreePoints = (TextBox)Controls.Find(homeOrAway + "3P" + lineNumber, true)[0];
+                TextBox txtFreeThrows = (TextBox)Controls.Find(homeOrAway + "FT" + lineNumber, true)[0];
+
+                int intFG; int intTP; int intFT;
+
+                int.TryParse(txtFieldGoals.Text, out intFG);
+                int.TryParse(txtThreePoints.Text, out intTP);
+                int.TryParse(txtFreeThrows.Text, out intFT);
+
+                int pointsTotal = intFG + intTP + intFT;
+
+                TextBox txtTotal = (TextBox)Controls.Find(homeOrAway + "PointsTotal" + lineNumber, true)[0];
+                txtTotal.Text = pointsTotal.ToString();
+            }
+            catch { }
         }
 
         private void FoulTextBox_KeyPress(object sender, EventArgs e)
@@ -677,7 +813,7 @@ namespace Basketball_Roster_Manager
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
-                for (int i = 1; i <= 22; i++)
+                for (int i = 1; i <= 21; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
