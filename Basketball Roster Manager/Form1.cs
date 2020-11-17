@@ -42,11 +42,44 @@ namespace Basketball_Roster_Manager
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
                 tsCboHalf_SelectedIndexChanged(sender, e);
+                wireUpEvents();
             }   
             else
             {
                 MessageBox.Show("Data file not found.  Closing application.", "Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
+            }
+        }
+
+        // Wrote this but couldn't get it to work. ??
+        // I'd rather have it dynamically create all of the form elements, and wire up the event handlers, but alas.
+        private void wireUpEvents()
+        {
+            for (int i = 1; i <= 22; i++)
+            {
+                TextBox t = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
+                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                t.Enter += new EventHandler(foulTextBox_enter);
+                t.Leave += new EventHandler(foulTextBox_leave);
+                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+
+                t = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
+                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                t.Enter += new EventHandler(foulTextBox_enter);
+                t.Leave += new EventHandler(foulTextBox_leave);
+                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+
+                t = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
+                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                t.Enter += new EventHandler(foulTextBox_enter);
+                t.Leave += new EventHandler(foulTextBox_leave);
+                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+
+                t = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
+                t.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                t.Enter += new EventHandler(foulTextBox_enter);
+                t.Leave += new EventHandler(foulTextBox_leave);
+                t.TextChanged += new EventHandler(FoulTextBox_KeyPress);
             }
         }
 
@@ -414,7 +447,7 @@ namespace Basketball_Roster_Manager
         {
             int intTotal = 0;
 
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 TextBox t = (TextBox)Controls.Find(homeOrAway + "Foul" + firstOrSecond + i, true)[0];
                 int f = 0;
@@ -580,7 +613,7 @@ namespace Basketball_Roster_Manager
 
                 SqlCeDataReader dr = cmd.ExecuteReader();
 
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox jerseyNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
                     TextBox playerName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
@@ -624,7 +657,7 @@ namespace Basketball_Roster_Manager
             if ((HomeFoulSecondTotal.Text != string.Empty) && (HomeFoulSecondTotal.Text != "0")) { return true; }
             if ((AwayFoulSecondTotal.Text != string.Empty) && (AwayFoulSecondTotal.Text != "0")) { return true; }
 
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 if (((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked) { return true; }
                 if (((CheckBox)Controls.Find("AwayEntered" + i, true)[0]).Checked) { return true; }
@@ -644,7 +677,7 @@ namespace Basketball_Roster_Manager
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
@@ -672,7 +705,7 @@ namespace Basketball_Roster_Manager
             }
             else if (cbi.Value == "2")
             {
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
@@ -770,8 +803,8 @@ namespace Basketball_Roster_Manager
             cmd.CommandText = String.Format("Delete from Players where TeamID = '{0}'", teamID);
             cmd.ExecuteNonQuery();
 
-            //HomeNumber1 - 18, HomeName1 - 18
-            for (int i = 1; i <= 18; i++)
+            //HomeNumber1 - 22, HomeName1 - 22
+            for (int i = 1; i <= 22; i++)
             {
                 TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
                 TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
@@ -847,7 +880,7 @@ namespace Basketball_Roster_Manager
 
         private void resetFoulsAndActivePlayers(bool requestConfirmation)
         {
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                 TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
@@ -867,7 +900,7 @@ namespace Basketball_Roster_Manager
 
         private void resetAllForm()
         {
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 ((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked = false;
                 ((TextBox)Controls.Find("HomeNumber" + i, true)[0]).Text = "";
@@ -1031,11 +1064,6 @@ namespace Basketball_Roster_Manager
                     File.Copy(openFileDialog1.FileName, dataPath, true);
                 }
             }
-        }
-
-        private void cboTeam1_DropDownClosed(object sender, EventArgs e)
-        {
-
         }
     }
 }
