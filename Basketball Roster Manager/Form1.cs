@@ -697,7 +697,7 @@ namespace Basketball_Roster_Manager
         private void loadTeamMembers(object sender, EventArgs e)
         {
             // Upon team change, reset fouls and totals
-            resetFoulsAndActivePlayers(false);
+            resetForm(false);
 
             ComboBox cb = (ComboBox)sender;
             string selectedValue = ((ComboBoxItem)cb.SelectedItem).Value;
@@ -1012,29 +1012,52 @@ namespace Basketball_Roster_Manager
 
         private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                resetFoulsAndActivePlayers(true);
-            }
+            resetForm(true);
         }
 
-        private void resetFoulsAndActivePlayers(bool requestConfirmation)
+        private void resetForm(bool requestConfirmation)
         {
-            for (int i = 1; i <= 22; i++)
-            {
-                TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
-                TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
-                TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
-                TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
-                CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
-                CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
+            bool doIt = false;
 
-                home1.Text = "";
-                away1.Text = "";
-                home2.Text = "";
-                away2.Text = "";
-                homeIn.Checked = false;
-                awayIn.Checked = false;
+            if (requestConfirmation)
+            {
+                if (MessageBox.Show("Reset all fouls, points, and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    doIt = true;
+                }
+            }
+            else
+            {
+                doIt = true;
+            }
+
+            if (doIt)
+            {
+                foreach (TextBox tb in groupHome.Controls.OfType<TextBox>())
+                {
+                    if (!tb.Name.Contains("Name") && !tb.Name.Contains("Number"))
+                    {
+                        tb.Text = "";
+                    }
+                }
+
+                foreach (CheckBox cb in groupHome.Controls.OfType<CheckBox>())
+                {
+                    cb.Checked = false;
+                }
+
+                foreach (TextBox tb in groupVisitor.Controls.OfType<TextBox>())
+                {
+                    if (!tb.Name.Contains("Name") && !tb.Name.Contains("Number"))
+                    {
+                        tb.Text = "";
+                    }
+                }
+
+                foreach (CheckBox cb in groupVisitor.Controls.OfType<CheckBox>())
+                {
+                    cb.Checked = false;
+                }
             }
         }
 
