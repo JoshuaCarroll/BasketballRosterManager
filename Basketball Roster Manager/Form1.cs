@@ -109,6 +109,7 @@ namespace Basketball_Roster_Manager
             checkbox.Left = left;
             checkbox.Text = "";
             checkbox.Width = 14;
+            checkbox.CheckedChanged += PlayerInCheckbox_Change;
             return checkbox.Left + checkbox.Width + leftMargin;
         }
 
@@ -147,6 +148,7 @@ namespace Basketball_Roster_Manager
             else if (name.Contains("Number") || name.Contains("Name"))
             {
                 textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
+                textbox.ForeColor = Color.LightGray;
             }
 
             return textbox.Left + textbox.Width + leftMargin;
@@ -437,22 +439,21 @@ namespace Basketball_Roster_Manager
             }
             catch { }
 
-            if (t.Name.StartsWith("HomeFG") || t.Name.StartsWith("AwayFG"))
-            {
-                points = points + 2;
-            }
-            else if (t.Name.StartsWith("Home3P") || t.Name.StartsWith("Away3P"))
-            {
-                points = points + 3;
-            }
-            else if (t.Name.StartsWith("HomeFT") || t.Name.StartsWith("AwayFT"))
-            {
-                points = points + 1;
-            }
-
+            points++;
             t.Text = points.ToString();
 
             label1.Focus();
+        }
+
+        private void PlayerInCheckbox_Change(object sender, EventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+
+            TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
+            txtName.ForeColor = Color.Black;
+
+            TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
+            txtNumber.ForeColor = Color.Black;
         }
 
         private void PointTextBox_KeyPress(object sender, EventArgs e)
@@ -487,7 +488,7 @@ namespace Basketball_Roster_Manager
                 int.TryParse(txtThreePoints.Text, out intTP);
                 int.TryParse(txtFreeThrows.Text, out intFT);
 
-                int pointsTotal = intFG + intTP + intFT;
+                int pointsTotal = (intFG * 2) + (intTP * 3) + intFT;
 
                 TextBox txtTotal = (TextBox)Controls.Find(homeOrAway + "PointsTotal" + lineNumber, true)[0];
                 txtTotal.Text = pointsTotal.ToString();
@@ -817,7 +818,7 @@ namespace Basketball_Roster_Manager
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
-                for (int i = 1; i <= 21; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
