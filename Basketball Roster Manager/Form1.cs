@@ -109,6 +109,7 @@ namespace Basketball_Roster_Manager
             checkbox.Left = left;
             checkbox.Text = "";
             checkbox.Width = 14;
+            checkbox.TabStop = false;
             checkbox.CheckedChanged += PlayerInCheckbox_Change;
             return checkbox.Left + checkbox.Width + leftMargin;
         }
@@ -124,11 +125,13 @@ namespace Basketball_Roster_Manager
             {
                 groupVisitor.Controls.Add(textbox);
             }
+
             textbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             textbox.Location = new System.Drawing.Point(left, top);
             textbox.Margin = new System.Windows.Forms.Padding(6, 0, 6, 2);
             textbox.Name = name;
             textbox.Size = new System.Drawing.Size(width, height);
+            textbox.TabStop = false;
             textbox.ReadOnly = readOnly;
 
             if (name.Contains("FoulFirst") || name.Contains("FoulSecond"))
@@ -149,6 +152,7 @@ namespace Basketball_Roster_Manager
             {
                 textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
                 textbox.ForeColor = Color.LightGray;
+                textbox.TabStop = true;
             }
 
             return textbox.Left + textbox.Width + leftMargin;
@@ -449,11 +453,22 @@ namespace Basketball_Roster_Manager
         {
             CheckBox cb = (CheckBox)sender;
 
-            TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
-            txtName.ForeColor = Color.Black;
+            if (cb.Checked)
+            {
+                TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
+                txtName.ForeColor = Color.Black;
 
-            TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
-            txtNumber.ForeColor = Color.Black;
+                TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
+                txtNumber.ForeColor = Color.Black;
+            }
+            else
+            {
+                TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
+                txtName.ForeColor = Color.LightGray;
+
+                TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
+                txtNumber.ForeColor = Color.LightGray;
+            }
         }
 
         private void PointTextBox_KeyPress(object sender, EventArgs e)
@@ -491,7 +506,14 @@ namespace Basketball_Roster_Manager
                 int pointsTotal = (intFG * 2) + (intTP * 3) + intFT;
 
                 TextBox txtTotal = (TextBox)Controls.Find(homeOrAway + "PointsTotal" + lineNumber, true)[0];
-                txtTotal.Text = pointsTotal.ToString();
+                if (pointsTotal > 0)
+                {
+                    txtTotal.Text = pointsTotal.ToString();
+                }
+                else
+                {
+                    txtTotal.Text = string.Empty;
+                }
             }
             catch { }
         }
@@ -599,7 +621,12 @@ namespace Basketball_Roster_Manager
 
             TextBox total = (TextBox)Controls.Find(homeOrAway + "Foul" + firstOrSecond + "Total", true)[0];
 
-            if (intTotal <= 10)
+            if (intTotal == 0)
+            {
+                total.Text = string.Empty;
+                total.BackColor = SystemColors.Control;
+            }
+            else if (intTotal <= 10)
             {
                 total.Text = intTotal.ToString();
                 total.BackColor = SystemColors.Control;
