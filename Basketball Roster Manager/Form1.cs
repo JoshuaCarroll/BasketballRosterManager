@@ -18,8 +18,11 @@ namespace Basketball_Roster_Manager
     {
         public static string dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.CompanyName, Application.ProductName);
         public static string dataFile = "Rosters.sdf";
+        public static string dataWord = "rosters";
         public static string dataPath = Path.Combine(dataFolder, dataFile);
-        public static string connectionString = "Data Source=" + dataPath + ";Persist Security Info=False;";
+        public static string connectionString = string.Format("Data Source=\"{0}\"; Password='{1}'",dataPath,dataWord);
+        public static int leftMargin = 5;
+        public static int topMargin = 5;
 
         private int mostRecentHomeTeamID = -1;
         private int mostRecentAwayTeamID = -1;
@@ -37,6 +40,7 @@ namespace Basketball_Roster_Manager
         {
             if (verifyDataPath())
             {
+                buildForm();
                 loadHalves();
                 loadLeagues();
                 tsCboLeague_SelectedIndexChanged(sender, e);
@@ -49,16 +53,121 @@ namespace Basketball_Roster_Manager
             }
         }
 
-        private void foulTextBox_enter(object sender, EventArgs e)
+        private void buildForm()
         {
-            if (tips.showFoulCountTip)
+            int numberOfRows = 22;
+
+            for (int i = 1; i <= numberOfRows; i++)
             {
-                TextBox textBox = (TextBox)sender;
-                tips.toolTip.Show("Tip: Double-click this field to add a foul", textBox, textBox.Width, -12, 3000);
+                int top = 94 + (28 * (i - 1));
+                createLine("Home", i, top);
+            }
+
+            for (int i = 1; i <= numberOfRows; i++)
+            {
+                int top = 94 + (28 * (i - 1));
+                createLine("Away", i, top);
             }
         }
 
-        private void foulTextBox_leave(object sender, EventArgs e)
+        private void createLine(string namePrefix, int number, int top)
+        {
+            int left = 12;
+            
+            left = createCheckbox(namePrefix + "Entered" + number, top, left);
+            left = createTextbox(namePrefix + "Number" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "Name" + number, top, left, 44, 265);
+            left = createTextbox(namePrefix + "FoulFirst" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FoulSecond" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FoulTotal" + number, top, left, 44, 38, true);
+            left = createTextbox(namePrefix + "FG" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "3P" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "FT" + number, top, left, 44, 38);
+            left = createTextbox(namePrefix + "PointsTotal" + number, top, left, 44, 38, true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="top"></param>
+        /// <param name="left"></param>
+        /// <returns>Position of right side</returns>
+        private int createCheckbox(string name, int top, int left)
+        {
+            CheckBox checkbox = new CheckBox();
+            if (name.StartsWith("Home"))
+            {
+                groupHome.Controls.Add(checkbox);
+            }
+            else
+            {
+                groupVisitor.Controls.Add(checkbox);
+            }
+            checkbox.Name = name;
+            checkbox.Top = top;
+            checkbox.Left = left;
+            checkbox.Text = "";
+            checkbox.Width = 14;
+            checkbox.TabStop = false;
+            checkbox.CheckedChanged += PlayerInCheckbox_Change;
+            return checkbox.Left + checkbox.Width + leftMargin;
+        }
+
+        private int createTextbox(string name, int top, int left, int height, int width, bool readOnly=false)
+        {
+            TextBox textbox = new TextBox();
+            if (name.StartsWith("Home"))
+            {
+                groupHome.Controls.Add(textbox);
+            }
+            else
+            {
+                groupVisitor.Controls.Add(textbox);
+            }
+
+            textbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            textbox.Location = new System.Drawing.Point(left, top);
+            textbox.Margin = new System.Windows.Forms.Padding(6, 0, 6, 2);
+            textbox.Name = name;
+            textbox.Size = new System.Drawing.Size(width, height);
+            textbox.TabStop = false;
+            textbox.ReadOnly = readOnly;
+
+            if (name.Contains("FoulFirst") || name.Contains("FoulSecond"))
+            {
+                textbox.MouseDoubleClick += new MouseEventHandler(FoulTextbox_MouseDoubleClick);
+                textbox.Enter += new EventHandler(TextBox_enter);
+                textbox.Leave += new EventHandler(TextBox_leave);
+                textbox.TextChanged += new EventHandler(FoulTextBox_KeyPress);
+            } 
+            else if (name.StartsWith("HomeFG") || name.StartsWith("Home3P") || name.StartsWith("HomeFT") || name.StartsWith("AwayFG") || name.StartsWith("Away3P") || name.StartsWith("AwayFT"))
+            {
+                textbox.MouseDoubleClick += new MouseEventHandler(PointsTextbox_MouseDoubleClick);
+                textbox.TextChanged += new EventHandler(PointTextBox_KeyPress);
+                textbox.Enter += new EventHandler(TextBox_enter);
+                textbox.Leave += new EventHandler(TextBox_leave);
+            }
+            else if (name.Contains("Number") || name.Contains("Name"))
+            {
+                textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
+                textbox.ForeColor = Color.LightGray;
+                textbox.TabStop = true;
+            }
+
+            return textbox.Left + textbox.Width + leftMargin;
+        }
+
+        private void TextBox_enter(object sender, EventArgs e)
+        {
+            if (tips.showCountTip)
+            {
+                TextBox textBox = (TextBox)sender;
+                tips.toolTip.Show(tips.tip, textBox, textBox.Width, -12, 3000);
+            }
+        }
+
+        private void TextBox_leave(object sender, EventArgs e)
         {
             TextBox textBox = (TextBox)sender;
             tips.toolTip.Hide(textBox);
@@ -74,6 +183,7 @@ namespace Basketball_Roster_Manager
             {
                 if (MessageBox.Show("The rosters data file was not found.  Create a new data file to maintain data?", "Create new file?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
+
                     // Verify folder exists
                     if (!Directory.Exists(dataFolder))
                     {
@@ -303,7 +413,7 @@ namespace Basketball_Roster_Manager
 
         private void FoulTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            tips.showFoulCountTip = false;
+            tips.showCountTip = false;
 
             TextBox t = (TextBox)sender;
             int fouls = 0;
@@ -318,6 +428,94 @@ namespace Basketball_Roster_Manager
             t.Text = fouls.ToString();
 
             label1.Focus();
+        }
+
+        private void PointsTextbox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            tips.showCountTip = false;
+
+            TextBox t = (TextBox)sender;
+            int points = 0;
+
+            try
+            {
+                points = int.Parse(t.Text);
+            }
+            catch { }
+
+            points++;
+            t.Text = points.ToString();
+
+            label1.Focus();
+        }
+
+        private void PlayerInCheckbox_Change(object sender, EventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+
+            if (cb.Checked)
+            {
+                TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
+                txtName.ForeColor = Color.Black;
+
+                TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
+                txtNumber.ForeColor = Color.Black;
+            }
+            else
+            {
+                TextBox txtName = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Name"), true)[0];
+                txtName.ForeColor = Color.LightGray;
+
+                TextBox txtNumber = (TextBox)Controls.Find(cb.Name.Replace("Entered", "Number"), true)[0];
+                txtNumber.ForeColor = Color.LightGray;
+            }
+        }
+
+        private void PointTextBox_KeyPress(object sender, EventArgs e)
+        {
+            TextBox t = (TextBox)sender;
+            string lineNumber = string.Empty;
+            string homeOrAway = string.Empty;
+
+            if (t.Name.StartsWith("Home"))
+            {
+                homeOrAway = "Home";
+            }
+            else
+            {
+                homeOrAway = "Away";
+            }
+
+            lineNumber = t.Name.Substring(6);
+
+            CheckBox ck = (CheckBox)Controls.Find(homeOrAway + "Entered" + lineNumber, true)[0];
+            ck.Checked = true;
+
+            try
+            {
+                TextBox txtFieldGoals = (TextBox)Controls.Find(homeOrAway + "FG" + lineNumber, true)[0];
+                TextBox txtThreePoints = (TextBox)Controls.Find(homeOrAway + "3P" + lineNumber, true)[0];
+                TextBox txtFreeThrows = (TextBox)Controls.Find(homeOrAway + "FT" + lineNumber, true)[0];
+
+                int intFG; int intTP; int intFT;
+
+                int.TryParse(txtFieldGoals.Text, out intFG);
+                int.TryParse(txtThreePoints.Text, out intTP);
+                int.TryParse(txtFreeThrows.Text, out intFT);
+
+                int pointsTotal = (intFG * 2) + (intTP * 3) + intFT;
+
+                TextBox txtTotal = (TextBox)Controls.Find(homeOrAway + "PointsTotal" + lineNumber, true)[0];
+                if (pointsTotal > 0)
+                {
+                    txtTotal.Text = pointsTotal.ToString();
+                }
+                else
+                {
+                    txtTotal.Text = string.Empty;
+                }
+            }
+            catch { }
         }
 
         private void FoulTextBox_KeyPress(object sender, EventArgs e)
@@ -412,7 +610,7 @@ namespace Basketball_Roster_Manager
         {
             int intTotal = 0;
 
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 TextBox t = (TextBox)Controls.Find(homeOrAway + "Foul" + firstOrSecond + i, true)[0];
                 int f = 0;
@@ -423,7 +621,12 @@ namespace Basketball_Roster_Manager
 
             TextBox total = (TextBox)Controls.Find(homeOrAway + "Foul" + firstOrSecond + "Total", true)[0];
 
-            if (intTotal <= 10)
+            if (intTotal == 0)
+            {
+                total.Text = string.Empty;
+                total.BackColor = SystemColors.Control;
+            }
+            else if (intTotal <= 10)
             {
                 total.Text = intTotal.ToString();
                 total.BackColor = SystemColors.Control;
@@ -522,7 +725,7 @@ namespace Basketball_Roster_Manager
         private void loadTeamMembers(object sender, EventArgs e)
         {
             // Upon team change, reset fouls and totals
-            resetFoulsAndActivePlayers(false);
+            resetForm(false);
 
             ComboBox cb = (ComboBox)sender;
             string selectedValue = ((ComboBoxItem)cb.SelectedItem).Value;
@@ -578,7 +781,7 @@ namespace Basketball_Roster_Manager
 
                 SqlCeDataReader dr = cmd.ExecuteReader();
 
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox jerseyNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
                     TextBox playerName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
@@ -622,7 +825,7 @@ namespace Basketball_Roster_Manager
             if ((HomeFoulSecondTotal.Text != string.Empty) && (HomeFoulSecondTotal.Text != "0")) { return true; }
             if ((AwayFoulSecondTotal.Text != string.Empty) && (AwayFoulSecondTotal.Text != "0")) { return true; }
 
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 if (((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked) { return true; }
                 if (((CheckBox)Controls.Find("AwayEntered" + i, true)[0]).Checked) { return true; }
@@ -642,7 +845,7 @@ namespace Basketball_Roster_Manager
             ComboBoxItem cbi = (ComboBoxItem)tsCboHalf.SelectedItem;
             if (cbi.Value == "1")
             {
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
@@ -670,7 +873,7 @@ namespace Basketball_Roster_Manager
             }
             else if (cbi.Value == "2")
             {
-                for (int i = 1; i <= 18; i++)
+                for (int i = 1; i <= 22; i++)
                 {
                     TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
                     TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
@@ -768,8 +971,8 @@ namespace Basketball_Roster_Manager
             cmd.CommandText = String.Format("Delete from Players where TeamID = '{0}'", teamID);
             cmd.ExecuteNonQuery();
 
-            //HomeNumber1 - 18, HomeName1 - 18
-            for (int i = 1; i <= 18; i++)
+            //HomeNumber1 - 22, HomeName1 - 22
+            for (int i = 1; i <= 22; i++)
             {
                 TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + i, true)[0];
                 TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + i, true)[0];
@@ -837,35 +1040,58 @@ namespace Basketball_Roster_Manager
 
         private void resetFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Reset all fouls and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                resetFoulsAndActivePlayers(true);
-            }
+            resetForm(true);
         }
 
-        private void resetFoulsAndActivePlayers(bool requestConfirmation)
+        private void resetForm(bool requestConfirmation)
         {
-            for (int i = 1; i <= 18; i++)
-            {
-                TextBox home1 = (TextBox)Controls.Find("HomeFoulFirst" + i, true)[0];
-                TextBox away1 = (TextBox)Controls.Find("AwayFoulFirst" + i, true)[0];
-                TextBox home2 = (TextBox)Controls.Find("HomeFoulSecond" + i, true)[0];
-                TextBox away2 = (TextBox)Controls.Find("AwayFoulSecond" + i, true)[0];
-                CheckBox homeIn = (CheckBox)Controls.Find("HomeEntered" + i, true)[0];
-                CheckBox awayIn = (CheckBox)Controls.Find("AwayEntered" + i, true)[0];
+            bool doIt = false;
 
-                home1.Text = "";
-                away1.Text = "";
-                home2.Text = "";
-                away2.Text = "";
-                homeIn.Checked = false;
-                awayIn.Checked = false;
+            if (requestConfirmation)
+            {
+                if (MessageBox.Show("Reset all fouls, points, and entered players?", "Reset form?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    doIt = true;
+                }
+            }
+            else
+            {
+                doIt = true;
+            }
+
+            if (doIt)
+            {
+                foreach (TextBox tb in groupHome.Controls.OfType<TextBox>())
+                {
+                    if (!tb.Name.Contains("Name") && !tb.Name.Contains("Number"))
+                    {
+                        tb.Text = "";
+                    }
+                }
+
+                foreach (CheckBox cb in groupHome.Controls.OfType<CheckBox>())
+                {
+                    cb.Checked = false;
+                }
+
+                foreach (TextBox tb in groupVisitor.Controls.OfType<TextBox>())
+                {
+                    if (!tb.Name.Contains("Name") && !tb.Name.Contains("Number"))
+                    {
+                        tb.Text = "";
+                    }
+                }
+
+                foreach (CheckBox cb in groupVisitor.Controls.OfType<CheckBox>())
+                {
+                    cb.Checked = false;
+                }
             }
         }
 
         private void resetAllForm()
         {
-            for (int i = 1; i <= 18; i++)
+            for (int i = 1; i <= 22; i++)
             {
                 ((CheckBox)Controls.Find("HomeEntered" + i, true)[0]).Checked = false;
                 ((TextBox)Controls.Find("HomeNumber" + i, true)[0]).Text = "";
@@ -1029,11 +1255,6 @@ namespace Basketball_Roster_Manager
                     File.Copy(openFileDialog1.FileName, dataPath, true);
                 }
             }
-        }
-
-        private void cboTeam1_DropDownClosed(object sender, EventArgs e)
-        {
-
         }
     }
 }

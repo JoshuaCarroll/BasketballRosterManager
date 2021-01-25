@@ -10,12 +10,14 @@ namespace Basketball_Roster_Manager
     class Tips
     {
         public ToolTip toolTip;
-        public bool showFoulCountTip;
+        public bool showCountTip;
+        public string tip;
 
         public Tips()
         {
             toolTip = new ToolTip();
-            showFoulCountTip = true;
+            showCountTip = true;
+            tip = "Tip: Double-click this field to add one to the current value.";
         }
     }
 }
