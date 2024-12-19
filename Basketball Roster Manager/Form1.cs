@@ -28,6 +28,7 @@ namespace Basketball_Roster_Manager
         private int mostRecentAwayTeamID = -1;
         private bool handleHomeTeamSelection = true;
         private bool handleAwayTeamSelection = true;
+        private int numberOfRows = 28;
 
         private Tips tips = new Tips();
 
@@ -55,8 +56,6 @@ namespace Basketball_Roster_Manager
 
         private void buildForm()
         {
-            int numberOfRows = 22;
-
             for (int i = 1; i <= numberOfRows; i++)
             {
                 int top = 94 + (28 * (i - 1));
@@ -73,17 +72,20 @@ namespace Basketball_Roster_Manager
         private void createLine(string namePrefix, int number, int top)
         {
             int left = 12;
+            int numberFieldWidth = 38;
+            int textFieldHeight = 44;
+            int nameFieldWidth = 340;
             
             left = createCheckbox(namePrefix + "Entered" + number, top, left);
-            left = createTextbox(namePrefix + "Number" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "Name" + number, top, left, 44, 265);
-            left = createTextbox(namePrefix + "FoulFirst" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "FoulSecond" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "FoulTotal" + number, top, left, 44, 38, true);
-            left = createTextbox(namePrefix + "FG" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "3P" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "FT" + number, top, left, 44, 38);
-            left = createTextbox(namePrefix + "PointsTotal" + number, top, left, 44, 38, true);
+            left = createTextbox(namePrefix + "Number" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "Name" + number, top, left, textFieldHeight, nameFieldWidth);
+            left = createTextbox(namePrefix + "FoulFirst" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "FoulSecond" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "FoulTotal" + number, top, left, textFieldHeight, numberFieldWidth, true);
+            left = createTextbox(namePrefix + "FG" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "3P" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "FT" + number, top, left, textFieldHeight, numberFieldWidth);
+            left = createTextbox(namePrefix + "PointsTotal" + number, top, left, textFieldHeight, numberFieldWidth, true);
         }
 
         /// <summary>
@@ -148,7 +150,14 @@ namespace Basketball_Roster_Manager
                 textbox.Enter += new EventHandler(TextBox_enter);
                 textbox.Leave += new EventHandler(TextBox_leave);
             }
-            else if (name.Contains("Number") || name.Contains("Name"))
+            else if (name.Contains("Number"))
+            {
+                textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
+                textbox.ContextMenuStrip = jerseyContextMenuStrip;
+                textbox.ForeColor = Color.LightGray;
+                textbox.TabStop = true;
+            }
+            else if (name.Contains("Name"))
             {
                 textbox.KeyPress += new KeyPressEventHandler(MarkDirty);
                 textbox.ForeColor = Color.LightGray;
@@ -1253,6 +1262,45 @@ namespace Basketball_Roster_Manager
                 if (MessageBox.Show("Are you sure you want to import this data file?\r\nThis will replace your current data file.  This action can not be undone.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                 {
                     File.Copy(openFileDialog1.FileName, dataPath, true);
+                }
+            }
+        }
+
+        private void pasteCSVToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string data = Clipboard.GetText().Replace("\n", "");
+            string[] arrData = data.Split('\r');
+
+            ToolStripItem menuItem = sender as ToolStripItem;
+            if (menuItem != null)
+            {
+                ContextMenuStrip owner = menuItem.Owner as ContextMenuStrip;
+                if (owner != null)
+                {
+                    Control sourceControl = owner.SourceControl;
+                    string homeOrAway = sourceControl.Name.Substring(0, 4);
+
+                    for (int i = 0; i < numberOfRows && i < arrData.Length; i++)
+                    {
+                        string[] values = arrData[i].Split('\t');
+
+                        TextBox txtNumber = (TextBox)Controls.Find(homeOrAway + "Number" + (i + 1).ToString(), true)[0];
+                        txtNumber.Text = values[0];
+
+                        TextBox txtName = (TextBox)Controls.Find(homeOrAway + "Name" + (i + 1).ToString(), true)[0];
+                        txtName.Text = "";
+                        for (int j = 1; j < values.Length; j++)
+                        {
+                            if (values[j].Trim() != "")
+                            {
+                                if (j > 1 && values[j].Trim() != "")
+                                {
+                                    txtName.Text += " - ";
+                                }
+                                txtName.Text += values[j].Trim();
+                            }
+                        }
+                    }
                 }
             }
         }
