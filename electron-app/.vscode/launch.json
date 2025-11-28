@@ -1,0 +1,62 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Basketball Roster Manager",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/main.js",
+      "args": ["--dev"],
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outputCapture": "std"
+    },
+    {
+      "name": "Launch Basketball Roster Manager (Production)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/main.js",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outputCapture": "std"
+    },
+    {
+      "name": "Debug Renderer Process",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "url": "http://localhost:*",
+      "webRoot": "${workspaceFolder}/src",
+      "timeout": 30000
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Main + Renderer",
+      "configurations": [
+        "Launch Basketball Roster Manager",
+        "Debug Renderer Process"
+      ]
+    }
+  ]
+}

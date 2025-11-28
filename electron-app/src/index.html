@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basketball Roster Manager</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Basketball Roster Manager</h1>
+        <div class="game-controls">
+          <div class="control-group">
+            <label for="league-select">League:</label>
+            <select id="league-select" class="select-input">
+              <option value="">Select League...</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="period-select">Period:</label>
+            <select id="period-select" class="select-input">
+              <option value="1">1st Half</option>
+              <option value="2">2nd Half</option>
+            </select>
+          </div>
+          <button id="new-league-btn" class="btn btn-secondary">New League</button>
+          <button id="swap-teams-btn" class="btn btn-primary">Swap Teams</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Team Setup -->
+      <section class="team-setup">
+        <div class="team-selector" id="home-team-section">
+          <h2>Home Team</h2>
+          <div class="team-controls">
+            <select id="home-team-select" class="select-input">
+              <option value="">Select Team...</option>
+            </select>
+            <button id="new-home-team-btn" class="btn btn-secondary">New Team</button>
+            <div class="team-color-indicator" id="home-team-color"></div>
+          </div>
+          <div class="team-fouls">
+            <span class="foul-label">Team Fouls: <span id="home-team-fouls">0</span></span>
+            <span class="bonus-indicator" id="home-bonus-indicator"></span>
+          </div>
+        </div>
+
+        <div class="team-selector" id="away-team-section">
+          <h2>Away Team</h2>
+          <div class="team-controls">
+            <select id="away-team-select" class="select-input">
+              <option value="">Select Team...</option>
+            </select>
+            <button id="new-away-team-btn" class="btn btn-secondary">New Team</button>
+            <div class="team-color-indicator" id="away-team-color"></div>
+          </div>
+          <div class="team-fouls">
+            <span class="foul-label">Team Fouls: <span id="away-team-fouls">0</span></span>
+            <span class="bonus-indicator" id="away-bonus-indicator"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Game Board -->
+      <section class="game-board">
+        <div class="team-roster" id="home-roster">
+          <div class="roster-header">
+            <h3>Home Team Roster</h3>
+            <button id="add-home-player-btn" class="btn btn-sm">Add Player</button>
+          </div>
+          <div class="roster-grid-header">
+            <div class="header-cell">In</div>
+            <div class="header-cell">#</div>
+            <div class="header-cell">Name</div>
+            <div class="header-cell">Fouls</div>
+            <div class="header-cell">FG</div>
+            <div class="header-cell">3P</div>
+            <div class="header-cell">FT</div>
+            <div class="header-cell">Pts</div>
+            <div class="header-cell">Actions</div>
+          </div>
+          <div id="home-players" class="roster-grid">
+            <!-- Player rows will be dynamically generated -->
+          </div>
+        </div>
+
+        <div class="team-roster" id="away-roster">
+          <div class="roster-header">
+            <h3>Away Team Roster</h3>
+            <button id="add-away-player-btn" class="btn btn-sm">Add Player</button>
+          </div>
+          <div class="roster-grid-header">
+            <div class="header-cell">In</div>
+            <div class="header-cell">#</div>
+            <div class="header-cell">Name</div>
+            <div class="header-cell">Fouls</div>
+            <div class="header-cell">FG</div>
+            <div class="header-cell">3P</div>
+            <div class="header-cell">FT</div>
+            <div class="header-cell">Pts</div>
+            <div class="header-cell">Actions</div>
+          </div>
+          <div id="away-players" class="roster-grid">
+            <!-- Player rows will be dynamically generated -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <!-- New League Modal -->
+      <div id="new-league-modal" class="modal">
+        <div class="modal-header">
+          <h2>New League</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="league-name">League Name:</label>
+            <input type="text" id="league-name" class="input-field" placeholder="Enter league name">
+          </div>
+          <div class="form-group">
+            <label for="foul-reset-period">Fouls Reset:</label>
+            <select id="foul-reset-period" class="select-input">
+              <option value="quarter">Every Quarter</option>
+              <option value="half">Every Half</option>
+              <option value="game">Never (Full Game)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bonus-fouls">Bonus Fouls:</label>
+            <input type="number" id="bonus-fouls" class="input-field" min="1" max="20" value="7">
+          </div>
+          <div class="form-group">
+            <label for="double-bonus-fouls">Double Bonus Fouls:</label>
+            <input type="number" id="double-bonus-fouls" class="input-field" min="1" max="20" value="10">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-league-btn" class="btn btn-secondary">Cancel</button>
+          <button id="save-league-btn" class="btn btn-primary">Save League</button>
+        </div>
+      </div>
+
+      <!-- New Team Modal -->
+      <div id="new-team-modal" class="modal">
+        <div class="modal-header">
+          <h2>New Team</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="team-name">Team Name:</label>
+            <input type="text" id="team-name" class="input-field" placeholder="Enter team name">
+          </div>
+          <div class="form-group">
+            <label for="team-color">Team Color:</label>
+            <div class="color-picker-group">
+              <input type="color" id="team-color" class="color-input" value="#000000">
+              <span id="team-color-preview" class="color-preview"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-team-btn" class="btn btn-secondary">Cancel</button>
+          <button id="save-team-btn" class="btn btn-primary">Save Team</button>
+        </div>
+      </div>
+
+      <!-- New Player Modal -->
+      <div id="new-player-modal" class="modal">
+        <div class="modal-header">
+          <h2>New Player</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="player-number">Jersey Number:</label>
+            <input type="text" id="player-number" class="input-field" placeholder="#" maxlength="3">
+          </div>
+          <div class="form-group">
+            <label for="player-name">Player Name:</label>
+            <input type="text" id="player-name" class="input-field" placeholder="Enter player name">
+          </div>
+          <div class="form-group">
+            <label for="player-class">Graduating Class (Optional):</label>
+            <input type="text" id="player-class" class="input-field" placeholder="e.g., 2025">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-player-btn" class="btn btn-secondary">Cancel</button>
+          <button id="save-player-btn" class="btn btn-primary">Save Player</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

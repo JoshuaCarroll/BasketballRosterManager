@@ -1,0 +1,74 @@
+{
+  "name": "basketball-roster-manager",
+  "version": "3.0.0",
+  "description": "Cross-platform Basketball Roster Manager for public address announcers",
+  "main": "src/main.js",
+  "author": "Joshua Carroll <joshua@carrollsportsmedia.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/JoshuaCarroll/BasketballRosterManager",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --publish=never"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  },
+  "build": {
+    "appId": "com.carrollsportsmedia.basketball-roster-manager",
+    "productName": "Basketball Roster Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.sports",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "category": "Game",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
