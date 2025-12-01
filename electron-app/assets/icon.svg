@@ -1,0 +1,14 @@
+<!-- Simple SVG Basketball Icon -->
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Basketball -->
+  <circle cx="128" cy="128" r="110" fill="#D2691E" stroke="#8B4513" stroke-width="4"/>
+  
+  <!-- Curved lines -->
+  <path d="M 18 128 Q 128 60 238 128" fill="none" stroke="#8B4513" stroke-width="3"/>
+  <path d="M 18 128 Q 128 196 238 128" fill="none" stroke="#8B4513" stroke-width="3"/>
+  <path d="M 128 18 Q 196 128 128 238" fill="none" stroke="#8B4513" stroke-width="3"/>
+  <path d="M 128 18 Q 60 128 128 238" fill="none" stroke="#8B4513" stroke-width="3"/>
+  
+  <!-- Highlight -->
+  <ellipse cx="100" cy="80" rx="20" ry="15" fill="#F4A460" opacity="0.7"/>
+</svg>
