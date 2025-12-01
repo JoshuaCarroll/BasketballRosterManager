@@ -12,6 +12,9 @@ class BasketballRosterManager {
     };
     this.editingPlayer = null;
     this.editingTeam = null;
+    this.editingLeague = null;
+    this.editingTeamId = null;
+    this.currentPlayers = { home: [], away: [] };
 
     this.init();
   }
@@ -181,11 +184,9 @@ class BasketballRosterManager {
       const players = await window.electronAPI.getPlayers(teamId);
       const container = document.getElementById(isHome ? 'home-players' : 'away-players');
       
-      // Sort players by jersey number
+      // Sort players by jersey number with custom logic
       players.sort((a, b) => {
-        const numA = parseInt(a.jersey_number) || 999;
-        const numB = parseInt(b.jersey_number) || 999;
-        return numA - numB;
+        return this.compareJerseyNumbers(a.jersey_number, b.jersey_number);
       });
 
       container.innerHTML = '';
@@ -200,12 +201,15 @@ class BasketballRosterManager {
         return;
       }
 
+      // Store players data for editing
+      const teamKey = isHome ? 'home' : 'away';
+      this.currentPlayers[teamKey] = players;
+      
       players.forEach(player => {
         this.createPlayerRow(player, isHome);
       });
 
       // Initialize game stats for this team
-      const teamKey = isHome ? 'home' : 'away';
       this.gameStats[teamKey] = {};
       players.forEach(player => {
         this.gameStats[teamKey][player.id] = {
@@ -247,7 +251,7 @@ class BasketballRosterManager {
     row.innerHTML = `
       <input type="checkbox" class="player-checkbox" ${stats.isCheckedIn ? 'checked' : ''}>
       <div class="player-number">${player.jersey_number}</div>
-      <div class="player-name" title="${player.name}">${player.name}</div>
+      <div class="player-name" title="${player.name}">${player.name}${player.description ? ' (' + player.description + ')' : ''}</div>
       <div class="player-stat foul-count ${this.getFoulClass(totalFouls)}">
         <input type="number" class="stat-input foul-input" value="${totalFouls}" min="0" max="20" readonly>
       </div>
@@ -264,8 +268,8 @@ class BasketballRosterManager {
         <input type="number" class="stat-input stat-calculated" value="${totalPoints}" readonly>
       </div>
       <div class="player-actions">
-        <button class="action-btn edit-btn" onclick="app.editPlayer(${player.id})">Edit</button>
-        <button class="action-btn delete-btn" onclick="app.deletePlayer(${player.id})">Delete</button>
+        <button class="action-btn edit-btn" data-action="edit" data-player-id="${player.id}">Edit</button>
+        <button class="action-btn delete-btn" data-action="delete" data-player-id="${player.id}">Delete</button>
       </div>
     `;
 
@@ -349,6 +353,43 @@ class BasketballRosterManager {
   }
 
   calculateTotalFouls(foulArray) {
+    // Individual player fouls are always cumulative (never reset)
+    return foulArray.reduce((sum, fouls) => sum + fouls, 0);
+  }
+
+  compareJerseyNumbers(jerseyA, jerseyB) {
+    // Custom sorting for jersey numbers: 0, 00, 1, 2, 3, 19, 22, HC
+    // Numbers first (with special handling for 0 vs 00), then alphabetic
+    
+    const isNumericA = /^\d+$/.test(jerseyA);
+    const isNumericB = /^\d+$/.test(jerseyB);
+    
+    // If both are numeric
+    if (isNumericA && isNumericB) {
+      const numA = parseInt(jerseyA);
+      const numB = parseInt(jerseyB);
+      
+      // Handle special case: 0 should come before 00
+      if (numA === 0 && numB === 0) {
+        // If both parse to 0, sort by string length (shorter first)
+        // "0" (length 1) comes before "00" (length 2)
+        return jerseyA.length - jerseyB.length;
+      }
+      
+      // Normal numeric sort
+      return numA - numB;
+    }
+    
+    // If one is numeric and one is not, numeric comes first
+    if (isNumericA && !isNumericB) return -1;
+    if (!isNumericA && isNumericB) return 1;
+    
+    // If both are non-numeric, sort alphabetically
+    return jerseyA.localeCompare(jerseyB);
+  }
+
+  calculateTeamFoulsForPeriod(foulArray) {
+    // Team fouls reset based on league rules
     const league = this.getCurrentLeague();
     if (!league) return foulArray.reduce((sum, fouls) => sum + fouls, 0);
 
@@ -370,7 +411,7 @@ class BasketballRosterManager {
     let totalFouls = 0;
 
     Object.values(teamStats).forEach(playerStats => {
-      totalFouls += this.calculateTotalFouls(playerStats.fouls);
+      totalFouls += this.calculateTeamFoulsForPeriod(playerStats.fouls);
     });
 
     return totalFouls;
@@ -438,7 +479,7 @@ class BasketballRosterManager {
     this.setupModalControls();
     
     // Action buttons
-    document.getElementById('new-league-btn').addEventListener('click', () => this.showModal('new-league-modal'));
+    document.getElementById('new-league-btn').addEventListener('click', () => this.showNewLeagueModal());
     document.getElementById('swap-teams-btn').addEventListener('click', () => this.swapTeams());
     document.getElementById('new-home-team-btn').addEventListener('click', () => {
       console.log('Home team button clicked');
@@ -450,6 +491,25 @@ class BasketballRosterManager {
     });
     document.getElementById('add-home-player-btn').addEventListener('click', () => this.showAddPlayerModal(true));
     document.getElementById('add-away-player-btn').addEventListener('click', () => this.showAddPlayerModal(false));
+    
+    // Edit buttons
+    document.getElementById('edit-league-btn').addEventListener('click', () => this.editLeague());
+    document.getElementById('edit-home-team-btn').addEventListener('click', () => this.editTeam(this.homeTeam));
+    document.getElementById('edit-away-team-btn').addEventListener('click', () => this.editTeam(this.awayTeam));
+    
+    // Player action buttons (edit/delete) using event delegation
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.action-btn[data-action]')) {
+        const action = e.target.dataset.action;
+        const playerId = e.target.dataset.playerId;
+        
+        if (action === 'edit') {
+          this.editPlayer(playerId);
+        } else if (action === 'delete') {
+          this.deletePlayer(playerId);
+        }
+      }
+    });
   }
 
   setupMenuHandlers() {
@@ -462,7 +522,7 @@ class BasketballRosterManager {
       window.electronAPI.onMenuAction((event, action) => {
         switch (action) {
           case 'new-league':
-            this.showModal('new-league-modal');
+            this.showNewLeagueModal();
             break;
           case 'new-team':
             this.showModal('new-team-modal');
@@ -471,7 +531,9 @@ class BasketballRosterManager {
             this.resetGame();
             break;
           case 'reset-fouls':
-            this.resetFouls();
+            // Individual player fouls are never reset during a game
+            // Team fouls automatically reset based on league rules
+            this.showNotification('Individual player fouls are not reset during games. Team fouls reset automatically based on league rules.', 'info');
             break;
           case 'swap-teams':
             this.swapTeams();
@@ -486,9 +548,11 @@ class BasketballRosterManager {
   async onLeagueChange() {
     const leagueSelect = document.getElementById('league-select');
     const selectedOption = leagueSelect.options[leagueSelect.selectedIndex];
+    const editLeagueBtn = document.getElementById('edit-league-btn');
     
     if (!selectedOption || !selectedOption.value) {
       this.currentLeague = null;
+      editLeagueBtn.style.display = 'none';
       return;
     }
 
@@ -499,6 +563,9 @@ class BasketballRosterManager {
       bonus_fouls: parseInt(selectedOption.dataset.bonusFouls),
       double_bonus_fouls: parseInt(selectedOption.dataset.doubleBonusFouls)
     };
+
+    // Show edit league button
+    editLeagueBtn.style.display = 'inline-block';
 
     // Update period options based on league
     this.updatePeriodOptions();
@@ -516,8 +583,11 @@ class BasketballRosterManager {
     const selectId = isHome ? 'home-team-select' : 'away-team-select';
     const select = document.getElementById(selectId);
     const selectedOption = select.options[select.selectedIndex];
+    const editBtnId = isHome ? 'edit-home-team-btn' : 'edit-away-team-btn';
+    const editBtn = document.getElementById(editBtnId);
     
     if (!selectedOption || !selectedOption.value) {
+      editBtn.style.display = 'none';
       return;
     }
 
@@ -531,6 +601,9 @@ class BasketballRosterManager {
     } else {
       this.awayTeam = { id: teamId, name: teamName, color: teamColor };
     }
+    
+    // Show edit button
+    editBtn.style.display = 'inline-block';
     
     // Update color indicator
     const colorElement = document.getElementById(isHome ? 'home-team-color' : 'away-team-color');
@@ -629,13 +702,26 @@ class BasketballRosterManager {
     }
 
     try {
-      await window.electronAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+      if (this.editingLeague) {
+        // Update existing league
+        await window.electronAPI.updateLeague(this.editingLeague, name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+        this.showNotification('League updated successfully', 'success');
+        this.editingLeague = null;
+      } else {
+        // Create new league
+        await window.electronAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+        this.showNotification('League created successfully', 'success');
+      }
+      
       await this.loadLeagues();
       this.hideModal();
-      this.showNotification('League created successfully', 'success');
+      
+      // Reset modal for next use
+      document.getElementById('league-modal-title').textContent = 'New League';
+      document.getElementById('save-league-btn').textContent = 'Create League';
     } catch (error) {
-      console.error('Failed to create league:', error);
-      this.showNotification('Failed to create league', 'error');
+      console.error('Failed to save league:', error);
+      this.showNotification('Failed to save league', 'error');
     }
   }
 
@@ -654,44 +740,74 @@ class BasketballRosterManager {
     }
 
     try {
-      await window.electronAPI.createTeam(this.currentLeague.id, name, color);
+      if (this.editingTeamId) {
+        // Update existing team
+        await window.electronAPI.updateTeam(this.editingTeamId, name, color);
+        
+        // Update local team data if it's currently selected
+        if (this.homeTeam && this.homeTeam.id === this.editingTeamId) {
+          this.homeTeam.name = name;
+          this.homeTeam.color = color;
+          document.getElementById('home-team-color').style.backgroundColor = color;
+        }
+        if (this.awayTeam && this.awayTeam.id === this.editingTeamId) {
+          this.awayTeam.name = name;
+          this.awayTeam.color = color;
+          document.getElementById('away-team-color').style.backgroundColor = color;
+        }
+        
+        this.showNotification('Team updated successfully', 'success');
+        this.editingTeamId = null;
+      } else {
+        // Create new team
+        await window.electronAPI.createTeam(this.currentLeague.id, name, color);
+        this.showNotification('Team created successfully', 'success');
+      }
+      
       await this.loadTeams(this.currentLeague.id);
       this.hideModal();
-      this.showNotification('Team created successfully', 'success');
+      
+      // Reset modal for next use
+      document.getElementById('team-modal-title').textContent = 'New Team';
+      document.getElementById('save-team-btn').textContent = 'Save Team';
     } catch (error) {
-      console.error('Failed to create team:', error);
-      this.showNotification('Failed to create team', 'error');
+      console.error('Failed to save team:', error);
+      this.showNotification('Failed to save team', 'error');
     }
   }
 
   async savePlayer() {
-    const number = document.getElementById('player-number').value.trim();
+    const number = document.getElementById('player-jersey').value.trim();
     const name = document.getElementById('player-name').value.trim();
-    const graduatingClass = document.getElementById('player-class').value.trim();
+    const description = document.getElementById('player-class').value.trim();
 
     if (!number || !name) {
       this.showNotification('Please enter jersey number and player name', 'error');
       return;
     }
 
-    const teamId = this.editingTeam;
-    if (!teamId) {
-      this.showNotification('No team selected', 'error');
-      return;
-    }
-
     try {
       if (this.editingPlayer) {
         // Update existing player
-        await window.electronAPI.updatePlayer(this.editingPlayer, number, name, graduatingClass);
+        await window.electronAPI.updatePlayer(this.editingPlayer, number, name, description);
+        
+        // Reload both rosters to ensure the updated player appears correctly
+        if (this.homeTeam) await this.loadPlayers(this.homeTeam.id, true);
+        if (this.awayTeam) await this.loadPlayers(this.awayTeam.id, false);
       } else {
-        // Create new player
-        await window.electronAPI.createPlayer(teamId, number, name, graduatingClass);
+        // Create new player - need teamId for this
+        const teamId = this.editingTeam;
+        if (!teamId) {
+          this.showNotification('No team selected', 'error');
+          return;
+        }
+        
+        await window.electronAPI.createPlayer(teamId, number, name, description);
+        
+        // Reload the appropriate roster
+        const isHome = teamId === (this.homeTeam ? this.homeTeam.id : null);
+        await this.loadPlayers(teamId, isHome);
       }
-
-      // Reload the appropriate roster
-      const isHome = teamId === (this.homeTeam ? this.homeTeam.id : null);
-      await this.loadPlayers(teamId, isHome);
       
       this.hideModal();
       this.showNotification(this.editingPlayer ? 'Player updated successfully' : 'Player created successfully', 'success');
@@ -699,6 +815,52 @@ class BasketballRosterManager {
       console.error('Failed to save player:', error);
       this.showNotification('Failed to save player', 'error');
     }
+  }
+
+  // ===== EDIT OPERATIONS =====
+  editLeague() {
+    if (!this.currentLeague) {
+      this.showNotification('No league selected', 'error');
+      return;
+    }
+
+    // Set modal title and button text for editing
+    document.getElementById('league-modal-title').textContent = 'Edit League';
+    document.getElementById('save-league-btn').textContent = 'Update League';
+
+    // Populate form with current league data
+    document.getElementById('league-name').value = this.currentLeague.name;
+    document.getElementById('foul-reset-period').value = this.currentLeague.foul_reset_period;
+    document.getElementById('bonus-fouls').value = this.currentLeague.bonus_fouls;
+    document.getElementById('double-bonus-fouls').value = this.currentLeague.double_bonus_fouls;
+
+    // Set editing flag
+    this.editingLeague = this.currentLeague.id;
+
+    this.showModal('new-league-modal');
+  }
+
+  editTeam(team) {
+    if (!team) {
+      this.showNotification('No team selected', 'error');
+      return;
+    }
+
+    // Set modal title and button text for editing
+    document.getElementById('team-modal-title').textContent = 'Edit Team';
+    document.getElementById('save-team-btn').textContent = 'Update Team';
+
+    // Populate form with current team data
+    document.getElementById('team-name').value = team.name;
+    document.getElementById('team-color').value = team.color;
+
+    // Update color preview
+    document.getElementById('team-color-preview').style.backgroundColor = team.color;
+
+    // Set editing flag
+    this.editingTeamId = team.id;
+
+    this.showModal('new-team-modal');
   }
 
   // ===== UTILITY METHODS =====
@@ -711,7 +873,34 @@ class BasketballRosterManager {
 
     this.editingTeam = team.id;
     this.editingPlayer = null;
+    
+    // Reset modal title and button text for new player
+    document.getElementById('player-modal-title').textContent = 'New Player';
+    document.getElementById('save-player-btn').textContent = 'Save Player';
+    
+    // Clear form for new player
+    document.getElementById('player-jersey').value = '';
+    document.getElementById('player-name').value = '';
+    document.getElementById('player-class').value = '';
+    
     this.showModal('new-player-modal');
+  }
+
+  showNewLeagueModal() {
+    // Reset modal title and button text for new league
+    document.getElementById('league-modal-title').textContent = 'New League';
+    document.getElementById('save-league-btn').textContent = 'Create League';
+    
+    // Clear editing flag
+    this.editingLeague = null;
+    
+    // Clear form fields
+    document.getElementById('league-name').value = '';
+    document.getElementById('foul-reset-period').value = 'half';
+    document.getElementById('bonus-fouls').value = '7';
+    document.getElementById('double-bonus-fouls').value = '10';
+    
+    this.showModal('new-league-modal');
   }
 
   showNewTeamModal() {
@@ -723,6 +912,16 @@ class BasketballRosterManager {
     }
     
     console.log('Opening new team modal');
+    
+    // Reset modal title and button text for new team
+    document.getElementById('team-modal-title').textContent = 'New Team';
+    document.getElementById('save-team-btn').textContent = 'Save Team';
+    
+    // Clear editing flag
+    this.editingTeamId = null;
+    
+    // Clear form fields
+    document.getElementById('team-name').value = '';
     
     // Reset color picker to default
     const colorInput = document.getElementById('team-color');
@@ -740,15 +939,60 @@ class BasketballRosterManager {
 
   editPlayer(playerId) {
     // Find the player data and populate the form
-    // This would need access to the full player data
-    this.editingPlayer = playerId;
-    this.showModal('new-player-modal');
+    let player = null;
+    for (const players of [this.currentPlayers.home, this.currentPlayers.away]) {
+      player = players.find(p => p.id === parseInt(playerId));
+      if (player) break;
+    }
     
-    // TODO: Pre-populate form with existing player data
+    if (player) {
+      this.editingPlayer = playerId;
+      
+      // Determine which team this player belongs to
+      const isHomeTeamPlayer = this.currentPlayers.home.some(p => p.id === parseInt(playerId));
+      this.editingTeam = isHomeTeamPlayer ? 
+        (this.homeTeam ? this.homeTeam.id : null) : 
+        (this.awayTeam ? this.awayTeam.id : null);
+      
+      // Update modal title and button text
+      document.getElementById('player-modal-title').textContent = 'Edit Player';
+      document.getElementById('save-player-btn').textContent = 'Update Player';
+      
+      // Populate form with existing data and ensure fields are editable
+      const jerseyField = document.getElementById('player-jersey');
+      const nameField = document.getElementById('player-name');
+      const classField = document.getElementById('player-class');
+      
+      if (jerseyField) {
+        jerseyField.readOnly = false;
+        jerseyField.disabled = false;
+        jerseyField.value = player.jersey_number;
+      }
+      if (nameField) {
+        nameField.readOnly = false;
+        nameField.disabled = false;
+        nameField.value = player.name;
+      }
+      if (classField) {
+        classField.readOnly = false;
+        classField.disabled = false;
+        classField.value = player.description || '';
+      }
+      
+      this.showModal('new-player-modal');
+    }
   }
 
   async deletePlayer(playerId) {
-    if (!confirm('Are you sure you want to delete this player?')) {
+    // Find the player data to show their name in confirmation
+    let player = null;
+    for (const players of [this.currentPlayers.home, this.currentPlayers.away]) {
+      player = players.find(p => p.id === parseInt(playerId));
+      if (player) break;
+    }
+    
+    const playerName = player ? player.name : 'this player';
+    if (!confirm(`Are you sure you want to delete ${playerName}? This action cannot be undone.`)) {
       return;
     }
 
@@ -814,32 +1058,12 @@ class BasketballRosterManager {
   }
 
   resetFouls() {
-    const league = this.getCurrentLeague();
-    if (!league) return;
-
-    // Reset fouls based on league rules
-    Object.keys(this.gameStats.home).forEach(playerId => {
-      if (league.foul_reset_period === 'quarter') {
-        this.gameStats.home[playerId].fouls[this.currentPeriod - 1] = 0;
-      } else if (league.foul_reset_period === 'half') {
-        const halfIndex = this.currentPeriod <= 2 ? 0 : 2;
-        this.gameStats.home[playerId].fouls[halfIndex] = 0;
-        this.gameStats.home[playerId].fouls[halfIndex + 1] = 0;
-      }
-    });
-
-    Object.keys(this.gameStats.away).forEach(playerId => {
-      if (league.foul_reset_period === 'quarter') {
-        this.gameStats.away[playerId].fouls[this.currentPeriod - 1] = 0;
-      } else if (league.foul_reset_period === 'half') {
-        const halfIndex = this.currentPeriod <= 2 ? 0 : 2;
-        this.gameStats.away[playerId].fouls[halfIndex] = 0;
-        this.gameStats.away[playerId].fouls[halfIndex + 1] = 0;
-      }
-    });
-
+    // Note: Individual player fouls never reset during a game
+    // Team foul counts automatically reset based on the league's foul_reset_period
+    // This function is kept for potential future use but doesn't modify player fouls
+    
     this.updateAllFoulDisplays();
-    this.showNotification('Fouls reset successfully', 'success');
+    this.showNotification('Team foul counts updated for current period', 'success');
   }
 
   updatePeriodOptions() {

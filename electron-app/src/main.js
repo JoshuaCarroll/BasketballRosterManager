@@ -173,7 +173,7 @@ function createMenu() {
           }
         },
         {
-          label: 'Reset Fouls',
+          label: 'Team Foul Info',
           accelerator: 'CmdOrCtrl+R',
           click: () => {
             mainWindow.webContents.send('menu-action', 'reset-fouls');
@@ -261,6 +261,9 @@ function initializeDatabase() {
         return;
       }
       console.log('Connected to SQLite database');
+      
+      // Run migrations after successful connection
+      runMigrations();
     });
   
   // Create tables if they don't exist
@@ -288,7 +291,7 @@ function initializeDatabase() {
       team_id INTEGER NOT NULL,
       jersey_number TEXT NOT NULL,
       name TEXT NOT NULL,
-      graduating_class TEXT,
+      description TEXT,
       is_active INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (team_id) REFERENCES teams (id)
@@ -363,6 +366,60 @@ function initializeDatabase() {
   }
 }
 
+// Database migration function
+function runMigrations() {
+  console.log('Running database migrations...');
+  
+  // Migration: Change graduating_class column to description
+  db.serialize(() => {
+    // Check if the old column exists
+    db.all("PRAGMA table_info(players)", (err, columns) => {
+      if (err) {
+        console.error('Error checking table info:', err);
+        return;
+      }
+      
+      const hasGraduatingClass = columns.some(col => col.name === 'graduating_class');
+      const hasDescription = columns.some(col => col.name === 'description');
+      
+      if (hasGraduatingClass && !hasDescription) {
+        console.log('Migrating graduating_class to description...');
+        
+        // Add the new description column
+        db.run("ALTER TABLE players ADD COLUMN description TEXT", (err) => {
+          if (err) {
+            console.error('Error adding description column:', err);
+            return;
+          }
+          
+          // Copy data from graduating_class to description
+          db.run("UPDATE players SET description = graduating_class WHERE graduating_class IS NOT NULL", (err) => {
+            if (err) {
+              console.error('Error copying data to description column:', err);
+              return;
+            }
+            
+            // Note: SQLite doesn't support dropping columns directly, 
+            // but we can leave the old column for compatibility
+            console.log('Migration completed: graduating_class -> description');
+          });
+        });
+      } else if (!hasDescription) {
+        // If neither column exists, add description column
+        db.run("ALTER TABLE players ADD COLUMN description TEXT", (err) => {
+          if (err) {
+            console.error('Error adding description column:', err);
+          } else {
+            console.log('Added description column to players table');
+          }
+        });
+      } else {
+        console.log('Database schema is up to date');
+      }
+    });
+  });
+}
+
 // Database API methods (using Promises for async operations)
 const dbAPI = {
   getLeagues: () => {
@@ -387,8 +444,7 @@ const dbAPI = {
     return new Promise((resolve, reject) => {
       db.all(`
         SELECT * FROM players 
-        WHERE team_id = ? AND is_active = 1 
-        ORDER BY CAST(jersey_number AS INTEGER)
+        WHERE team_id = ? AND is_active = 1
       `, [teamId], (err, rows) => {
         if (err) reject(err);
         else resolve(rows || []);
@@ -421,7 +477,7 @@ const dbAPI = {
   createPlayer: (teamId, jerseyNumber, name, graduatingClass) => {
     return new Promise((resolve, reject) => {
       db.run(`
-        INSERT INTO players (team_id, jersey_number, name, graduating_class) 
+        INSERT INTO players (team_id, jersey_number, name, description) 
         VALUES (?, ?, ?, ?)
       `, [teamId, jerseyNumber, name, graduatingClass || ''], function(err) {
         if (err) reject(err);
@@ -434,9 +490,35 @@ const dbAPI = {
     return new Promise((resolve, reject) => {
       db.run(`
         UPDATE players 
-        SET jersey_number = ?, name = ?, graduating_class = ? 
+        SET jersey_number = ?, name = ?, description = ? 
         WHERE id = ?
       `, [jerseyNumber, name, graduatingClass || '', playerId], function(err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
+      });
+    });
+  },
+
+  updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+    return new Promise((resolve, reject) => {
+      db.run(`
+        UPDATE leagues 
+        SET name = ?, foul_reset_period = ?, bonus_fouls = ?, double_bonus_fouls = ? 
+        WHERE id = ?
+      `, [name, foulResetPeriod, bonusFouls, doubleBonusFouls, leagueId], function(err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
+      });
+    });
+  },
+
+  updateTeam: (teamId, name, color) => {
+    return new Promise((resolve, reject) => {
+      db.run(`
+        UPDATE teams 
+        SET name = ?, color = ? 
+        WHERE id = ?
+      `, [name, color, teamId], function(err) {
         if (err) reject(err);
         else resolve({ lastID: this.lastID, changes: this.changes });
       });
@@ -476,9 +558,14 @@ function setupIPC() {
   
   ipcMain.handle('db:getPlayers', async (_, teamId) => {
     try {
-      return await dbAPI.getPlayers(teamId);
+      console.log('Getting players for team ID:', teamId);
+      const players = await dbAPI.getPlayers(teamId);
+      console.log('Found players:', players.length);
+      return players;
     } catch (error) {
-      console.error('Error getting players:', error);
+      console.error('Error getting players for team', teamId, ':', error);
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
       throw error;
     }
   });
@@ -517,6 +604,24 @@ function setupIPC() {
       return await dbAPI.updatePlayer(playerId, jerseyNumber, name, graduatingClass);
     } catch (error) {
       console.error('Error updating player:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db:updateLeague', async (_, leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+    try {
+      return await dbAPI.updateLeague(leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+    } catch (error) {
+      console.error('Error updating league:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db:updateTeam', async (_, teamId, name, color) => {
+    try {
+      return await dbAPI.updateTeam(teamId, name, color);
+    } catch (error) {
+      console.error('Error updating team:', error);
       throw error;
     }
   });

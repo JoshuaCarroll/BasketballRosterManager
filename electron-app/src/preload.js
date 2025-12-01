@@ -17,11 +17,15 @@ try {
       ipcRenderer.invoke('db:createLeague', name, foulResetPeriod, bonusFouls, doubleBonusFouls),
     createTeam: (leagueId, name, color) => 
       ipcRenderer.invoke('db:createTeam', leagueId, name, color),
-    createPlayer: (teamId, jerseyNumber, name, graduatingClass) =>
-      ipcRenderer.invoke('db:createPlayer', teamId, jerseyNumber, name, graduatingClass),
+    createPlayer: (teamId, jerseyNumber, name, description) =>
+      ipcRenderer.invoke('db:createPlayer', teamId, jerseyNumber, name, description),
       
-    updatePlayer: (playerId, jerseyNumber, name, graduatingClass) =>
-      ipcRenderer.invoke('db:updatePlayer', playerId, jerseyNumber, name, graduatingClass),
+    updatePlayer: (playerId, jerseyNumber, name, description) =>
+      ipcRenderer.invoke('db:updatePlayer', playerId, jerseyNumber, name, description),
+    updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) =>
+      ipcRenderer.invoke('db:updateLeague', leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls),
+    updateTeam: (teamId, name, color) =>
+      ipcRenderer.invoke('db:updateTeam', teamId, name, color),
       
     deletePlayer: (playerId) => ipcRenderer.invoke('db:deletePlayer', playerId),
     
