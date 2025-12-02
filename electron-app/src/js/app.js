@@ -702,6 +702,14 @@ class BasketballRosterManager {
     document.getElementById('save-league-btn').addEventListener('click', () => this.saveLeague());
     document.getElementById('save-team-btn').addEventListener('click', () => this.saveTeam());
     document.getElementById('save-player-btn').addEventListener('click', () => this.savePlayer());
+    
+    // Add Enter key support for player modal
+    document.getElementById('new-player-modal').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.savePlayer();
+      }
+    });
 
     // Color picker - initialize and add event listener
     const colorInput = document.getElementById('team-color');
@@ -875,8 +883,19 @@ class BasketballRosterManager {
         await this.loadPlayers(teamId, isHome);
       }
       
-      this.hideModal();
-      this.showNotification(this.editingPlayer ? 'Player updated successfully' : 'Player created successfully', 'success');
+      // Check if 'Add another player' is checked and we're creating a new player
+      const addAnother = document.getElementById('add-another-player').checked;
+      const isCreating = !this.editingPlayer;
+      
+      if (addAnother && isCreating) {
+        // Reset form but keep modal open
+        this.resetPlayerForm();
+        document.getElementById('player-jersey').focus();
+        this.showNotification('Player created successfully. Add another player.', 'success');
+      } else {
+        this.hideModal();
+        this.showNotification(this.editingPlayer ? 'Player updated successfully' : 'Player created successfully', 'success');
+      }
     } catch (error) {
       console.error('Failed to save player:', error);
       this.showNotification('Failed to save player', 'error');
@@ -948,8 +967,23 @@ class BasketballRosterManager {
     document.getElementById('player-jersey').value = '';
     document.getElementById('player-name').value = '';
     document.getElementById('player-class').value = '';
+    document.getElementById('add-another-player').checked = false;
+    
+    // Show 'Add another player' checkbox when adding new player
+    const addAnotherGroup = document.getElementById('add-another-player').closest('.form-group');
+    addAnotherGroup.style.display = 'block';
     
     this.showModal('new-player-modal');
+    // Focus on jersey number field
+    setTimeout(() => document.getElementById('player-jersey').focus(), 100);
+  }
+
+  resetPlayerForm() {
+    // Clear form fields
+    document.getElementById('player-jersey').value = '';
+    document.getElementById('player-name').value = '';
+    document.getElementById('player-class').value = '';
+    // Keep the 'Add another player' checkbox state as is
   }
 
   showNewLeagueModal() {
@@ -1045,7 +1079,13 @@ class BasketballRosterManager {
         classField.value = player.description || '';
       }
       
+      // Hide 'Add another player' checkbox when editing
+      const addAnotherGroup = document.getElementById('add-another-player').closest('.form-group');
+      addAnotherGroup.style.display = 'none';
+      
       this.showModal('new-player-modal');
+      // Focus on jersey number field
+      setTimeout(() => document.getElementById('player-jersey').focus(), 100);
     }
   }
 

@@ -360,6 +360,19 @@
   outline: none;
 }
 
+/* Checkbox Input Styling */
+.checkbox-input {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.form-group label:has(.checkbox-input) {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   :root {
