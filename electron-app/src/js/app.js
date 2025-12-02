@@ -142,6 +142,12 @@ class BasketballRosterManager {
         option.dataset.doubleBonusFouls = league.double_bonus_fouls;
         leagueSelect.appendChild(option);
       });
+      
+      // Add create new league option
+      const createOption = document.createElement('option');
+      createOption.value = 'CREATE_NEW';
+      createOption.textContent = '* Create new league';
+      leagueSelect.appendChild(createOption);
 
       // Auto-select first league if available
       if (leagues.length > 0) {
@@ -510,7 +516,7 @@ class BasketballRosterManager {
     this.setupModalControls();
     
     // Action buttons
-    document.getElementById('new-league-btn').addEventListener('click', () => this.showNewLeagueModal());
+    // New league option is now in the dropdown
     document.getElementById('swap-teams-btn').addEventListener('click', () => this.swapTeams());
     document.getElementById('new-home-team-btn').addEventListener('click', () => {
       console.log('Home team button clicked');
@@ -584,6 +590,17 @@ class BasketballRosterManager {
     if (!selectedOption || !selectedOption.value) {
       this.currentLeague = null;
       editLeagueBtn.style.display = 'none';
+      return;
+    }
+    
+    // Handle create new league option
+    if (selectedOption.value === 'CREATE_NEW') {
+      // Reset selection to default
+      leagueSelect.value = '';
+      this.currentLeague = null;
+      editLeagueBtn.style.display = 'none';
+      // Show new league modal
+      this.showNewLeagueModal();
       return;
     }
 

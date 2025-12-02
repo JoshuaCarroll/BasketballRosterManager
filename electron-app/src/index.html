@@ -13,23 +13,21 @@
     <!-- Header -->
     <header class="app-header">
       <div class="header-content">
-        <h1>Basketball Roster Manager</h1>
-        <div class="game-controls">
-          <div class="control-group">
-            <label for="league-select">League:</label>
-            <select id="league-select" class="select-input">
+        <div class="header-left">
+          <h1>Basketball Roster Manager</h1>
+          <div class="header-controls">
+            <select id="league-select" class="compact-select">
               <option value="">Select League...</option>
             </select>
-            <button id="edit-league-btn" class="btn btn-secondary" style="display: none;">...</button>
-          </div>
-          <div class="control-group">
-            <label for="period-select">Period:</label>
-            <select id="period-select" class="select-input">
+            <button id="edit-league-btn" class="btn btn-icon" style="display: none;" title="Edit League">⚙️</button>
+            <span class="separator">|</span>
+            <select id="period-select" class="compact-select">
               <option value="1">1st Half</option>
               <option value="2">2nd Half</option>
             </select>
           </div>
-          <button id="new-league-btn" class="btn btn-secondary">New League</button>
+        </div>
+        <div class="header-actions">
           <button id="swap-teams-btn" class="btn btn-primary">Swap Teams</button>
         </div>
       </div>
