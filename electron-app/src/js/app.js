@@ -170,15 +170,21 @@ class BasketballRosterManager {
       const homeSelect = document.getElementById('home-team-select');
       const awaySelect = document.getElementById('away-team-select');
       
-      const defaultOption = '<option value="">Select Team...</option>';
-      homeSelect.innerHTML = defaultOption;
-      awaySelect.innerHTML = defaultOption;
+      const homeDefaultOption = '<option value="">Select Home Team...</option>';
+      const awayDefaultOption = '<option value="">Select Away Team...</option>';
+      homeSelect.innerHTML = homeDefaultOption;
+      awaySelect.innerHTML = awayDefaultOption;
       
       teams.forEach(team => {
         const option = `<option value="${team.id}" data-color="${team.color}">${team.name}</option>`;
         homeSelect.innerHTML += option;
         awaySelect.innerHTML += option;
       });
+      
+      // Add create new team options
+      const createOption = '<option value="CREATE_NEW">* Create new team</option>';
+      homeSelect.innerHTML += createOption;
+      awaySelect.innerHTML += createOption;
     } catch (error) {
       console.error('Failed to load teams:', error);
       this.showNotification('Failed to load teams', 'error');
@@ -516,16 +522,8 @@ class BasketballRosterManager {
     this.setupModalControls();
     
     // Action buttons
-    // New league option is now in the dropdown
+    // New league and team options are now in the dropdowns
     document.getElementById('swap-teams-btn').addEventListener('click', () => this.swapTeams());
-    document.getElementById('new-home-team-btn').addEventListener('click', () => {
-      console.log('Home team button clicked');
-      this.showNewTeamModal();
-    });
-    document.getElementById('new-away-team-btn').addEventListener('click', () => {
-      console.log('Away team button clicked');
-      this.showNewTeamModal();
-    });
     document.getElementById('add-home-player-btn').addEventListener('click', () => this.showAddPlayerModal(true));
     document.getElementById('add-away-player-btn').addEventListener('click', () => this.showAddPlayerModal(false));
     
@@ -621,9 +619,11 @@ class BasketballRosterManager {
     // Load teams for this league
     await this.loadTeams(this.currentLeague.id);
     
-    // Clear team selections
+    // Clear team selections and hide edit buttons
     document.getElementById('home-team-select').value = '';
     document.getElementById('away-team-select').value = '';
+    document.getElementById('edit-home-team-btn').style.display = 'none';
+    document.getElementById('edit-away-team-btn').style.display = 'none';
     this.clearRosters();
   }
 
@@ -636,6 +636,20 @@ class BasketballRosterManager {
     
     if (!selectedOption || !selectedOption.value) {
       editBtn.style.display = 'none';
+      this.clearRosterForTeam(isHome);
+      return;
+    }
+    
+    // Handle create new team option
+    if (selectedOption.value === 'CREATE_NEW') {
+      // Reset selection to default
+      select.value = '';
+      editBtn.style.display = 'none';
+      this.clearRosterForTeam(isHome);
+      // Set current team side for the modal
+      this.currentTeamSide = isHome;
+      // Show new team modal
+      this.showNewTeamModal();
       return;
     }
 
@@ -1168,6 +1182,17 @@ class BasketballRosterManager {
     document.getElementById('away-bonus-indicator').textContent = '';
     document.getElementById('home-bonus-indicator').className = 'bonus-indicator';
     document.getElementById('away-bonus-indicator').className = 'bonus-indicator';
+  }
+
+  clearRosterForTeam(isHome) {
+    const playersId = isHome ? 'home-players' : 'away-players';
+    const teamFoulsId = isHome ? 'home-team-fouls' : 'away-team-fouls';
+    const bonusIndicatorId = isHome ? 'home-bonus-indicator' : 'away-bonus-indicator';
+    
+    document.getElementById(playersId).innerHTML = '';
+    document.getElementById(teamFoulsId).textContent = '0';
+    document.getElementById(bonusIndicatorId).textContent = '';
+    document.getElementById(bonusIndicatorId).className = 'bonus-indicator';
   }
 
   getCurrentLeague() {
