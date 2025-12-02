@@ -253,7 +253,7 @@ class BasketballRosterManager {
       <div class="player-number">${player.jersey_number}</div>
       <div class="player-name" title="${player.name}">${player.name}${player.description ? ' (' + player.description + ')' : ''}</div>
       <div class="player-stat foul-count ${this.getFoulClass(totalFouls)}">
-        <input type="number" class="stat-input foul-input" value="${totalFouls}" min="0" max="20" readonly>
+        <input type="number" class="stat-input foul-input" value="${totalFouls}" min="0" max="20">
       </div>
       <div class="player-stat">
         <input type="number" class="stat-input" value="${stats.fieldGoals}" min="0" data-stat="fieldGoals">
@@ -312,12 +312,23 @@ class BasketballRosterManager {
       });
     });
 
-    // Foul input - double-click to add foul
+    // Foul input - double-click to add foul, change to set foul manually
     foulInput.addEventListener('dblclick', (e) => {
       const playerId = parseInt(row.dataset.playerId);
       const teamKey = row.dataset.teamSide;
       
       this.addFoul(playerId, teamKey);
+      this.updatePlayerFoulDisplay(row);
+      this.updateTeamFoulDisplay(teamKey === 'home');
+    });
+
+    // Foul input - manual change event
+    foulInput.addEventListener('change', (e) => {
+      const playerId = parseInt(row.dataset.playerId);
+      const teamKey = row.dataset.teamSide;
+      const newFoulCount = parseInt(e.target.value) || 0;
+      
+      this.setPlayerFouls(playerId, teamKey, newFoulCount);
       this.updatePlayerFoulDisplay(row);
       this.updateTeamFoulDisplay(teamKey === 'home');
     });
@@ -349,6 +360,26 @@ class BasketballRosterManager {
     
     if (periodIndex >= 0 && periodIndex < 4) {
       stats.fouls[periodIndex]++;
+    }
+  }
+
+  setPlayerFouls(playerId, teamKey, totalFouls) {
+    const stats = this.gameStats[teamKey][playerId];
+    const currentPeriodIndex = this.currentPeriod - 1;
+    
+    // Ensure totalFouls is non-negative
+    totalFouls = Math.max(0, totalFouls);
+    
+    // Reset all fouls to 0 first
+    stats.fouls = [0, 0, 0, 0];
+    
+    // Put all fouls in the current period for simplicity
+    // This approach makes it easy to track manual edits
+    if (currentPeriodIndex >= 0 && currentPeriodIndex < 4) {
+      stats.fouls[currentPeriodIndex] = totalFouls;
+    } else {
+      // If no valid period, put fouls in period 1
+      stats.fouls[0] = totalFouls;
     }
   }
 

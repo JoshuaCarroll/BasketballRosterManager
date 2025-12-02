@@ -20,7 +20,7 @@
             <select id="league-select" class="select-input">
               <option value="">Select League...</option>
             </select>
-            <button id="edit-league-btn" class="btn btn-secondary" style="display: none;">Edit League</button>
+            <button id="edit-league-btn" class="btn btn-secondary" style="display: none;">...</button>
           </div>
           <div class="control-group">
             <label for="period-select">Period:</label>
@@ -49,10 +49,6 @@
             <button id="edit-home-team-btn" class="btn btn-secondary" style="display: none;">Edit Team</button>
             <div class="team-color-indicator" id="home-team-color"></div>
           </div>
-          <div class="team-fouls">
-            <span class="foul-label">Team Fouls: <span id="home-team-fouls">0</span></span>
-            <span class="bonus-indicator" id="home-bonus-indicator"></span>
-          </div>
         </div>
 
         <div class="team-selector" id="away-team-section">
@@ -65,10 +61,6 @@
             <button id="edit-away-team-btn" class="btn btn-secondary" style="display: none;">Edit Team</button>
             <div class="team-color-indicator" id="away-team-color"></div>
           </div>
-          <div class="team-fouls">
-            <span class="foul-label">Team Fouls: <span id="away-team-fouls">0</span></span>
-            <span class="bonus-indicator" id="away-bonus-indicator"></span>
-          </div>
         </div>
       </section>
 
@@ -77,6 +69,10 @@
         <div class="team-roster" id="home-roster">
           <div class="roster-header">
             <h3>Home Team Roster</h3>
+            <div class="team-fouls">
+              <span class="foul-label">Team Fouls: <span id="home-team-fouls">0</span></span>
+              <span class="bonus-indicator" id="home-bonus-indicator"></span>
+            </div>
             <button id="add-home-player-btn" class="btn btn-sm">Add Player</button>
           </div>
           <div class="roster-grid-header">
@@ -98,6 +94,10 @@
         <div class="team-roster" id="away-roster">
           <div class="roster-header">
             <h3>Away Team Roster</h3>
+            <div class="team-fouls">
+              <span class="foul-label">Team Fouls: <span id="away-team-fouls">0</span></span>
+              <span class="bonus-indicator" id="away-bonus-indicator"></span>
+          </div>
             <button id="add-away-player-btn" class="btn btn-sm">Add Player</button>
           </div>
           <div class="roster-grid-header">
