@@ -20,7 +20,7 @@
     "build:simple": "npm run pack && powershell -Command \"Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath 'dist/Basketball-Roster-Manager-v3.0.0-win64.zip' -Force\""
   },
   "devDependencies": {
-    "electron": "^28.0.0",
+    "electron": "^35.7.5",
     "electron-builder": "^24.6.4",
     "electron-rebuild": "^3.2.9"
   },
