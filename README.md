@@ -1,5 +1,4 @@
 # Basketball Roster Manager v3.0 - Cross-Platform Edition
-=========================
 
 As an NCAA Division I public address announcer, I know that rosters are valuable.  I also know just how easy it is to get rosters mixed up.  At JV and varsity games, some coaches list players by jersey number (bless you) and some alphabetically (go stub your toe!), while sometimes all you get is a scribbled piece of paper 2 minutes before the game (seriously, who hired you?).
 
@@ -7,7 +6,7 @@ I created this program to help keep up with rosters, and to make finding the rig
 
 Basketball Roster Manager is a Windows desktop application written in C# that is made for use by public address announcers during basketball games, which can replace paper rosters and hand-written notes to keep up with fouls, among other helpful features.
 
-![capture2](https://cloud.githubusercontent.com/assets/2617394/5951215/b5bfda80-a729-11e4-85c5-911b14951445.JPG)
+![capture2](https://github.com/user-attachments/assets/4739a420-2469-40d8-b485-aa25790ee0b4)
 
 ## Contributing 
 

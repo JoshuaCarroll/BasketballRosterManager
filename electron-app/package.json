@@ -9,19 +9,20 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
+    "rebuild": "electron-rebuild",
+    "prebuild": "npm run rebuild",
     "build": "electron-builder",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --publish=never"
+    "dist": "electron-builder --publish=never",
+    "build:simple": "npm run pack && powershell -Command \"Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath 'dist/Basketball-Roster-Manager-v3.0.0-win64.zip' -Force\""
   },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.6.4"
-  },
-  "dependencies": {
-    "sqlite3": "^5.1.6"
+    "electron-builder": "^24.6.4",
+    "electron-rebuild": "^3.2.9"
   },
   "build": {
     "appId": "com.carrollsportsmedia.basketball-roster-manager",
@@ -33,26 +34,37 @@
       "src/**/*",
       "node_modules/**/*"
     ],
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
     "mac": {
       "icon": "assets/icon.icns",
       "category": "public.app-category.sports",
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ]
     },
     "win": {
       "icon": "assets/icon.ico",
+      "certificateFile": null,
+      "certificatePassword": null,
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -62,7 +74,9 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -70,5 +84,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
   }
 }
