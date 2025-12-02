@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="header-actions">
-          <button id="swap-teams-btn" class="btn btn-primary" title="Change sides">↔️</button>
+          <button id="swap-teams-btn" class="btn btn-primary" title="Swap sides">↔️</button>
         </div>
       </div>
     </header>
@@ -44,7 +44,6 @@
                 <option value="">Select Home Team...</option>
               </select>
               <button id="edit-home-team-btn" class="btn btn-icon" style="display: none;" title="Edit Team">⚙️</button>
-              <div class="team-color-indicator" id="home-team-color"></div>
             </div>
             <div class="team-fouls">
               <span class="foul-label">Team Fouls: <span id="home-team-fouls">0</span></span>
@@ -75,7 +74,6 @@
                 <option value="">Select Away Team...</option>
               </select>
               <button id="edit-away-team-btn" class="btn btn-icon" style="display: none;" title="Edit Team">⚙️</button>
-              <div class="team-color-indicator" id="away-team-color"></div>
             </div>
             <div class="team-fouls">
               <span class="foul-label">Team Fouls: <span id="away-team-fouls">0</span></span>
@@ -115,7 +113,7 @@
             <input type="text" id="league-name" class="input-field" placeholder="Enter league name">
           </div>
           <div class="form-group">
-            <label for="foul-reset-period">Fouls Reset:</label>
+            <label for="foul-reset-period">Team Fouls Reset:</label>
             <select id="foul-reset-period" class="select-input">
               <option value="quarter">Every Quarter</option>
               <option value="half">Every Half</option>

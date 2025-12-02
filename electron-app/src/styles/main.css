@@ -145,16 +145,6 @@ body {
   overflow-x: auto;
 }
 
-/* Team Color Indicator */
-.team-color-indicator {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--border-color);
-  background-color: #000000;
-  flex-shrink: 0;
-}
-
 .team-fouls {
   display: flex;
   align-items: center;
@@ -207,6 +197,7 @@ body {
   padding: 1rem 1.5rem;
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
+  color: white;
 }
 
 .roster-title {

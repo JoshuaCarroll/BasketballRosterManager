@@ -668,9 +668,10 @@ class BasketballRosterManager {
     // Show edit button
     editBtn.style.display = 'inline-block';
     
-    // Update color indicator
-    const colorElement = document.getElementById(isHome ? 'home-team-color' : 'away-team-color');
-    colorElement.style.backgroundColor = teamColor;
+    // Update roster header background color
+    const rosterHeaderId = isHome ? 'home-roster' : 'away-roster';
+    const rosterHeader = document.getElementById(rosterHeaderId).querySelector('.roster-header');
+    rosterHeader.style.backgroundColor = teamColor;
     
     // Load players
     await this.loadPlayers(teamId, isHome);
@@ -811,12 +812,14 @@ class BasketballRosterManager {
         if (this.homeTeam && this.homeTeam.id === this.editingTeamId) {
           this.homeTeam.name = name;
           this.homeTeam.color = color;
-          document.getElementById('home-team-color').style.backgroundColor = color;
+          const homeRosterHeader = document.getElementById('home-roster').querySelector('.roster-header');
+          homeRosterHeader.style.backgroundColor = color;
         }
         if (this.awayTeam && this.awayTeam.id === this.editingTeamId) {
           this.awayTeam.name = name;
           this.awayTeam.color = color;
-          document.getElementById('away-team-color').style.backgroundColor = color;
+          const awayRosterHeader = document.getElementById('away-roster').querySelector('.roster-header');
+          awayRosterHeader.style.backgroundColor = color;
         }
         
         this.showNotification('Team updated successfully', 'success');
