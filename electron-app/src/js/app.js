@@ -6,6 +6,7 @@ class BasketballRosterManager {
     this.homeTeam = null;
     this.awayTeam = null;
     this.currentPeriod = 1;
+    this.teamsSwapped = false; // Track if teams are currently swapped
     this.gameStats = {
       home: {},
       away: {}
@@ -1073,18 +1074,35 @@ class BasketballRosterManager {
   }
 
   swapTeams() {
-    const homeSelect = document.getElementById('home-team-select');
-    const awaySelect = document.getElementById('away-team-select');
+    // Get the DOM elements
+    const homeRoster = document.getElementById('home-roster');
+    const awayRoster = document.getElementById('away-roster');
+    const gameBoard = document.querySelector('.game-board');
     
-    const homeValue = homeSelect.value;
-    const awayValue = awaySelect.value;
+    // Always swap the visual order of the rosters
+    if (!this.teamsSwapped) {
+      // First swap: away roster goes to the left (first position)
+      gameBoard.insertBefore(awayRoster, homeRoster);
+      this.teamsSwapped = true;
+      console.log('Teams swapped: Away team now on left');
+    } else {
+      // Swap back: home roster goes to the left (original position)
+      gameBoard.insertBefore(homeRoster, awayRoster);
+      this.teamsSwapped = false;
+      console.log('Teams swapped back: Home team now on left');
+    }
     
-    homeSelect.value = awayValue;
-    awaySelect.value = homeValue;
+    // Always swap the team object references
+    const tempTeam = this.homeTeam;
+    this.homeTeam = this.awayTeam;
+    this.awayTeam = tempTeam;
     
-    // Trigger change events
-    this.onTeamChange(true);
-    this.onTeamChange(false);
+    // Always swap the game statistics
+    const tempStats = this.gameStats.home;
+    this.gameStats.home = this.gameStats.away;
+    this.gameStats.away = tempStats;
+    
+    console.log('Teams swapped - all data preserved');
   }
 
   resetGame() {
