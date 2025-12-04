@@ -532,6 +532,47 @@ const dbAPI = {
         else resolve({ lastID: this.lastID, changes: this.changes });
       });
     });
+  },
+  
+  deleteLeague: (leagueId) => {
+    return new Promise((resolve, reject) => {
+      // First check if league has any teams
+      db.get('SELECT COUNT(*) as count FROM teams WHERE league_id = ?', [leagueId], (err, row) => {
+        if (err) reject(err);
+        else if (row.count > 0) {
+          reject(new Error(`Cannot delete league: ${row.count} teams are associated with this league`));
+        } else {
+          // Safe to delete league
+          db.run('DELETE FROM leagues WHERE id = ?', [leagueId], function(err) {
+            if (err) reject(err);
+            else resolve({ changes: this.changes });
+          });
+        }
+      });
+    });
+  },
+  
+  deleteTeam: (teamId) => {
+    return new Promise((resolve, reject) => {
+      // First get count of players on this team
+      db.get('SELECT COUNT(*) as count FROM players WHERE team_id = ? AND is_active = 1', [teamId], (err, row) => {
+        if (err) reject(err);
+        else {
+          const playerCount = row.count;
+          // Delete all players first (set inactive)
+          db.run('UPDATE players SET is_active = 0 WHERE team_id = ?', [teamId], function(err) {
+            if (err) reject(err);
+            else {
+              // Then delete the team
+              db.run('DELETE FROM teams WHERE id = ?', [teamId], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes, playersDeleted: playerCount });
+              });
+            }
+          });
+        }
+      });
+    });
   }
 };
 
@@ -632,6 +673,24 @@ function setupIPC() {
       return await dbAPI.deletePlayer(playerId);
     } catch (error) {
       console.error('Error deleting player:', error);
+      throw error;
+    }
+  });
+  
+  ipcMain.handle('db:deleteLeague', async (_, leagueId) => {
+    try {
+      return await dbAPI.deleteLeague(leagueId);
+    } catch (error) {
+      console.error('Error deleting league:', error);
+      throw error;
+    }
+  });
+  
+  ipcMain.handle('db:deleteTeam', async (_, teamId) => {
+    try {
+      return await dbAPI.deleteTeam(teamId);
+    } catch (error) {
+      console.error('Error deleting team:', error);
       throw error;
     }
   });

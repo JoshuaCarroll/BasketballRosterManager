@@ -171,6 +171,12 @@ class BasketballRosterManager {
       const homeSelect = document.getElementById('home-team-select');
       const awaySelect = document.getElementById('away-team-select');
       
+      // Check if elements exist before trying to modify them
+      if (!homeSelect || !awaySelect) {
+        console.warn('Team select elements not found, skipping team list update');
+        return;
+      }
+      
       const homeDefaultOption = '<option value="">Select Home Team...</option>';
       const awayDefaultOption = '<option value="">Select Away Team...</option>';
       homeSelect.innerHTML = homeDefaultOption;
@@ -703,6 +709,10 @@ class BasketballRosterManager {
     document.getElementById('save-team-btn').addEventListener('click', () => this.saveTeam());
     document.getElementById('save-player-btn').addEventListener('click', () => this.savePlayer());
     
+    // Delete buttons
+    document.getElementById('delete-league-btn').addEventListener('click', () => this.deleteLeague());
+    document.getElementById('delete-team-btn').addEventListener('click', () => this.deleteTeam());
+    
     // Add Enter key support for player modal
     document.getElementById('new-player-modal').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -902,6 +912,138 @@ class BasketballRosterManager {
     }
   }
 
+  // ===== DELETE OPERATIONS =====
+  async deleteLeague() {
+    if (!this.currentLeague) {
+      this.showNotification('No league selected', 'error');
+      return;
+    }
+
+    try {
+      // First check if league has teams
+      const teams = await window.electronAPI.getTeams(this.currentLeague.id);
+      
+      if (teams.length > 0) {
+        const teamCount = teams.length;
+        const teamWord = teamCount === 1 ? 'team' : 'teams';
+        const confirmMessage = `This league contains ${teamCount} ${teamWord}. You must delete all teams before deleting the league.\n\nWould you like to view the teams to delete them first?`;
+        
+        if (confirm(confirmMessage)) {
+          // Close league modal and show teams
+          this.hideModal();
+          // Teams should already be loaded since we have a current league
+        }
+        return;
+      }
+
+      // League has no teams, confirm deletion
+      const confirmMessage = `Are you sure you want to delete the league "${this.currentLeague.name}"?\n\nThis action cannot be undone.`;
+      
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // Delete the league
+      await window.electronAPI.deleteLeague(this.currentLeague.id);
+      
+      this.showNotification('League deleted successfully', 'success');
+      
+      // Clear current selections and reload
+      this.currentLeague = null;
+      this.homeTeam = null;
+      this.awayTeam = null;
+      
+      await this.loadLeagues();
+      this.hideModal();
+      
+    } catch (error) {
+      console.error('Failed to delete league:', error);
+      this.showNotification('Failed to delete league: ' + error.message, 'error');
+    }
+  }
+
+  async deleteTeam() {
+    if (!this.editingTeamId) {
+      this.showNotification('No team selected for deletion', 'error');
+      return;
+    }
+
+    try {
+      // Get team details and player count
+      const players = await window.electronAPI.getPlayers(this.editingTeamId);
+      
+      // Find team in current teams list, or get from selected teams
+      let team = null;
+      if (this.teams && this.teams.length > 0) {
+        team = this.teams.find(t => t.id === this.editingTeamId);
+      }
+      
+      // If not found in teams list, check if it's one of the selected teams
+      if (!team) {
+        if (this.homeTeam && this.homeTeam.id === this.editingTeamId) {
+          team = this.homeTeam;
+        } else if (this.awayTeam && this.awayTeam.id === this.editingTeamId) {
+          team = this.awayTeam;
+        }
+      }
+      
+      if (!team) {
+        this.showNotification('Team not found', 'error');
+        return;
+      }
+
+      let confirmMessage = `Are you sure you want to delete the team "${team.name}"?`;
+      
+      if (players.length > 0) {
+        const playerCount = players.length;
+        const playerWord = playerCount === 1 ? 'player' : 'players';
+        confirmMessage += `\n\nThis will also delete ${playerCount} ${playerWord} associated with this team.`;
+      }
+      
+      confirmMessage += '\n\nThis action cannot be undone.';
+      
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // Delete the team (players will be deleted automatically via CASCADE)
+      await window.electronAPI.deleteTeam(this.editingTeamId);
+      
+      this.showNotification('Team deleted successfully', 'success');
+      
+      // Clear team selections if the deleted team was selected
+      if (this.homeTeam && this.homeTeam.id === this.editingTeamId) {
+        this.homeTeam = null;
+        document.getElementById('home-team-select').value = '';
+        document.getElementById('edit-home-team-btn').style.display = 'none';
+        this.clearRosterForTeam(true);
+        // Reset roster header background
+        const homeRosterHeader = document.getElementById('home-roster').querySelector('.roster-header');
+        homeRosterHeader.style.backgroundColor = '';
+      }
+      if (this.awayTeam && this.awayTeam.id === this.editingTeamId) {
+        this.awayTeam = null;
+        document.getElementById('away-team-select').value = '';
+        document.getElementById('edit-away-team-btn').style.display = 'none';
+        this.clearRosterForTeam(false);
+        // Reset roster header background
+        const awayRosterHeader = document.getElementById('away-roster').querySelector('.roster-header');
+        awayRosterHeader.style.backgroundColor = '';
+      }
+      
+      // Clear editing state
+      this.editingTeamId = null;
+      
+      // Reload teams
+      await this.loadTeams(this.currentLeague.id);
+      this.hideModal();
+      
+    } catch (error) {
+      console.error('Failed to delete team:', error);
+      this.showNotification('Failed to delete team: ' + error.message, 'error');
+    }
+  }
+
   // ===== EDIT OPERATIONS =====
   editLeague() {
     if (!this.currentLeague) {
@@ -921,6 +1063,9 @@ class BasketballRosterManager {
 
     // Set editing flag
     this.editingLeague = this.currentLeague.id;
+    
+    // Show delete button for editing
+    document.getElementById('delete-league-btn').style.display = 'block';
 
     this.showModal('new-league-modal');
   }
@@ -944,6 +1089,9 @@ class BasketballRosterManager {
 
     // Set editing flag
     this.editingTeamId = team.id;
+    
+    // Show delete button for editing
+    document.getElementById('delete-team-btn').style.display = 'block';
 
     this.showModal('new-team-modal');
   }
@@ -1000,6 +1148,9 @@ class BasketballRosterManager {
     document.getElementById('bonus-fouls').value = '7';
     document.getElementById('double-bonus-fouls').value = '10';
     
+    // Hide delete button for new league
+    document.getElementById('delete-league-btn').style.display = 'none';
+    
     this.showModal('new-league-modal');
   }
 
@@ -1033,6 +1184,9 @@ class BasketballRosterManager {
     if (colorPreview) {
       colorPreview.style.backgroundColor = '#000000';
     }
+    
+    // Hide delete button for new team
+    document.getElementById('delete-team-btn').style.display = 'none';
     
     this.showModal('new-team-modal');
   }

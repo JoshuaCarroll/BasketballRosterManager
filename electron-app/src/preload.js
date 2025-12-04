@@ -28,6 +28,8 @@ try {
       ipcRenderer.invoke('db:updateTeam', teamId, name, color),
       
     deletePlayer: (playerId) => ipcRenderer.invoke('db:deletePlayer', playerId),
+    deleteLeague: (leagueId) => ipcRenderer.invoke('db:deleteLeague', leagueId),
+    deleteTeam: (teamId) => ipcRenderer.invoke('db:deleteTeam', teamId),
     
     // Menu actions
     onMenuAction: (callback) => {

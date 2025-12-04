@@ -173,11 +173,17 @@
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 0.75rem;
   padding: 1.5rem;
   border-top: 1px solid var(--border-color);
   background-color: var(--background-color);
+}
+
+.modal-footer-right {
+  display: flex;
+  gap: 0.75rem;
 }
 
 /* Form Groups */
