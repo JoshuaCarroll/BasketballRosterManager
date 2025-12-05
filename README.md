@@ -1,46 +1,16 @@
 # Basketball Roster Manager v3.0 - Cross-Platform Edition
 
-As an NCAA Division I public address announcer, I know that rosters are valuable.  I also know just how easy it is to get rosters mixed up.  At JV and varsity games, some coaches list players by jersey number (bless you) and some alphabetically (go stub your toe!), while sometimes all you get is a scribbled piece of paper 2 minutes before the game (seriously, who hired you?).
+As a public address announcer I've announced nearly 1,000 games varying from club leagues, to varsity, to NCAA Division I to MiLB. I know that rosters are valuable. I also know just how easy it is to get rosters mixed up. At JV and varsity games, some coaches list players by jersey number (bless you) and some alphabetically (go stub your toe!), while sometimes all you get is a scribbled piece of paper 2 minutes before the game in no order whatsoever! (Seriously, who raised you!?)
 
-I created this program to help keep up with rosters, and to make finding the right name quickly as easy as possible.  Rosters are automatically sorted numerically by jersey number.  They can also be color-coded to match the teams' jerseys.  Lastly, you can easily swap the rosters from one side of the screen to the other, enabling you to keep the roster on the same side as their goal.
+I created this program to help keep up with rosters, but it quickly turned into something so much more. Now it tracks personal fouls, team fouls, field goals, three pointers, and free throws! Rosters are automatically sorted numerically by jersey number.  They can also be color-coded to match the teams' jerseys. Lastly, you can easily swap the rosters from one side of the screen to the other, enabling you to keep the roster on the same side as their goal.
 
-Basketball Roster Manager is a Windows desktop application written in C# that is made for use by public address announcers during basketball games, which can replace paper rosters and hand-written notes to keep up with fouls, among other helpful features.
+Basketball Roster Manager is now cross platform!  So whether you're using Windows or Mac, you're ready to roll!
 
 ![capture2](https://github.com/user-attachments/assets/4739a420-2469-40d8-b485-aa25790ee0b4)
 
-## Contributing 
+## Getting Started
 
-Contributions to this project can be made by using the program and providing feedback or by assisting in the programming and submitting pull requests.  In either case, please read the [contributing page](https://github.com/JoshuaCarroll/BasketballRosterManager/blob/development/CONTRIBUTING.md) for instructions.
-
-
-## ✨ Key Improvements Over Original
-
-### 🆕 New Features You Requested
-- **✅ Unlimited Players**: No longer limited to 28 rows - add as many players as needed
-- **✅ Smart Auto-Sorting**: Players automatically resort by jersey number even after check-ins
-- **✅ Configurable Foul Rules**: Different leagues have different foul reset periods and bonus thresholds
-- **✅ Quarter/Half Tracking**: Support for leagues that reset fouls each quarter vs. each half
-- **✅ Enhanced Bonus System**: Visual indicators for bonus (e.g., 7 fouls) and double-bonus (e.g., 5 fouls for HS girls)
-
-### 🌟 Additional Modern Enhancements
-- **Cross-Platform**: Runs on Windows, macOS, and Linux
-- **Modern UI**: Clean, responsive design with CSS Grid
-- **Double-Click Increments**: Double-click any stat to add +1
-- **Team Colors**: Visual team identification 
-- **Keyboard Shortcuts**: Quick access to common functions
-- **Better Database**: SQLite for reliable local storage
-- **Electron Packaging**: Self-contained executables
-
-## 🏀 League Presets Included
-
-The app comes pre-loaded with common basketball league configurations:
-
-- **NCAA Men/Women**: Fouls reset at half, bonus at 7, double-bonus at 10
-- **High School Boys**: Fouls reset per quarter, bonus at 7, double-bonus at 10  
-- **High School Girls**: Fouls reset per quarter, double-bonus at 5 (no regular bonus)
-- **Varsity Boys/Girls**: Fouls reset at half, bonus at 7, double-bonus at 10
-
-You can also create custom leagues with your own foul rules!
+Download the run the latest release on the [releases page](https://github.com/JoshuaCarroll/BasketballRosterManager/releases/).
 
 ## 🎮 How to Use
 
@@ -60,6 +30,39 @@ You can also create custom leagues with your own foul rules!
 - **Foul Tracking**: Adapts to your league's reset rules (quarter/half/game)
 - **Team Swapping**: Easily switch home/away sides during games
 - **Keyboard Shortcuts**: Use Ctrl+S to swap, Ctrl+R to reset fouls, etc.
+
+## 🏀 League Presets Included
+
+The app comes pre-loaded with common basketball league configurations:
+
+- **NCAA Men/Women**: Fouls reset at half, bonus at 7, double-bonus at 10
+- **High School Boys**: Fouls reset per quarter, bonus at 7, double-bonus at 10  
+- **High School Girls**: Fouls reset per quarter, double-bonus at 5 (no regular bonus)
+- **Varsity Boys/Girls**: Fouls reset at half, bonus at 7, double-bonus at 10
+
+You can also create custom leagues with your own foul rules!
+
+## ✨ Key Improvements Over Original
+
+### 🆕 New Features You Requested
+- **✅ Unlimited Players**: No longer limited to 28 rows - add as many players as needed
+- **✅ Smart Auto-Sorting**: Players automatically resort by jersey number even after check-ins
+- **✅ Configurable Foul Rules**: Different leagues have different foul reset periods and bonus thresholds
+- **✅ Quarter/Half Tracking**: Support for leagues that reset fouls each quarter vs. each half
+- **✅ Enhanced Bonus System**: Visual indicators for bonus (e.g., 7 fouls) and double-bonus (e.g., 5 fouls for HS girls)
+
+### 🌟 Additional Modern Enhancements
+- **Cross-Platform**: Runs on Windows, macOS, and Linux
+- **Modern UI**: Clean, responsive design with CSS Grid
+- **Double-Click Increments**: Double-click any stat to add +1
+- **Team Colors**: Visual team identification 
+- **Keyboard Shortcuts**: Quick access to common functions
+- **Better Database**: SQLite for reliable local storage
+- **Electron Packaging**: Self-contained executables
+
+## Contributing 
+
+Contributions to this project can be made by using the program and providing feedback or by assisting in the programming and submitting pull requests. If you have a feature request or find a problem, simply report it on the [issues tab](https://github.com/JoshuaCarroll/BasketballRosterManager/issues) tab.
 
 ## 🚀 Installation & Setup
 
