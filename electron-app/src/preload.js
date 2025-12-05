@@ -31,6 +31,20 @@ try {
     deleteLeague: (leagueId) => ipcRenderer.invoke('db:deleteLeague', leagueId),
     deleteTeam: (teamId) => ipcRenderer.invoke('db:deleteTeam', teamId),
     
+    // Auto-updater functions
+    checkForUpdates: () => ipcRenderer.invoke('updater:checkForUpdates'),
+    downloadUpdate: () => ipcRenderer.invoke('updater:downloadUpdate'),
+    quitAndInstall: () => ipcRenderer.invoke('updater:quitAndInstall'),
+    
+    // Update progress listener
+    onUpdateProgress: (callback) => {
+      ipcRenderer.on('update-progress', callback);
+    },
+    
+    removeUpdateProgressListener: () => {
+      ipcRenderer.removeAllListeners('update-progress');
+    },
+    
     // Menu actions
     onMenuAction: (callback) => {
       ipcRenderer.on('menu-action', callback);

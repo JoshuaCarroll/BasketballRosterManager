@@ -552,6 +552,57 @@ class BasketballRosterManager {
         }
       }
     });
+    
+    // Setup update progress listener
+    this.setupUpdateListeners();
+  }
+  
+  setupUpdateListeners() {
+    if (!window.electronAPI || !window.electronAPI.onUpdateProgress) {
+      console.warn('ElectronAPI update handlers not available');
+      return;
+    }
+    
+    try {
+      window.electronAPI.onUpdateProgress((event, progressObj) => {
+        this.showUpdateProgress(progressObj);
+      });
+    } catch (error) {
+      console.error('Failed to setup update listeners:', error);
+    }
+  }
+  
+  showUpdateProgress(progressObj) {
+    const notification = document.getElementById('update-notification');
+    const message = document.getElementById('update-message');
+    const progressBar = document.getElementById('update-progress-bar');
+    const details = document.getElementById('update-details');
+    
+    // Show the notification
+    notification.classList.remove('hidden');
+    
+    // Update progress bar
+    progressBar.style.width = `${Math.round(progressObj.percent)}%`;
+    
+    // Update text
+    message.textContent = 'Downloading update...';
+    
+    const transferredMB = Math.round(progressObj.transferred / 1024 / 1024);
+    const totalMB = Math.round(progressObj.total / 1024 / 1024);
+    details.textContent = `${transferredMB}MB / ${totalMB}MB (${Math.round(progressObj.percent)}%)`;
+    
+    // Auto-hide after completion (with delay)
+    if (progressObj.percent >= 100) {
+      setTimeout(() => {
+        notification.classList.add('hidden');
+        this.showNotification('Update downloaded successfully! The application will restart to apply the update.', 'success');
+      }, 2000);
+    }
+  }
+  
+  hideUpdateProgress() {
+    const notification = document.getElementById('update-notification');
+    notification.classList.add('hidden');
   }
 
   setupMenuHandlers() {

@@ -1,4 +1,5 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
@@ -20,6 +21,99 @@ console.log('=== MAIN: Current working directory:', process.cwd());
 // Keep a global reference of the window object
 let mainWindow;
 let db;
+
+// Auto-updater configuration
+autoUpdater.checkForUpdatesAndNotify = false; // We'll handle this manually
+autoUpdater.autoDownload = false; // Ask user before downloading
+autoUpdater.logger = console;
+
+// Auto-updater event handlers
+function setupAutoUpdater() {
+  console.log('=== UPDATER: Setting up auto-updater ===');
+  
+  autoUpdater.on('checking-for-update', () => {
+    console.log('=== UPDATER: Checking for update...');
+  });
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('=== UPDATER: Update available:', info.version);
+    
+    // Show dialog to user
+    const response = dialog.showMessageBoxSync(mainWindow, {
+      type: 'info',
+      buttons: ['Download Update', 'Later'],
+      title: 'Update Available',
+      message: `A new version (${info.version}) is available!`,
+      detail: 'Would you like to download and install the update? The application will restart after installation.',
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (response === 0) {
+      console.log('=== UPDATER: User chose to download update');
+      autoUpdater.downloadUpdate();
+    } else {
+      console.log('=== UPDATER: User postponed update');
+    }
+  });
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('=== UPDATER: Update not available. Current version:', info.version);
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.error('=== UPDATER: Error in auto-updater:', err);
+  });
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = `=== UPDATER: Download progress: ${Math.round(progressObj.percent)}%`;
+    log_message += ` (${Math.round(progressObj.transferred / 1024 / 1024)}MB / ${Math.round(progressObj.total / 1024 / 1024)}MB)`;
+    console.log(log_message);
+    
+    // Send progress to renderer if window exists
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('update-progress', progressObj);
+    }
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('=== UPDATER: Update downloaded, version:', info.version);
+    
+    const response = dialog.showMessageBoxSync(mainWindow, {
+      type: 'info',
+      buttons: ['Restart Now', 'Later'],
+      title: 'Update Ready',
+      message: 'Update has been downloaded successfully!',
+      detail: 'The application will restart to apply the update. Any unsaved changes will be lost.',
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (response === 0) {
+      console.log('=== UPDATER: User chose to restart now');
+      autoUpdater.quitAndInstall();
+    } else {
+      console.log('=== UPDATER: User postponed restart');
+    }
+  });
+}
+
+// Check for updates (with internet connection check)
+async function checkForUpdates() {
+  try {
+    // Only check if we're not in development mode
+    if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
+      console.log('=== UPDATER: Skipping update check in development mode');
+      return;
+    }
+
+    console.log('=== UPDATER: Starting update check...');
+    await autoUpdater.checkForUpdates();
+  } catch (error) {
+    console.error('=== UPDATER: Error checking for updates:', error.message);
+    // Fail silently - don't bother user if update check fails
+  }
+}
 
 function createWindow() {
   // Create the browser window
@@ -210,6 +304,57 @@ function createMenu() {
           accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
           click: () => {
             mainWindow.webContents.toggleDevTools();
+          }
+        }
+      ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Check for Updates',
+          click: async () => {
+            try {
+              console.log('=== MENU: Check for updates clicked');
+              
+              // Show checking dialog
+              const checkingDialog = dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                buttons: ['Cancel'],
+                title: 'Checking for Updates',
+                message: 'Checking for updates...',
+                detail: 'Please wait while we check for the latest version.'
+              });
+
+              await checkForUpdates();
+              
+              // Close the checking dialog if it's still open
+              if (checkingDialog) {
+                // The dialog might have been closed by the update process
+              }
+            } catch (error) {
+              console.error('=== MENU: Error checking for updates:', error);
+              dialog.showMessageBox(mainWindow, {
+                type: 'error',
+                buttons: ['OK'],
+                title: 'Update Check Failed',
+                message: 'Failed to check for updates',
+                detail: 'Please check your internet connection and try again later.'
+              });
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'About Basketball Roster Manager',
+          click: () => {
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              buttons: ['OK'],
+              title: 'About',
+              message: 'Basketball Roster Manager',
+              detail: `Version: ${app.getVersion()}\nA cross-platform roster management tool for basketball games.`
+            });
           }
         }
       ]
@@ -694,6 +839,38 @@ function setupIPC() {
       throw error;
     }
   });
+
+  // Auto-updater IPC handlers
+  ipcMain.handle('updater:checkForUpdates', async () => {
+    try {
+      console.log('=== UPDATER: Manual update check requested');
+      const result = await autoUpdater.checkForUpdates();
+      return result;
+    } catch (error) {
+      console.error('=== UPDATER: Error in manual update check:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('updater:downloadUpdate', () => {
+    try {
+      console.log('=== UPDATER: Manual download requested');
+      autoUpdater.downloadUpdate();
+    } catch (error) {
+      console.error('=== UPDATER: Error downloading update:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('updater:quitAndInstall', () => {
+    try {
+      console.log('=== UPDATER: Quit and install requested');
+      autoUpdater.quitAndInstall();
+    } catch (error) {
+      console.error('=== UPDATER: Error quitting and installing:', error);
+      throw error;
+    }
+  });
 }
 
 // App event handlers
@@ -703,8 +880,14 @@ app.whenReady().then(() => {
   try {
     initializeDatabase();
     setupIPC();
+    setupAutoUpdater();
     createWindow();
     console.log('App initialization completed');
+    
+    // Check for updates after a short delay to let the app fully load
+    setTimeout(() => {
+      checkForUpdates();
+    }, 3000);
   } catch (error) {
     console.error('App initialization failed:', error);
   }
