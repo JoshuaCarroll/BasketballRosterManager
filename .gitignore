@@ -95,6 +95,13 @@ temp/
 /electron-app/build/
 /electron-app/out/
 
+# Python virtual environment
+/electron-app/.venv/
+/electron-app/venv/
+
+# Temporary icon generation files
+/electron-app/assets/icon.png
+
 # Electron-builder output
 *.dmg
 *.exe
