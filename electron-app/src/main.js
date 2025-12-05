@@ -25,18 +25,34 @@ let db;
 // Auto-updater configuration
 autoUpdater.checkForUpdatesAndNotify = false; // We'll handle this manually
 autoUpdater.autoDownload = false; // Ask user before downloading
-autoUpdater.logger = console;
+
+console.log('=== UPDATER INIT: Configuring auto-updater...');
+console.log('=== UPDATER INIT: electron-updater version:', require('electron-updater/package.json').version);
 
 // Auto-updater event handlers
 function setupAutoUpdater() {
   console.log('=== UPDATER: Setting up auto-updater ===');
+  console.log('=== UPDATER: App version:', app.getVersion());
+  console.log('=== UPDATER: App packaged:', app.isPackaged);
+  console.log('=== UPDATER: Platform:', process.platform);
+  console.log('=== UPDATER: Arch:', process.arch);
+  
+  // Configure updater with more verbose logging
+  autoUpdater.logger = {
+    info: (message) => console.log('=== UPDATER INFO:', message),
+    warn: (message) => console.warn('=== UPDATER WARN:', message),
+    error: (message) => console.error('=== UPDATER ERROR:', message),
+    debug: (message) => console.log('=== UPDATER DEBUG:', message)
+  };
   
   autoUpdater.on('checking-for-update', () => {
-    console.log('=== UPDATER: Checking for update...');
+    console.log('=== UPDATER: Event - checking-for-update triggered');
+    console.log('=== UPDATER: Feed URL:', autoUpdater.getFeedURL());
   });
 
   autoUpdater.on('update-available', (info) => {
-    console.log('=== UPDATER: Update available:', info.version);
+    console.log('=== UPDATER: Event - update-available triggered');
+    console.log('=== UPDATER: Update available:', JSON.stringify(info, null, 2));
     
     // Show dialog to user
     const response = dialog.showMessageBoxSync(mainWindow, {
@@ -58,11 +74,20 @@ function setupAutoUpdater() {
   });
 
   autoUpdater.on('update-not-available', (info) => {
-    console.log('=== UPDATER: Update not available. Current version:', info.version);
+    console.log('=== UPDATER: Event - update-not-available triggered');
+    console.log('=== UPDATER: Update not available. Info:', JSON.stringify(info, null, 2));
+    console.log('=== UPDATER: Current version:', app.getVersion());
   });
 
   autoUpdater.on('error', (err) => {
-    console.error('=== UPDATER: Error in auto-updater:', err);
+    console.error('=== UPDATER: Event - error triggered');
+    console.error('=== UPDATER: Error details:', {
+      message: err.message,
+      stack: err.stack,
+      code: err.code,
+      name: err.name
+    });
+    console.error('=== UPDATER: Full error object:', err);
   });
 
   autoUpdater.on('download-progress', (progressObj) => {
@@ -101,17 +126,66 @@ function setupAutoUpdater() {
 // Check for updates (with internet connection check)
 async function checkForUpdates() {
   try {
+    console.log('=== UPDATER: checkForUpdates() called');
+    console.log('=== UPDATER: NODE_ENV:', process.env.NODE_ENV);
+    console.log('=== UPDATER: app.isPackaged:', app.isPackaged);
+    
     // Only check if we're not in development mode
     if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
       console.log('=== UPDATER: Skipping update check in development mode');
-      return;
+      return 'dev-mode-skip';
     }
 
     console.log('=== UPDATER: Starting update check...');
-    await autoUpdater.checkForUpdates();
+    console.log('=== UPDATER: Current app version:', app.getVersion());
+    console.log('=== UPDATER: Update feed URL:', autoUpdater.getFeedURL());
+    
+    // Test network connectivity first
+    console.log('=== UPDATER: Testing network connectivity...');
+    try {
+      const https = require('https');
+      await new Promise((resolve, reject) => {
+        const req = https.request('https://api.github.com/repos/JoshuaCarroll/BasketballRosterManager/releases/latest', {
+          method: 'HEAD',
+          timeout: 10000
+        }, (res) => {
+          console.log('=== UPDATER: GitHub API response status:', res.statusCode);
+          resolve(res);
+        });
+        req.on('error', (err) => {
+          console.error('=== UPDATER: Network test failed:', err.message);
+          reject(err);
+        });
+        req.on('timeout', () => {
+          console.error('=== UPDATER: Network test timed out');
+          req.destroy();
+          reject(new Error('Network test timeout'));
+        });
+        req.end();
+      });
+      console.log('=== UPDATER: Network connectivity test passed');
+    } catch (netError) {
+      console.error('=== UPDATER: Network connectivity test failed:', netError.message);
+      throw new Error('Network connectivity test failed: ' + netError.message);
+    }
+    
+    // Set a timeout for the update check
+    const updatePromise = autoUpdater.checkForUpdates();
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Update check timeout after 30 seconds')), 30000);
+    });
+    
+    console.log('=== UPDATER: Calling autoUpdater.checkForUpdates()...');
+    const result = await Promise.race([updatePromise, timeoutPromise]);
+    console.log('=== UPDATER: checkForUpdates completed successfully:', result);
+    return result;
   } catch (error) {
-    console.error('=== UPDATER: Error checking for updates:', error.message);
-    // Fail silently - don't bother user if update check fails
+    console.error('=== UPDATER: Error in checkForUpdates:');
+    console.error('=== UPDATER: Error message:', error.message);
+    console.error('=== UPDATER: Error stack:', error.stack);
+    console.error('=== UPDATER: Error code:', error.code);
+    console.error('=== UPDATER: Full error:', error);
+    throw error; // Re-throw for caller to handle
   }
 }
 
@@ -316,30 +390,47 @@ function createMenu() {
           click: async () => {
             try {
               console.log('=== MENU: Check for updates clicked');
+              console.log('=== MENU: App version:', app.getVersion());
+              console.log('=== MENU: App packaged:', app.isPackaged);
               
-              // Show checking dialog
-              const checkingDialog = dialog.showMessageBox(mainWindow, {
-                type: 'info',
-                buttons: ['Cancel'],
-                title: 'Checking for Updates',
-                message: 'Checking for updates...',
-                detail: 'Please wait while we check for the latest version.'
-              });
-
-              await checkForUpdates();
+              const result = await checkForUpdates();
+              console.log('=== MENU: Update check result:', result);
               
-              // Close the checking dialog if it's still open
-              if (checkingDialog) {
-                // The dialog might have been closed by the update process
+              if (result === 'dev-mode-skip') {
+                dialog.showMessageBox(mainWindow, {
+                  type: 'info',
+                  buttons: ['OK'],
+                  title: 'Development Mode',
+                  message: 'Update checking is disabled in development mode',
+                  detail: 'Updates are only checked in packaged/production builds.'
+                });
+                return;
               }
+              
+              // If we get here and no update dialogs were shown, it means no update was available
+              console.log('=== MENU: No update available or check completed silently');
+              
             } catch (error) {
-              console.error('=== MENU: Error checking for updates:', error);
+              console.error('=== MENU: Error checking for updates:');
+              console.error('=== MENU: Error message:', error.message);
+              console.error('=== MENU: Error stack:', error.stack);
+              console.error('=== MENU: Full error:', error);
+              
+              let errorDetail = `Error: ${error.message}`;
+              if (error.message.includes('timeout')) {
+                errorDetail = 'The update check timed out. Please check your internet connection and try again.';
+              } else if (error.message.includes('ENOTFOUND') || error.message.includes('network')) {
+                errorDetail = 'Network error. Please check your internet connection and try again.';
+              } else if (error.code) {
+                errorDetail = `Error code: ${error.code}. ${error.message}`;
+              }
+              
               dialog.showMessageBox(mainWindow, {
                 type: 'error',
                 buttons: ['OK'],
                 title: 'Update Check Failed',
                 message: 'Failed to check for updates',
-                detail: 'Please check your internet connection and try again later.'
+                detail: errorDetail
               });
             }
           }
@@ -843,11 +934,16 @@ function setupIPC() {
   // Auto-updater IPC handlers
   ipcMain.handle('updater:checkForUpdates', async () => {
     try {
-      console.log('=== UPDATER: Manual update check requested');
-      const result = await autoUpdater.checkForUpdates();
+      console.log('=== IPC UPDATER: Manual update check requested via IPC');
+      console.log('=== IPC UPDATER: App version:', app.getVersion());
+      console.log('=== IPC UPDATER: App packaged:', app.isPackaged);
+      console.log('=== IPC UPDATER: Platform:', process.platform);
+      
+      const result = await checkForUpdates();
+      console.log('=== IPC UPDATER: Manual update check completed:', result);
       return result;
     } catch (error) {
-      console.error('=== UPDATER: Error in manual update check:', error);
+      console.error('=== IPC UPDATER: Error in manual update check:', error);
       throw error;
     }
   });
@@ -869,6 +965,66 @@ function setupIPC() {
     } catch (error) {
       console.error('=== UPDATER: Error quitting and installing:', error);
       throw error;
+    }
+  });
+
+  // Debug helper for testing GitHub API access
+  ipcMain.handle('updater:testGitHubAPI', async () => {
+    try {
+      console.log('=== TEST API: Testing GitHub API access...');
+      const https = require('https');
+      
+      const result = await new Promise((resolve, reject) => {
+        const req = https.request('https://api.github.com/repos/JoshuaCarroll/BasketballRosterManager/releases/latest', {
+          method: 'GET',
+          timeout: 15000,
+          headers: {
+            'User-Agent': 'BasketballRosterManager-Updater/3.0.1'
+          }
+        }, (res) => {
+          let data = '';
+          res.on('data', (chunk) => data += chunk);
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              console.log('=== TEST API: GitHub API response:', {
+                statusCode: res.statusCode,
+                latestVersion: parsed.tag_name,
+                publishedAt: parsed.published_at,
+                assetsCount: parsed.assets ? parsed.assets.length : 0
+              });
+              resolve({
+                success: true,
+                statusCode: res.statusCode,
+                latestVersion: parsed.tag_name,
+                publishedAt: parsed.published_at,
+                assets: parsed.assets ? parsed.assets.map(a => ({ name: a.name, size: a.size, downloadUrl: a.browser_download_url })) : []
+              });
+            } catch (parseError) {
+              console.error('=== TEST API: Parse error:', parseError.message);
+              resolve({ success: false, error: 'Parse error: ' + parseError.message, rawData: data });
+            }
+          });
+        });
+        
+        req.on('error', (err) => {
+          console.error('=== TEST API: Request error:', err.message);
+          reject(err);
+        });
+        
+        req.on('timeout', () => {
+          console.error('=== TEST API: Request timeout');
+          req.destroy();
+          reject(new Error('Request timeout'));
+        });
+        
+        req.end();
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('=== TEST API: Error testing GitHub API:', error);
+      return { success: false, error: error.message };
     }
   });
 }

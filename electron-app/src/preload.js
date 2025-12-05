@@ -35,6 +35,7 @@ try {
     checkForUpdates: () => ipcRenderer.invoke('updater:checkForUpdates'),
     downloadUpdate: () => ipcRenderer.invoke('updater:downloadUpdate'),
     quitAndInstall: () => ipcRenderer.invoke('updater:quitAndInstall'),
+    testGitHubAPI: () => ipcRenderer.invoke('updater:testGitHubAPI'),
     
     // Update progress listener
     onUpdateProgress: (callback) => {

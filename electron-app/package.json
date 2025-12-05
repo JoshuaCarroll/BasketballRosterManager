@@ -1,6 +1,6 @@
 {
   "name": "basketball-roster-manager",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Cross-platform Basketball Roster Manager for public address announcers",
   "main": "src/main.js",
   "author": "Joshua Carroll <joshua@carrollsportsmedia.com>",
