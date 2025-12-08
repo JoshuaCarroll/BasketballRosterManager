@@ -155,6 +155,9 @@ body {
 .foul-label {
   font-weight: 500;
   color: var(--text-secondary);
+  text-stroke: 4px white;
+	-webkit-text-stroke: 4px white;
+	paint-order: stroke fill;
 }
 
 .bonus-indicator {
