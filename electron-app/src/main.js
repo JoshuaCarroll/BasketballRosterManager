@@ -510,6 +510,7 @@ function initializeDatabase() {
       foul_reset_period TEXT NOT NULL DEFAULT 'half',
       bonus_fouls INTEGER NOT NULL DEFAULT 7,
       double_bonus_fouls INTEGER NOT NULL DEFAULT 10,
+      max_player_fouls INTEGER NOT NULL DEFAULT 5,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`,
     
@@ -606,6 +607,31 @@ function initializeDatabase() {
 function runMigrations() {
   console.log('Running database migrations...');
   
+  // Migration: Add max_player_fouls column to leagues table
+  db.serialize(() => {
+    db.all("PRAGMA table_info(leagues)", (err, columns) => {
+      if (err) {
+        console.error('Error checking leagues table info:', err);
+        return;
+      }
+      
+      const hasMaxPlayerFouls = columns.some(col => col.name === 'max_player_fouls');
+      
+      if (!hasMaxPlayerFouls) {
+        console.log('Adding max_player_fouls column to leagues table...');
+        db.run("ALTER TABLE leagues ADD COLUMN max_player_fouls INTEGER NOT NULL DEFAULT 5", (err) => {
+          if (err) {
+            console.error('Error adding max_player_fouls column:', err);
+          } else {
+            console.log('Successfully added max_player_fouls column');
+          }
+        });
+      } else {
+        console.log('max_player_fouls column already exists');
+      }
+    });
+  });
+  
   // Migration: Change graduating_class column to description
   db.serialize(() => {
     // Check if the old column exists
@@ -688,12 +714,12 @@ const dbAPI = {
     });
   },
   
-  createLeague: (name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+  createLeague: (name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls = 5) => {
     return new Promise((resolve, reject) => {
       db.run(`
-        INSERT INTO leagues (name, foul_reset_period, bonus_fouls, double_bonus_fouls) 
-        VALUES (?, ?, ?, ?)
-      `, [name, foulResetPeriod, bonusFouls, doubleBonusFouls], function(err) {
+        INSERT INTO leagues (name, foul_reset_period, bonus_fouls, double_bonus_fouls, max_player_fouls) 
+        VALUES (?, ?, ?, ?, ?)
+      `, [name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls], function(err) {
         if (err) reject(err);
         else resolve({ lastID: this.lastID, changes: this.changes });
       });
@@ -735,13 +761,13 @@ const dbAPI = {
     });
   },
 
-  updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+  updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls = 5) => {
     return new Promise((resolve, reject) => {
       db.run(`
         UPDATE leagues 
-        SET name = ?, foul_reset_period = ?, bonus_fouls = ?, double_bonus_fouls = ? 
+        SET name = ?, foul_reset_period = ?, bonus_fouls = ?, double_bonus_fouls = ?, max_player_fouls = ? 
         WHERE id = ?
-      `, [name, foulResetPeriod, bonusFouls, doubleBonusFouls, leagueId], function(err) {
+      `, [name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls, leagueId], function(err) {
         if (err) reject(err);
         else resolve({ lastID: this.lastID, changes: this.changes });
       });
@@ -848,9 +874,9 @@ function setupIPC() {
   });
   
   // Create operations
-  ipcMain.handle('db:createLeague', async (_, name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+  ipcMain.handle('db:createLeague', async (_, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls) => {
     try {
-      return await dbAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+      return await dbAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls);
     } catch (error) {
       console.error('Error creating league:', error);
       throw error;
@@ -885,9 +911,9 @@ function setupIPC() {
     }
   });
 
-  ipcMain.handle('db:updateLeague', async (_, leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) => {
+  ipcMain.handle('db:updateLeague', async (_, leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls) => {
     try {
-      return await dbAPI.updateLeague(leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+      return await dbAPI.updateLeague(leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls);
     } catch (error) {
       console.error('Error updating league:', error);
       throw error;

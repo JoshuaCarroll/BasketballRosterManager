@@ -410,6 +410,27 @@ body {
   background-color: var(--text-muted);
 }
 
+/* Player Foul Visual Indicators */
+.foul-count.danger-fouls {
+  background-color: #fed7aa !important; /* Light orange */
+  color: #c2410c;
+  font-weight: 600;
+}
+
+.foul-count.fouled-out {
+  background-color: #fecaca !important; /* Light red */
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.player-row.fouled-out {
+  opacity: 0.7;
+}
+
+.player-row.fouled-out .player-stat:not(.foul-count) {
+  color: var(--text-muted);
+}
+
 /* Update Notification Styles */
 .update-notification {
   position: fixed;

@@ -74,8 +74,8 @@ class BasketballRosterManager {
       getLeagues: async () => {
         console.warn('Mock API: getLeagues called');
         return [
-          { id: 1, name: 'Mock NCAA - Men', foul_reset_period: 'half', bonus_fouls: 7, double_bonus_fouls: 10 },
-          { id: 2, name: 'Mock High School - Girls', foul_reset_period: 'quarter', bonus_fouls: 5, double_bonus_fouls: 5 }
+          { id: 1, name: 'Mock NCAA - Men', foul_reset_period: 'half', bonus_fouls: 7, double_bonus_fouls: 10, max_player_fouls: 5 },
+          { id: 2, name: 'Mock High School - Girls', foul_reset_period: 'quarter', bonus_fouls: 5, double_bonus_fouls: 5, max_player_fouls: 5 }
         ];
       },
       getTeams: async (leagueId) => {
@@ -141,6 +141,7 @@ class BasketballRosterManager {
         option.dataset.foulResetPeriod = league.foul_reset_period;
         option.dataset.bonusFouls = league.bonus_fouls;
         option.dataset.doubleBonusFouls = league.double_bonus_fouls;
+        option.dataset.maxPlayerFouls = league.max_player_fouls || 5;
         leagueSelect.appendChild(option);
       });
       
@@ -475,9 +476,17 @@ class BasketballRosterManager {
     
     const foulInput = row.querySelector('.foul-input');
     const foulContainer = row.querySelector('.foul-count');
+    const foulClass = this.getFoulClass(totalFouls);
     
     foulInput.value = totalFouls;
-    foulContainer.className = `player-stat foul-count ${this.getFoulClass(totalFouls)}`;
+    foulContainer.className = `player-stat foul-count ${foulClass}`;
+    
+    // Apply fouled-out class to entire row if player is fouled out
+    if (foulClass === 'fouled-out') {
+      row.classList.add('fouled-out');
+    } else {
+      row.classList.remove('fouled-out');
+    }
   }
 
   updateTeamFoulDisplay(isHome) {
@@ -505,8 +514,15 @@ class BasketballRosterManager {
   }
 
   getFoulClass(foulCount) {
-    if (foulCount >= 4) return 'high-fouls';
-    if (foulCount >= 3) return 'warning-fouls';
+    if (!this.currentLeague) return '';
+    
+    const maxFouls = this.currentLeague.max_player_fouls || 5;
+    
+    if (foulCount >= maxFouls) {
+      return 'fouled-out';
+    } else if (foulCount === maxFouls - 1) {
+      return 'danger-fouls';
+    }
     return '';
   }
 
@@ -665,7 +681,8 @@ class BasketballRosterManager {
       name: selectedOption.textContent,
       foul_reset_period: selectedOption.dataset.foulResetPeriod,
       bonus_fouls: parseInt(selectedOption.dataset.bonusFouls),
-      double_bonus_fouls: parseInt(selectedOption.dataset.doubleBonusFouls)
+      double_bonus_fouls: parseInt(selectedOption.dataset.doubleBonusFouls),
+      max_player_fouls: parseInt(selectedOption.dataset.maxPlayerFouls) || 5
     };
 
     // Show edit league button
@@ -820,6 +837,7 @@ class BasketballRosterManager {
     const foulResetPeriod = document.getElementById('foul-reset-period').value;
     const bonusFouls = parseInt(document.getElementById('bonus-fouls').value);
     const doubleBonusFouls = parseInt(document.getElementById('double-bonus-fouls').value);
+    const maxPlayerFouls = parseInt(document.getElementById('max-player-fouls').value);
 
     if (!name) {
       this.showNotification('Please enter a league name', 'error');
@@ -829,12 +847,12 @@ class BasketballRosterManager {
     try {
       if (this.editingLeague) {
         // Update existing league
-        await window.electronAPI.updateLeague(this.editingLeague, name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+        await window.electronAPI.updateLeague(this.editingLeague, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls);
         this.showNotification('League updated successfully', 'success');
         this.editingLeague = null;
       } else {
         // Create new league
-        await window.electronAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls);
+        await window.electronAPI.createLeague(name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls);
         this.showNotification('League created successfully', 'success');
       }
       
@@ -1103,6 +1121,7 @@ class BasketballRosterManager {
     document.getElementById('foul-reset-period').value = this.currentLeague.foul_reset_period;
     document.getElementById('bonus-fouls').value = this.currentLeague.bonus_fouls;
     document.getElementById('double-bonus-fouls').value = this.currentLeague.double_bonus_fouls;
+    document.getElementById('max-player-fouls').value = this.currentLeague.max_player_fouls || 5;
 
     // Set editing flag
     this.editingLeague = this.currentLeague.id;

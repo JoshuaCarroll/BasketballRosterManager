@@ -59,13 +59,11 @@
 }
 
 .stat-input:hover {
-  background-color: var(--background-color);
   border-color: var(--border-color);
 }
 
 .stat-input:focus {
   outline: none;
-  background-color: var(--surface-color);
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgb(37 99 235 / 0.1);
 }

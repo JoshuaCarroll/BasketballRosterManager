@@ -13,8 +13,8 @@ try {
     getTeams: (leagueId) => ipcRenderer.invoke('db:getTeams', leagueId),
     getPlayers: (teamId) => ipcRenderer.invoke('db:getPlayers', teamId),
     
-    createLeague: (name, foulResetPeriod, bonusFouls, doubleBonusFouls) => 
-      ipcRenderer.invoke('db:createLeague', name, foulResetPeriod, bonusFouls, doubleBonusFouls),
+    createLeague: (name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls) => 
+      ipcRenderer.invoke('db:createLeague', name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls),
     createTeam: (leagueId, name, color) => 
       ipcRenderer.invoke('db:createTeam', leagueId, name, color),
     createPlayer: (teamId, jerseyNumber, name, description) =>
@@ -22,8 +22,8 @@ try {
       
     updatePlayer: (playerId, jerseyNumber, name, description) =>
       ipcRenderer.invoke('db:updatePlayer', playerId, jerseyNumber, name, description),
-    updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls) =>
-      ipcRenderer.invoke('db:updateLeague', leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls),
+    updateLeague: (leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls) =>
+      ipcRenderer.invoke('db:updateLeague', leagueId, name, foulResetPeriod, bonusFouls, doubleBonusFouls, maxPlayerFouls),
     updateTeam: (teamId, name, color) =>
       ipcRenderer.invoke('db:updateTeam', teamId, name, color),
       
