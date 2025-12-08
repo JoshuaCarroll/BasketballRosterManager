@@ -909,7 +909,22 @@ class BasketballRosterManager {
         this.showNotification('Team created successfully', 'success');
       }
       
+      // Store current team selections before reloading
+      const homeSelect = document.getElementById('home-team-select');
+      const awaySelect = document.getElementById('away-team-select');
+      const currentHomeTeam = homeSelect ? homeSelect.value : '';
+      const currentAwayTeam = awaySelect ? awaySelect.value : '';
+      
       await this.loadTeams(this.currentLeague.id);
+      
+      // Restore team selections after reload
+      if (homeSelect && currentHomeTeam) {
+        homeSelect.value = currentHomeTeam;
+      }
+      if (awaySelect && currentAwayTeam) {
+        awaySelect.value = currentAwayTeam;
+      }
+      
       this.hideModal();
       
       // Reset modal for next use
