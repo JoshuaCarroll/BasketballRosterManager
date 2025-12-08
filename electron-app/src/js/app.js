@@ -774,14 +774,6 @@ class BasketballRosterManager {
 
     // Color picker - initialize and add event listener
     const colorInput = document.getElementById('team-color');
-    const colorPreview = document.getElementById('team-color-preview');
-    
-    // Initialize preview color
-    colorPreview.style.backgroundColor = colorInput.value;
-    
-    colorInput.addEventListener('change', (e) => {
-      colorPreview.style.backgroundColor = e.target.value;
-    });
   }
 
   showModal(modalId) {
@@ -1135,9 +1127,6 @@ class BasketballRosterManager {
     document.getElementById('team-name').value = team.name;
     document.getElementById('team-color').value = team.color;
 
-    // Update color preview
-    document.getElementById('team-color-preview').style.backgroundColor = team.color;
-
     // Set editing flag
     this.editingTeamId = team.id;
     
@@ -1227,13 +1216,9 @@ class BasketballRosterManager {
     
     // Reset color picker to default
     const colorInput = document.getElementById('team-color');
-    const colorPreview = document.getElementById('team-color-preview');
     
     if (colorInput) {
-      colorInput.value = '#000000';
-    }
-    if (colorPreview) {
-      colorPreview.style.backgroundColor = '#000000';
+      colorInput.value = '#08C95C';
     }
     
     // Hide delete button for new team
