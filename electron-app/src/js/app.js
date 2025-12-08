@@ -550,6 +550,10 @@ class BasketballRosterManager {
     document.getElementById('add-home-player-btn').addEventListener('click', () => this.showAddPlayerModal(true));
     document.getElementById('add-away-player-btn').addEventListener('click', () => this.showAddPlayerModal(false));
     
+    // CSV Import buttons
+    document.getElementById('import-home-roster-btn').addEventListener('click', () => this.showCSVImportModal(true));
+    document.getElementById('import-away-roster-btn').addEventListener('click', () => this.showCSVImportModal(false));
+    
     // Edit buttons
     document.getElementById('edit-league-btn').addEventListener('click', () => this.editLeague());
     document.getElementById('edit-home-team-btn').addEventListener('click', () => this.editTeam(this.homeTeam));
@@ -771,11 +775,13 @@ class BasketballRosterManager {
     document.getElementById('cancel-league-btn').addEventListener('click', () => this.hideModal());
     document.getElementById('cancel-team-btn').addEventListener('click', () => this.hideModal());
     document.getElementById('cancel-player-btn').addEventListener('click', () => this.hideModal());
+    document.getElementById('cancel-import-btn').addEventListener('click', () => this.hideModal());
 
     // Save buttons
     document.getElementById('save-league-btn').addEventListener('click', () => this.saveLeague());
     document.getElementById('save-team-btn').addEventListener('click', () => this.saveTeam());
     document.getElementById('save-player-btn').addEventListener('click', () => this.savePlayer());
+    document.getElementById('import-csv-btn').addEventListener('click', () => this.importCSVRoster());
     
     // Delete buttons
     document.getElementById('delete-league-btn').addEventListener('click', () => this.deleteLeague());
@@ -788,6 +794,9 @@ class BasketballRosterManager {
         this.savePlayer();
       }
     });
+
+    // CSV file input
+    document.getElementById('csv-file-input').addEventListener('change', (e) => this.handleCSVFileSelect(e));
 
     // Color picker - initialize and add event listener
     const colorInput = document.getElementById('team-color');
@@ -1522,6 +1531,344 @@ class BasketballRosterManager {
         }
       }, 300);
     }, 3000);
+  }
+
+  // ===== CSV IMPORT METHODS =====
+  
+  /**
+   * Calculate class (grade) based on graduation year and season year
+   * @param {number} graduationYear - The year the student graduates (e.g., 2026)
+   * @param {number} seasonStartYear - The start year of the season (e.g., 2025 for 2025-2026 season)
+   * @returns {string} Class designation (Fr, So, Jr, Sr, or grade number like "8th", "7th", etc.)
+   */
+  calculatePlayerClass(graduationYear, seasonStartYear) {
+    if (!graduationYear || !seasonStartYear) return '';
+    
+    // Calculate years until graduation from the start of the season
+    const yearsUntilGraduation = graduationYear - seasonStartYear;
+    
+    switch (yearsUntilGraduation) {
+      case 1: return 'Sr';  // Senior - graduates this year
+      case 2: return 'Jr';  // Junior - graduates next year  
+      case 3: return 'So';  // Sophomore - graduates in 2 years
+      case 4: return 'Fr';  // Freshman - graduates in 3 years
+      default:
+        if (yearsUntilGraduation > 4) {
+          // Calculate grade level for middle school/elementary
+          const gradeLevel = 12 - (yearsUntilGraduation - 1);
+          if (gradeLevel >= 1) {
+            const ordinals = ['', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'];
+            return ordinals[gradeLevel] || `Grade ${gradeLevel}`;
+          }
+        }
+        return ''; // Unknown/invalid grade
+    }
+  }
+
+  /**
+   * Extract season start year from CSV title
+   * @param {string} title - Title line from CSV (e.g., "2025-2026 Boys Basketball Varsity Roster")
+   * @returns {number|null} Season start year or null if not found
+   */
+  extractSeasonYear(title) {
+    const yearMatch = title.match(/(\d{4})-\d{4}/);
+    return yearMatch ? parseInt(yearMatch[1]) : null;
+  }
+
+  /**
+   * Parse SBLive CSV content
+   * @param {string} csvContent - Raw CSV content as string
+   * @returns {Object} Parsed data with players and coaches
+   */
+  parseCSV(csvContent) {
+    const lines = csvContent.split(/\r?\n/).filter(line => line.trim());
+    if (lines.length < 3) {
+      throw new Error('Invalid CSV format: Not enough lines');
+    }
+
+    const schoolName = lines[0].trim();
+    const seasonTitle = lines[1].trim();
+    const seasonYear = this.extractSeasonYear(seasonTitle);
+
+    if (!seasonYear) {
+      throw new Error('Could not extract season year from CSV title');
+    }
+
+    const players = [];
+    const coaches = [];
+    let isPlayerSection = true;
+    let headerFound = false;
+
+    for (let i = 2; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      // Check if we're at the header line for players
+      if (line.toLowerCase().includes('no,name,position')) {
+        headerFound = true;
+        isPlayerSection = true;
+        continue;
+      }
+
+      // Check if we're at the header line for coaches
+      if (line.toLowerCase().includes('name,position,experience')) {
+        isPlayerSection = false;
+        continue;
+      }
+
+      // Skip empty lines or lines that look like headers
+      if (!headerFound && !isPlayerSection) continue;
+      
+      const columns = this.parseCSVLine(line);
+      
+      if (isPlayerSection && columns.length >= 2) {
+        // Player row: No, Name, Position, Height, Weight, Year
+        let jerseyNumber = columns[0]?.trim();
+        const name = columns[1]?.trim();
+        const position = columns[2]?.trim() || '';
+        const height = columns[3]?.trim() || '';  // Height is in column 3
+        const weight = columns[4]?.trim() || '';  // Weight is in column 4 (not used in description)
+        const graduationYear = columns[5] ? parseInt(columns[5].trim()) : null;
+
+        // Use jersey number 99 as fallback when number is missing
+        if (!jerseyNumber || jerseyNumber === '') {
+          jerseyNumber = '99';
+        }
+
+        if (name && jerseyNumber !== 'No') {
+          const playerClass = graduationYear ? this.calculatePlayerClass(graduationYear, seasonYear) : '';
+          const description = this.buildPlayerDescription(position, height, playerClass);
+          
+          players.push({
+            jerseyNumber: jerseyNumber,
+            name: name,
+            description: description,
+            graduationYear: graduationYear
+          });
+        }
+      } else if (!isPlayerSection && columns.length >= 2) {
+        // Coach row: Name, Position, Experience
+        const name = columns[0]?.trim();
+        const position = columns[1]?.trim() || '';
+        const experience = columns[2]?.trim() || '';
+        
+        if (name && name !== 'Name') {
+          const jerseyNumber = position.toLowerCase().includes('head') ? 'HC' : 'AC';
+          coaches.push({
+            jerseyNumber: jerseyNumber,
+            name: name,
+            description: experience
+          });
+        }
+      }
+    }
+
+    return {
+      schoolName,
+      seasonTitle,
+      seasonYear,
+      players,
+      coaches
+    };
+  }
+
+  /**
+   * Parse a single CSV line, handling quoted fields
+   * @param {string} line - CSV line to parse
+   * @returns {Array<string>} Array of field values
+   */
+  parseCSVLine(line) {
+    // For SBLive CSV format, we can use simple comma splitting
+    // since the quotes are part of measurements (5' 7") not CSV delimiters
+    return line.split(',').map(field => field.trim());
+  }
+
+  /**
+   * Build player description from position, height, and class
+   * @param {string} position - Player position
+   * @param {string} height - Player height  
+   * @param {string} playerClass - Player class (Fr, So, Jr, Sr, etc.)
+   * @returns {string} Formatted description
+   */
+  buildPlayerDescription(position, height, playerClass) {
+    const parts = [];
+    
+    if (position) parts.push(position);
+    if (height) parts.push(height);
+    if (playerClass) parts.push(playerClass);
+    
+    return parts.join(', ');
+  }
+
+  /**
+   * Show CSV import modal for specified team
+   * @param {boolean} isHome - Whether this is for home team (true) or away team (false)
+   */
+  showCSVImportModal(isHome) {
+    const team = isHome ? this.homeTeam : this.awayTeam;
+    if (!team) {
+      this.showNotification('Please select a team first', 'error');
+      return;
+    }
+
+    this.importingTeamId = team.id;
+    this.importingIsHome = isHome;
+    
+    // Reset modal state
+    document.getElementById('csv-file-input').value = '';
+    document.getElementById('preserve-existing-players').checked = true;
+    document.getElementById('csv-preview').style.display = 'none';
+    document.getElementById('import-csv-btn').disabled = true;
+    
+    this.showModal('csv-import-modal');
+  }
+
+  /**
+   * Handle CSV file selection
+   * @param {Event} event - File input change event
+   */
+  async handleCSVFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      document.getElementById('csv-preview').style.display = 'none';
+      document.getElementById('import-csv-btn').disabled = true;
+      return;
+    }
+
+    try {
+      const csvContent = await this.readFileAsText(file);
+      const parsedData = this.parseCSV(csvContent);
+      
+      // Show preview
+      this.showCSVPreview(parsedData);
+      document.getElementById('import-csv-btn').disabled = false;
+      
+      // Store parsed data for import
+      this.pendingImportData = parsedData;
+      
+    } catch (error) {
+      console.error('Error parsing CSV:', error);
+      this.showNotification(`Error parsing CSV: ${error.message}`, 'error');
+      document.getElementById('csv-preview').style.display = 'none';
+      document.getElementById('import-csv-btn').disabled = true;
+    }
+  }
+
+  /**
+   * Read file as text
+   * @param {File} file - File object to read
+   * @returns {Promise<string>} File content as string
+   */
+  readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = e => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }
+
+  /**
+   * Show preview of parsed CSV data
+   * @param {Object} parsedData - Parsed CSV data
+   */
+  showCSVPreview(parsedData) {
+    const preview = document.getElementById('csv-preview-content');
+    const { schoolName, seasonTitle, players, coaches } = parsedData;
+    
+    let previewHTML = `<strong>${schoolName}</strong><br>`;
+    previewHTML += `<em>${seasonTitle}</em><br><br>`;
+    
+    previewHTML += `<strong>Players (${players.length}):</strong><br>`;
+    players.slice(0, 5).forEach(player => {
+      previewHTML += `#${player.jerseyNumber} ${player.name}`;
+      if (player.description) {
+        previewHTML += ` (${player.description})`;
+      }
+      previewHTML += '<br>';
+    });
+    
+    if (players.length > 5) {
+      previewHTML += `... and ${players.length - 5} more players<br>`;
+    }
+    
+    if (coaches.length > 0) {
+      previewHTML += `<br><strong>Coaches (${coaches.length}):</strong><br>`;
+      coaches.forEach(coach => {
+        previewHTML += `${coach.jerseyNumber} ${coach.name}`;
+        if (coach.description) {
+          previewHTML += ` (${coach.description})`;
+        }
+        previewHTML += '<br>';
+      });
+    }
+    
+    preview.innerHTML = previewHTML;
+    document.getElementById('csv-preview').style.display = 'block';
+  }
+
+  /**
+   * Import the parsed CSV data
+   */
+  async importCSVRoster() {
+    if (!this.pendingImportData || !this.importingTeamId) {
+      this.showNotification('No import data available', 'error');
+      return;
+    }
+
+    const preserveExisting = document.getElementById('preserve-existing-players').checked;
+    const { players, coaches } = this.pendingImportData;
+    const allPersons = [...players, ...coaches];
+
+    try {
+      let importCount = 0;
+      let errorCount = 0;
+      const errors = [];
+
+      // If not preserving existing players, clear the roster first
+      if (!preserveExisting) {
+        try {
+          await window.electronAPI.deleteAllPlayersForTeam(this.importingTeamId);
+          console.log('Cleared existing players before import');
+        } catch (error) {
+          console.error('Error clearing existing players:', error);
+          this.showNotification('Warning: Could not clear existing players', 'warning');
+        }
+      }
+      
+      for (const person of allPersons) {
+        try {
+          await window.electronAPI.createPlayer(
+            this.importingTeamId,
+            person.jerseyNumber,
+            person.name,
+            person.description || ''
+          );
+          importCount++;
+        } catch (error) {
+          errorCount++;
+          errors.push(`${person.name} (#${person.jerseyNumber}): ${error.message}`);
+        }
+      }
+
+      // Reload the roster to show imported players
+      await this.loadPlayers(this.importingTeamId, this.importingIsHome);
+
+      // Show results
+      if (errorCount === 0) {
+        this.showNotification(`Successfully imported ${importCount} players/coaches`, 'success');
+      } else {
+        const message = `Imported ${importCount}, failed ${errorCount}. Check console for details.`;
+        this.showNotification(message, 'warning');
+        console.error('Import errors:', errors);
+      }
+
+      this.hideModal();
+      
+    } catch (error) {
+      console.error('Error during CSV import:', error);
+      this.showNotification('Import failed: ' + error.message, 'error');
+    }
   }
 }
 

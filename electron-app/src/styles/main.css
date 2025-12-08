@@ -486,3 +486,48 @@ body {
   opacity: 0.9;
   white-space: nowrap;
 }
+
+/* CSV Import Styles */
+.roster-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+.csv-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.csv-preview h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.csv-preview-content {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.help-text {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}

@@ -795,6 +795,15 @@ const dbAPI = {
       });
     });
   },
+
+  deleteAllPlayersForTeam: (teamId) => {
+    return new Promise((resolve, reject) => {
+      db.run('UPDATE players SET is_active = 0 WHERE team_id = ?', [teamId], function(err) {
+        if (err) reject(err);
+        else resolve({ changes: this.changes });
+      });
+    });
+  },
   
   deleteLeague: (leagueId) => {
     return new Promise((resolve, reject) => {
@@ -935,6 +944,15 @@ function setupIPC() {
       return await dbAPI.deletePlayer(playerId);
     } catch (error) {
       console.error('Error deleting player:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db:deleteAllPlayersForTeam', async (_, teamId) => {
+    try {
+      return await dbAPI.deleteAllPlayersForTeam(teamId);
+    } catch (error) {
+      console.error('Error deleting all players for team:', error);
       throw error;
     }
   });

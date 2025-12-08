@@ -60,7 +60,10 @@
               <span class="foul-label">Team Fouls: <span id="home-team-fouls">0</span></span>
               <span class="bonus-indicator" id="home-bonus-indicator"></span>
             </div>
-            <button id="add-home-player-btn" class="btn btn-sm">Add Player</button>
+            <div class="roster-actions">
+              <button id="add-home-player-btn" class="btn btn-sm">Add Player</button>
+              <button id="import-home-roster-btn" class="btn btn-sm btn-secondary">Import CSV</button>
+            </div>
           </div>
           <div class="roster-grid-header">
             <div class="header-cell">In</div>
@@ -90,7 +93,10 @@
               <span class="foul-label">Team Fouls: <span id="away-team-fouls">0</span></span>
               <span class="bonus-indicator" id="away-bonus-indicator"></span>
             </div>
-            <button id="add-away-player-btn" class="btn btn-sm">Add Player</button>
+            <div class="roster-actions">
+              <button id="add-away-player-btn" class="btn btn-sm">Add Player</button>
+              <button id="import-away-roster-btn" class="btn btn-sm btn-secondary">Import CSV</button>
+            </div>
           </div>
           <div class="roster-grid-header">
             <div class="header-cell">In</div>
@@ -209,6 +215,35 @@
         <div class="modal-footer">
           <button id="cancel-player-btn" class="btn btn-secondary">Cancel</button>
           <button id="save-player-btn" class="btn btn-primary">Save Player</button>
+        </div>
+      </div>
+
+      <!-- CSV Import Modal -->
+      <div id="csv-import-modal" class="modal">
+        <div class="modal-header">
+          <h2>Import Roster from CSV</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="csv-file-input">Select CSV File:</label>
+            <input type="file" id="csv-file-input" class="input-field" accept=".csv" />
+            <small class="help-text">Select a SBLive roster CSV file to import</small>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="preserve-existing-players" class="checkbox-input" checked>
+              Keep existing players (unchecked will replace entire roster)
+            </label>
+          </div>
+          <div id="csv-preview" class="csv-preview" style="display: none;">
+            <h4>Preview:</h4>
+            <div id="csv-preview-content"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-import-btn" class="btn btn-secondary">Cancel</button>
+          <button id="import-csv-btn" class="btn btn-primary" disabled>Import Roster</button>
         </div>
       </div>
     </div>

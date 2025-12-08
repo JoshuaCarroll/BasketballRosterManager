@@ -28,6 +28,7 @@ try {
       ipcRenderer.invoke('db:updateTeam', teamId, name, color),
       
     deletePlayer: (playerId) => ipcRenderer.invoke('db:deletePlayer', playerId),
+    deleteAllPlayersForTeam: (teamId) => ipcRenderer.invoke('db:deleteAllPlayersForTeam', teamId),
     deleteLeague: (leagueId) => ipcRenderer.invoke('db:deleteLeague', leagueId),
     deleteTeam: (teamId) => ipcRenderer.invoke('db:deleteTeam', teamId),
     
