@@ -1211,9 +1211,15 @@ class BasketballRosterManager {
     document.getElementById('team-modal-title').textContent = 'Edit Team';
     document.getElementById('save-team-btn').textContent = 'Update Team';
 
-    // Populate form with current team data
-    document.getElementById('team-name').value = team.name;
-    document.getElementById('team-color').value = team.color;
+    // Populate form with current team data and ensure fields are enabled
+    const teamNameField = document.getElementById('team-name');
+    const teamColorField = document.getElementById('team-color');
+    
+    teamNameField.value = team.name;
+    teamNameField.disabled = false;
+    
+    teamColorField.value = team.color;
+    teamColorField.disabled = false;
 
     // Set editing flag
     this.editingTeamId = team.id;
@@ -1299,14 +1305,17 @@ class BasketballRosterManager {
     // Clear editing flag
     this.editingTeamId = null;
     
-    // Clear form fields
-    document.getElementById('team-name').value = '';
+    // Clear form fields and ensure they are enabled
+    const teamNameField = document.getElementById('team-name');
+    teamNameField.value = '';
+    teamNameField.disabled = false;
     
-    // Reset color picker to default
+    // Reset color picker to default and ensure it's enabled
     const colorInput = document.getElementById('team-color');
     
     if (colorInput) {
       colorInput.value = '#08C95C';
+      colorInput.disabled = false;
     }
     
     // Hide delete button for new team
