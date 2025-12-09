@@ -16,6 +16,7 @@ class BasketballRosterManager {
     this.editingLeague = null;
     this.editingTeamId = null;
     this.currentPlayers = { home: [], away: [] };
+    this.currentTeamSide = null; // Track which dropdown (true=home, false=away) triggered team creation
 
     this.init();
   }
@@ -959,11 +960,47 @@ class BasketballRosterManager {
         this.editingTeamId = null;
       } else {
         // Create new team
-        await window.electronAPI.createTeam(this.currentLeague.id, name, color);
+        const result = await window.electronAPI.createTeam(this.currentLeague.id, name, color);
         this.showNotification('Team created successfully', 'success');
+        
+        // Store current team selections before reloading
+        const homeSelect = document.getElementById('home-team-select');
+        const awaySelect = document.getElementById('away-team-select');
+        const currentHomeTeam = homeSelect ? homeSelect.value : '';
+        const currentAwayTeam = awaySelect ? awaySelect.value : '';
+        
+        await this.loadTeams(this.currentLeague.id);
+        
+        // Auto-select newly created team in the appropriate dropdown
+        if (this.currentTeamSide !== null && result && result.lastID) {
+          const targetSelect = this.currentTeamSide ? homeSelect : awaySelect;
+          if (targetSelect) {
+            targetSelect.value = result.lastID.toString();
+            // Trigger change event to update the UI properly
+            await this.onTeamChange(this.currentTeamSide);
+          }
+        } else {
+          // Restore previous selections for editing case
+          if (homeSelect && currentHomeTeam) {
+            homeSelect.value = currentHomeTeam;
+          }
+          if (awaySelect && currentAwayTeam) {
+            awaySelect.value = currentAwayTeam;
+          }
+        }
+        
+        // Reset currentTeamSide after use
+        this.currentTeamSide = null;
+        
+        this.hideModal();
+        
+        // Reset modal for next use
+        document.getElementById('team-modal-title').textContent = 'New Team';
+        document.getElementById('save-team-btn').textContent = 'Save Team';
+        return; // Early return to avoid duplicate code below
       }
       
-      // Store current team selections before reloading
+      // Store current team selections before reloading (for editing case)
       const homeSelect = document.getElementById('home-team-select');
       const awaySelect = document.getElementById('away-team-select');
       const currentHomeTeam = homeSelect ? homeSelect.value : '';
