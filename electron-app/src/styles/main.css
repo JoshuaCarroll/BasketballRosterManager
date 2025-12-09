@@ -531,3 +531,17 @@ body {
   font-size: 0.875rem;
   color: var(--text-muted);
 }
+
+/* Point columns visibility toggle */
+.hide-point-columns .point-column {
+  display: none;
+}
+
+/* Adjust grid layout when point columns are hidden */
+.hide-point-columns .roster-grid-header {
+  grid-template-columns: 3rem 4rem 1fr 4rem 6rem;
+}
+
+.hide-point-columns .player-row {
+  grid-template-columns: 3rem 4rem 1fr 4rem 6rem;
+}

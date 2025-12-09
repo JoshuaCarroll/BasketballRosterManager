@@ -301,6 +301,8 @@ function createWindow() {
   createMenu();
 }
 
+let pointColumnsMenuItem;
+
 function createMenu() {
   const template = [
     {
@@ -360,31 +362,31 @@ function createMenu() {
       label: 'View',
       submenu: [
         {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click: () => {
-            mainWindow.reload();
-          }
-        },
-        {
-          label: 'Force Reload',
-          accelerator: 'CmdOrCtrl+Shift+R',
-          click: () => {
-            mainWindow.webContents.reloadIgnoringCache();
-          }
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
-          click: () => {
-            mainWindow.webContents.toggleDevTools();
-          }
+          label: 'Show Point Columns',
+          type: 'checkbox',
+          checked: true,
+          click: (menuItem) => {
+            mainWindow.webContents.send('menu-action', 'toggle-point-columns', menuItem.checked);
+          },
+          id: 'point-columns-menu'
         }
       ]
     },
     {
       label: 'Help',
       submenu: [
+        {
+          label: 'About Basketball Roster Manager',
+          click: () => {
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              buttons: ['OK'],
+              title: 'About',
+              message: 'Basketball Roster Manager',
+              detail: `Version: ${app.getVersion()}\nA cross-platform roster management tool for basketball games.`
+            });
+          }
+        },
         {
           label: 'Check for Updates',
           click: async () => {
@@ -437,17 +439,27 @@ function createMenu() {
         },
         { type: 'separator' },
         {
-          label: 'About Basketball Roster Manager',
+          label: 'Reload',
+          accelerator: 'CmdOrCtrl+R',
           click: () => {
-            dialog.showMessageBox(mainWindow, {
-              type: 'info',
-              buttons: ['OK'],
-              title: 'About',
-              message: 'Basketball Roster Manager',
-              detail: `Version: ${app.getVersion()}\nA cross-platform roster management tool for basketball games.`
-            });
+            mainWindow.reload();
           }
-        }
+        },
+        {
+          label: 'Force Reload',
+          accelerator: 'CmdOrCtrl+Shift+R',
+          click: () => {
+            mainWindow.webContents.reloadIgnoringCache();
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
+          click: () => {
+            mainWindow.webContents.toggleDevTools();
+          }
+        },
       ]
     }
   ];
@@ -680,6 +692,36 @@ function runMigrations() {
       }
     });
   });
+
+  // Migration: Create settings table if it doesn't exist
+  db.serialize(() => {
+    db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='settings'", (err, table) => {
+      if (err) {
+        console.error('Error checking for settings table:', err);
+        return;
+      }
+      
+      if (!table) {
+        console.log('Creating settings table...');
+        db.run(`
+          CREATE TABLE settings (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `, (err) => {
+          if (err) {
+            console.error('Error creating settings table:', err);
+          } else {
+            console.log('Successfully created settings table');
+          }
+        });
+      } else {
+        console.log('Settings table already exists');
+      }
+    });
+  });
 }
 
 // Database API methods (using Promises for async operations)
@@ -799,6 +841,27 @@ const dbAPI = {
   deleteAllPlayersForTeam: (teamId) => {
     return new Promise((resolve, reject) => {
       db.run('UPDATE players SET is_active = 0 WHERE team_id = ?', [teamId], function(err) {
+        if (err) reject(err);
+        else resolve({ changes: this.changes });
+      });
+    });
+  },
+
+  getSetting: (key) => {
+    return new Promise((resolve, reject) => {
+      db.get('SELECT value FROM settings WHERE key = ?', [key], (err, row) => {
+        if (err) reject(err);
+        else resolve(row ? row.value : null);
+      });
+    });
+  },
+
+  setSetting: (key, value) => {
+    return new Promise((resolve, reject) => {
+      db.run(`
+        INSERT OR REPLACE INTO settings (key, value) 
+        VALUES (?, ?)
+      `, [key, value], function(err) {
         if (err) reject(err);
         else resolve({ changes: this.changes });
       });
@@ -972,6 +1035,38 @@ function setupIPC() {
     } catch (error) {
       console.error('Error deleting team:', error);
       throw error;
+    }
+  });
+
+  // Settings operations
+  ipcMain.handle('settings:get', async (_, key) => {
+    try {
+      return await dbAPI.getSetting(key);
+    } catch (error) {
+      console.error('Error getting setting:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('settings:set', async (_, key, value) => {
+    try {
+      return await dbAPI.setSetting(key, value);
+    } catch (error) {
+      console.error('Error setting setting:', error);
+      throw error;
+    }
+  });
+
+  // Menu state management
+  ipcMain.handle('menu:updatePointColumns', async (_, checked) => {
+    try {
+      const menu = Menu.getApplicationMenu();
+      const menuItem = menu.getMenuItemById('point-columns-menu');
+      if (menuItem) {
+        menuItem.checked = checked;
+      }
+    } catch (error) {
+      console.error('Error updating menu state:', error);
     }
   });
 

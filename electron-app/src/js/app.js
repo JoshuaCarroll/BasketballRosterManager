@@ -26,6 +26,7 @@ class BasketballRosterManager {
     
     try {
       await this.loadLeagues();
+      await this.loadSettings();
       this.setupEventListeners();
       this.setupMenuHandlers();
     } catch (error) {
@@ -275,16 +276,16 @@ class BasketballRosterManager {
       <div class="player-stat foul-count ${this.getFoulClass(totalFouls)}">
         <input type="number" class="stat-input foul-input" value="${totalFouls}" min="0" max="20">
       </div>
-      <div class="player-stat">
+      <div class="player-stat point-column">
         <input type="number" class="stat-input" value="${stats.fieldGoals}" min="0" data-stat="fieldGoals">
       </div>
-      <div class="player-stat">
+      <div class="player-stat point-column">
         <input type="number" class="stat-input" value="${stats.threePointers}" min="0" data-stat="threePointers">
       </div>
-      <div class="player-stat">
+      <div class="player-stat point-column">
         <input type="number" class="stat-input" value="${stats.freeThrows}" min="0" data-stat="freeThrows">
       </div>
-      <div class="player-stat">
+      <div class="player-stat point-column">
         <input type="number" class="stat-input stat-calculated" value="${totalPoints}" readonly>
       </div>
       <div class="player-actions">
@@ -632,7 +633,7 @@ class BasketballRosterManager {
     }
     
     try {
-      window.electronAPI.onMenuAction((event, action) => {
+      window.electronAPI.onMenuAction((event, action, ...args) => {
         switch (action) {
           case 'new-league':
             this.showNewLeagueModal();
@@ -650,6 +651,9 @@ class BasketballRosterManager {
             break;
           case 'swap-teams':
             this.swapTeams();
+            break;
+          case 'toggle-point-columns':
+            this.togglePointColumns(args[0]);
             break;
         }
       });
@@ -753,6 +757,47 @@ class BasketballRosterManager {
     
     // Load players
     await this.loadPlayers(teamId, isHome);
+  }
+
+  // ===== SETTINGS MANAGEMENT =====
+  async loadSettings() {
+    try {
+      const showPointColumns = await window.electronAPI.getSetting('showPointColumns');
+      // Default to true if not set
+      const shouldShow = showPointColumns === null ? true : showPointColumns === 'true';
+      this.setPointColumnsVisibility(shouldShow);
+      // Update menu state to match setting
+      if (window.electronAPI.updateMenuPointColumns) {
+        await window.electronAPI.updateMenuPointColumns(shouldShow);
+      }
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+      // Default to showing columns
+      this.setPointColumnsVisibility(true);
+    }
+  }
+
+  async togglePointColumns(checked) {
+    try {
+      await window.electronAPI.setSetting('showPointColumns', checked.toString());
+      this.setPointColumnsVisibility(checked);
+      this.showNotification(
+        checked ? 'Point columns shown' : 'Point columns hidden', 
+        'success'
+      );
+    } catch (error) {
+      console.error('Failed to save point columns setting:', error);
+      this.showNotification('Failed to save setting', 'error');
+    }
+  }
+
+  setPointColumnsVisibility(show) {
+    const appElement = document.getElementById('app');
+    if (show) {
+      appElement.classList.remove('hide-point-columns');
+    } else {
+      appElement.classList.add('hide-point-columns');
+    }
   }
 
   // ===== MODAL MANAGEMENT =====

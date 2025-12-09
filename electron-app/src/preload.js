@@ -31,6 +31,11 @@ try {
     deleteAllPlayersForTeam: (teamId) => ipcRenderer.invoke('db:deleteAllPlayersForTeam', teamId),
     deleteLeague: (leagueId) => ipcRenderer.invoke('db:deleteLeague', leagueId),
     deleteTeam: (teamId) => ipcRenderer.invoke('db:deleteTeam', teamId),
+
+    // Settings
+    getSetting: (key) => ipcRenderer.invoke('settings:get', key),
+    setSetting: (key, value) => ipcRenderer.invoke('settings:set', key, value),
+    updateMenuPointColumns: (checked) => ipcRenderer.invoke('menu:updatePointColumns', checked),
     
     // Auto-updater functions
     checkForUpdates: () => ipcRenderer.invoke('updater:checkForUpdates'),
