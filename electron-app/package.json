@@ -1,31 +1,32 @@
 {
   "name": "basketball-roster-manager",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Cross-platform Basketball Roster Manager for public address announcers",
   "main": "src/main.js",
-  "author": "Joshua Carroll <joshua@carrollsportsmedia.com>",
+  "author": "Joshua Carroll",
   "license": "MIT",
   "homepage": "https://github.com/JoshuaCarroll/BasketballRosterManager",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "rebuild": "electron-rebuild",
-    "prebuild": "npm run rebuild",
+    "postinstall": "electron-builder install-app-deps",
+    "prebuild": "echo Skipping rebuild - using prebuilt binaries",
     "build": "electron-builder",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish=never",
-    "build:simple": "npm run pack && powershell -Command \"Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath 'dist/Basketball-Roster-Manager-v3.0.0-win64.zip' -Force\""
+    "build:simple:win": "npm run pack && powershell -Command \"Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath 'dist/Basketball-Roster-Manager-v3.1.0-win64.zip' -Force\"",
+    "build:simple:mac": "npm run pack && cd dist && zip -r Basketball-Roster-Manager-v3.1.0-mac.zip mac",
+    "build:simple": "npm run pack"
   },
   "devDependencies": {
     "electron": "^35.7.5",
-    "electron-builder": "^24.6.4",
-    "electron-rebuild": "^3.2.9"
+    "electron-builder": "^24.6.4"
   },
   "build": {
-    "appId": "com.carrollsportsmedia.basketball-roster-manager",
+    "appId": "com.aa5jc.basketball-roster-manager",
     "productName": "Basketball Roster Manager",
     "directories": {
       "output": "dist"
@@ -36,6 +37,7 @@
     ],
     "nodeGypRebuild": false,
     "buildDependenciesFromSource": false,
+    "npmRebuild": false,
     "mac": {
       "icon": "assets/icon.icns",
       "category": "public.app-category.sports",
