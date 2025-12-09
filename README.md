@@ -1,8 +1,8 @@
-# Basketball Roster Manager v3.0 - Cross-Platform Edition
+# Basketball Roster Manager v3
 
 As a public address announcer I've announced nearly 1,000 games varying from club leagues, to varsity, to NCAA Division I to MiLB. I know that rosters are valuable. I also know just how easy it is to get rosters mixed up. At JV and varsity games, some coaches list players by jersey number (bless you) and some alphabetically (go stub your toe!), while sometimes all you get is a scribbled piece of paper 2 minutes before the game in no order whatsoever! (Seriously, who raised you!?)
 
-I created this program to help keep up with rosters, but it quickly turned into something so much more. Now it tracks personal fouls, team fouls, field goals, three pointers, and free throws! Rosters are automatically sorted numerically by jersey number.  They can also be color-coded to match the teams' jerseys. Lastly, you can easily swap the rosters from one side of the screen to the other, enabling you to keep the roster on the same side as their goal.
+I created this program to help keep up with rosters, but it quickly turned into something so much more. Now it tracks personal fouls, team fouls, field goals, three pointers, and free throws! Just double-click in any number field to increment it! Rosters are automatically sorted numerically by jersey number.  They can also be color-coded to match the teams' jerseys. Lastly, you can easily swap the rosters from one side of the screen to the other, enabling you to keep the roster on the same side as their goal.
 
 Basketball Roster Manager is now cross platform!  So whether you're using Windows or Mac, you're ready to roll!
 
@@ -10,7 +10,9 @@ Basketball Roster Manager is now cross platform!  So whether you're using Window
 
 ## Getting Started
 
-Download the run the latest release on the [releases page](https://github.com/JoshuaCarroll/BasketballRosterManager/releases/).
+Download the latest release on the [releases page](https://github.com/JoshuaCarroll/BasketballRosterManager/releases/). 
+- Windows users: download and run the installer ending with `.exe`.
+- Mac users: download and run the appropriate `.dmg` file.
 
 ## 🎮 How to Use
 
@@ -25,6 +27,7 @@ Download the run the latest release on the [releases page](https://github.com/Jo
    - Points calculate automatically
 
 ### Smart Features
+- **Double-click to Increment**: Simply double-click on any number field to add one to it. This works on fouls and points! Make a mistake? You can still type a value.
 - **Auto-Sorting**: Players stay sorted by number even after check-ins
 - **Visual Feedback**: Checked-in players highlighted in yellow
 - **Foul Tracking**: Adapts to your league's reset rules (quarter/half/game)
@@ -50,6 +53,7 @@ You can also create custom leagues with your own foul rules!
 - **✅ Configurable Foul Rules**: Different leagues have different foul reset periods and bonus thresholds
 - **✅ Quarter/Half Tracking**: Support for leagues that reset fouls each quarter vs. each half
 - **✅ Enhanced Bonus System**: Visual indicators for bonus (e.g., 7 fouls) and double-bonus (e.g., 5 fouls for HS girls)
+- **✅ Import**: Import roster CSV files from SBLive to get you into the game faster
 
 ### 🌟 Additional Modern Enhancements
 - **Cross-Platform**: Runs on Windows, macOS, and Linux
@@ -64,7 +68,7 @@ You can also create custom leagues with your own foul rules!
 
 Contributions to this project can be made by using the program and providing feedback or by assisting in the programming and submitting pull requests. If you have a feature request or find a problem, simply report it on the [issues tab](https://github.com/JoshuaCarroll/BasketballRosterManager/issues) tab.
 
-## 🚀 Installation & Setup
+## 🚀 Installation & Setup (for developers.. normal people can ignore this part)
 
 ### Option 1: Development Mode (Recommended for Testing)
 ```bash
@@ -108,7 +112,7 @@ electron-app/
 
 ## 🎯 Comparison with Original
 
-| Feature | Original (2014) | New Version (2024) |
+| Feature | Original (2014) | New Version (2025) |
 |---------|-----------------|-------------------|
 | Platform | Windows only | Windows, macOS, Linux |
 | UI Framework | Windows Forms | Modern web UI |
