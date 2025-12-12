@@ -206,11 +206,8 @@ class BasketballRosterManager {
       const players = await window.electronAPI.getPlayers(teamId);
       const container = document.getElementById(isHome ? 'home-players' : 'away-players');
       
-      // Sort players by jersey number with custom logic
-      players.sort((a, b) => {
-        return this.compareJerseyNumbers(a.jersey_number, b.jersey_number);
-      });
-
+      const teamKey = isHome ? 'home' : 'away';
+      
       container.innerHTML = '';
 
       if (players.length === 0) {
@@ -223,15 +220,7 @@ class BasketballRosterManager {
         return;
       }
 
-      // Store players data for editing
-      const teamKey = isHome ? 'home' : 'away';
-      this.currentPlayers[teamKey] = players;
-      
-      players.forEach(player => {
-        this.createPlayerRow(player, isHome);
-      });
-
-      // Initialize game stats for this team
+      // Initialize game stats for this team BEFORE sorting
       this.gameStats[teamKey] = {};
       players.forEach(player => {
         this.gameStats[teamKey][player.id] = {
@@ -241,6 +230,18 @@ class BasketballRosterManager {
           freeThrows: 0,
           isCheckedIn: false
         };
+      });
+
+      // Sort players by "In" status first, then by jersey number
+      players.sort((a, b) => {
+        return this.comparePlayersWithInStatus(a, b, teamKey);
+      });
+
+      // Store players data for editing
+      this.currentPlayers[teamKey] = players;
+      
+      players.forEach(player => {
+        this.createPlayerRow(player, isHome);
       });
 
       this.updateTeamFoulDisplay(isHome);
@@ -309,9 +310,13 @@ class BasketballRosterManager {
       const playerId = parseInt(row.dataset.playerId);
       const teamKey = row.dataset.teamSide;
       const isChecked = e.target.checked;
+      const isHome = teamKey === 'home';
 
       this.gameStats[teamKey][playerId].isCheckedIn = isChecked;
       row.classList.toggle('checked-in', isChecked);
+      
+      // Re-sort the player list to show checked players first
+      this.resortPlayerList(isHome);
     });
 
     // Stat inputs
@@ -439,6 +444,36 @@ class BasketballRosterManager {
     
     // If both are non-numeric, sort alphabetically
     return jerseyA.localeCompare(jerseyB);
+  }
+
+  comparePlayersWithInStatus(playerA, playerB, teamKey) {
+    // First sort by "In" status (checked players first)
+    const statsA = (this.gameStats[teamKey] && this.gameStats[teamKey][playerA.id]) || { isCheckedIn: false };
+    const statsB = (this.gameStats[teamKey] && this.gameStats[teamKey][playerB.id]) || { isCheckedIn: false };
+    
+    if (statsA.isCheckedIn && !statsB.isCheckedIn) return -1;
+    if (!statsA.isCheckedIn && statsB.isCheckedIn) return 1;
+    
+    // If "In" status is the same, sort by jersey number
+    return this.compareJerseyNumbers(playerA.jersey_number, playerB.jersey_number);
+  }
+
+  resortPlayerList(isHome) {
+    const teamKey = isHome ? 'home' : 'away';
+    const players = this.currentPlayers[teamKey];
+    
+    if (!players || players.length === 0) return;
+    
+    // Sort players by "In" status first, then by jersey number
+    players.sort((a, b) => this.comparePlayersWithInStatus(a, b, teamKey));
+    
+    // Re-render the player list
+    const container = document.getElementById(isHome ? 'home-players' : 'away-players');
+    container.innerHTML = '';
+    
+    players.forEach(player => {
+      this.createPlayerRow(player, isHome);
+    });
   }
 
   calculateTeamFoulsForPeriod(foulArray) {
