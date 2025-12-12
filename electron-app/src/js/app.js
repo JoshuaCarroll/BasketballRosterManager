@@ -201,7 +201,7 @@ class BasketballRosterManager {
     }
   }
 
-  async loadPlayers(teamId, isHome = true) {
+  async loadPlayers(teamId, isHome = true, resetStats = false) {
     try {
       const players = await window.electronAPI.getPlayers(teamId);
       const container = document.getElementById(isHome ? 'home-players' : 'away-players');
@@ -221,15 +221,22 @@ class BasketballRosterManager {
       }
 
       // Initialize game stats for this team BEFORE sorting
-      this.gameStats[teamKey] = {};
+      // Preserve existing game stats when adding new players unless resetStats is true
+      if (!this.gameStats[teamKey] || resetStats) {
+        this.gameStats[teamKey] = {};
+      }
+      
       players.forEach(player => {
-        this.gameStats[teamKey][player.id] = {
-          fouls: [0, 0, 0, 0], // quarters 1-4
-          fieldGoals: 0,
-          threePointers: 0,
-          freeThrows: 0,
-          isCheckedIn: false
-        };
+        // Only initialize stats for new players, preserve existing ones unless resetStats is true
+        if (!this.gameStats[teamKey][player.id] || resetStats) {
+          this.gameStats[teamKey][player.id] = {
+            fouls: [0, 0, 0, 0], // quarters 1-4
+            fieldGoals: 0,
+            threePointers: 0,
+            freeThrows: 0,
+            isCheckedIn: false
+          };
+        }
       });
 
       // Sort players by "In" status first, then by jersey number
@@ -791,8 +798,8 @@ class BasketballRosterManager {
     const rosterHeader = document.getElementById(rosterHeaderId).querySelector('.roster-header');
     rosterHeader.style.backgroundColor = teamColor;
     
-    // Load players
-    await this.loadPlayers(teamId, isHome);
+    // Load players (reset stats since we're switching teams)
+    await this.loadPlayers(teamId, isHome, true);
   }
 
   // ===== SETTINGS MANAGEMENT =====
@@ -1463,6 +1470,14 @@ class BasketballRosterManager {
 
     try {
       await window.electronAPI.deletePlayer(playerId);
+      
+      // Clean up game stats for deleted player
+      if (this.gameStats.home && this.gameStats.home[playerId]) {
+        delete this.gameStats.home[playerId];
+      }
+      if (this.gameStats.away && this.gameStats.away[playerId]) {
+        delete this.gameStats.away[playerId];
+      }
       
       // Reload both rosters to reflect changes
       if (this.homeTeam) await this.loadPlayers(this.homeTeam.id, true);
