@@ -343,6 +343,7 @@ class BasketballRosterManager {
         const currentValue = parseInt(e.target.value) || 0;
         e.target.value = currentValue + 1;
         e.target.dispatchEvent(new Event('change'));
+        e.target.blur();
       });
     });
 
@@ -354,6 +355,7 @@ class BasketballRosterManager {
       this.addFoul(playerId, teamKey);
       this.updatePlayerFoulDisplay(row);
       this.updateTeamFoulDisplay(teamKey === 'home');
+      e.target.blur();
     });
 
     // Foul input - manual change event
