@@ -1521,6 +1521,11 @@ class BasketballRosterManager {
     this.gameStats.home = this.gameStats.away;
     this.gameStats.away = tempStats;
     
+    // Always swap the current players arrays
+    const tempPlayers = this.currentPlayers.home;
+    this.currentPlayers.home = this.currentPlayers.away;
+    this.currentPlayers.away = tempPlayers;
+    
     console.log('Teams swapped - all data preserved');
   }
 
