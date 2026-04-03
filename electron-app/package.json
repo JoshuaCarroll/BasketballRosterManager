@@ -22,7 +22,7 @@
     "build:simple": "npm run pack"
   },
   "devDependencies": {
-    "electron": "^35.7.5",
+    "electron": "^39.8.4",
     "electron-builder": "^24.6.4"
   },
   "build": {
